@@ -18,8 +18,6 @@
 
         unit = "px"
         svg = d3.select("#svgCanvas")
-                // .attr("width", "100%")
-                // .attr("height", "100%")
                 .append("svg")
                 .attr("width", width  + unit)
                 .attr("height", height + unit);
@@ -29,19 +27,26 @@
             .attr("height", "100%")
             .attr("fill", "#faebd7");
 
-
-        companies = ['Waymo', 'Uber', 'Apple', 'Tesla', 'Glusha']
+        companies = ['Waymo', 'Uber', 'Apple', 'Tesla']
         for (i = 0; i < companies.length; i++) {
             addCompanyBlock(companies[i]);
         }
+        // svg.selectAll('g.company')
+        // .attr("transform", function(d, i) {
+        //   return centerTranslationForCompany(i)
+        // });
+
+
         // uber.attr("transform", "translate(" + (width - companyWidth) / 2 + "," + (height-companyHeight)/2 + ")");
+        companies.push("Glusha")
+        addCompanyBlock("Glusha");
         svg.selectAll('g.company')
-          .attr("transform", function(d, i) {
-            margin = (width - (width * (companies.length - 1))/companies.length - companyWidth) / 2; // Used to center
-            x = (width * i)/companies.length + margin;
-            y = height/5 -companyHeight/2; // Put it 1/5th of the way up
-            return ("translate(" + x + "," + y + ")");
-          });
+        .transition()
+        .delay(3.0)
+        .duration(3.0)
+        .attr("transform", function(d, i) {
+          return centerTranslationForCompany(i)
+        });
 
 
         function addCompanyBlock(name) {
@@ -63,6 +68,12 @@
         };
 
 
+        function centerTranslationForCompany(i) {
+            margin = (width - (width * (companies.length - 1))/companies.length - companyWidth) / 2; // Used to center
+            x = (width * i)/companies.length + margin;
+            y = height/5 -companyHeight/2; // Put it 1/5th of the way up
+            return ("translate(" + x + "," + y + ")");
+        }
 
         </script>
     </body>
