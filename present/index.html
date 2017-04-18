@@ -5,16 +5,21 @@
         <script src="http://d3js.org/d3.v3.min.js"></script>
     </head>
     <body>
+        <h1>Autonomous Vehicles</h1>
+        <div id="svgCanvas"></div>
+
         <script type="text/javascript">
         // Build our SVG
         width = 500.0;
         height = 500.0;
-
-        companyWidth = width / 5.0;
+        companyWidth = width / 6.0;
         companyHeight = height / 10.0;
+        companyColor = "#32CD32";
 
         unit = "px"
-        svg = d3.select("body")
+        svg = d3.select("#svgCanvas")
+                // .attr("width", "100%")
+                // .attr("height", "100%")
                 .append("svg")
                 .attr("width", width  + unit)
                 .attr("height", height + unit);
@@ -24,13 +29,27 @@
             .attr("height", "100%")
             .attr("fill", "#faebd7");
 
-        g = addCompanyBlock('Uber');
-        g.attr("transform", "translate(" + (width - companyWidth) / 2 + "," + (height-companyHeight)/2 + ")");
+
+        companies = ['Waymo', 'Uber', 'Apple', 'Tesla', 'Glusha']
+        for (i = 0; i < companies.length; i++) {
+            addCompanyBlock(companies[i]);
+        }
+        // uber.attr("transform", "translate(" + (width - companyWidth) / 2 + "," + (height-companyHeight)/2 + ")");
+        svg.selectAll('g.company')
+          .attr("transform", function(d, i) {
+            margin = (width - (width * (companies.length - 1))/companies.length - companyWidth) / 2; // Used to center
+            x = (width * i)/companies.length + margin;
+            y = height/5 -companyHeight/2; // Put it 1/5th of the way up
+            return ("translate(" + x + "," + y + ")");
+          });
+
 
         function addCompanyBlock(name) {
-          g = svg.append("g");
+          g = svg.append("g")
+              .attr("id", name)
+              .attr("class", "company");
           g.append("rect")
-              .attr("fill", "pink")
+              .attr("fill", companyColor)
               .attr("height", companyHeight + unit)
               .attr("width", companyWidth + unit);
           g.append("text")
@@ -46,6 +65,5 @@
 
 
         </script>
-        <h1>Autonomous Vehicles</h1>
     </body>
 </html>  
