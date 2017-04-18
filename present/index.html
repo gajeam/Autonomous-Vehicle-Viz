@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+        // Build our SVG
+        width = 500.0;
+        height = 500.0;
+
+        companyWidth = width / 5.0;
+        companyHeight = height / 10.0;
+
+        unit = "px"
+        svg = d3.select("body")
+                .append("svg")
+                .attr("width", width  + unit)
+                .attr("height", height + unit);
+        // Add a rectangle so we can always see our canvas size
+        svg.append("rect")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("fill", "#faebd7");
+
+        g = addCompanyBlock('Uber');
+        g.attr("transform", "translate(" + (width - companyWidth) / 2 + "," + (height-companyHeight)/2 + ")");
+
+        function addCompanyBlock(name) {
+          g = svg.append("g");
+          g.append("rect")
+              .attr("fill", "pink")
+              .attr("height", companyHeight + unit)
+              .attr("width", companyWidth + unit);
+          g.append("text")
+              .attr("y", companyHeight/2 + unit)
+              .attr("x", companyWidth/2 + unit)
+              .style("text-anchor", "middle")
+              .style("alignment-baseline", "middle")
+              .text(name);
+
+          return g;
+        };
+
+
+
+        </script>
+        <h1>Autonomous Vehicles</h1>
+    </body>
+</html>  
