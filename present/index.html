@@ -15,14 +15,14 @@
         width = 700.0;
         height = 700.0;
         
-        companyWidth = width / 8.0;
+        companyWidth = width / 6.0;
         companyHeight = height / 8.0;
         companyColor = "#32CD32";
 
         startupRadius = width / 15.0;
         startupColor = "#4682B4";
 
-        personRadius = width / 50.0;
+        personRadius = width / 200.0;
         personColor = "#D3D3D3";
 
         unit = ""
@@ -40,7 +40,7 @@
             .attr("fill", "#faebd7");
 
 
-        companies = ['Waymo', 'Uber', 'Apple', 'Tesla', 'Glusha']
+        companies = ['Waymo', 'Uber', 'Apple', 'Tesla']
         for (i = 0; i < companies.length; i++) {
             addCompanyBlock(companies[i]);
         }
@@ -49,7 +49,7 @@
           return defaultTranslationForCompany(i)
         });
 
-        startups = ['Otto', 'Argo AI', 'Faraday Futures', 'Clinsense'];
+        startups = ['Otto', 'Argo AI', 'Clinsense'];
         for (i = 0; i < startups.length; i++) {
             addStartupBlock(startups[i]);
         }
@@ -58,7 +58,7 @@
           return defaultTranslationForStartup(i)
         });
 
-        people = ['Nisha Pathak', "Lucia D'Onofio", "GabeNicholas"];
+        people = ['Nisha Pathak', "Lucia D'Onofrio", "Gabe Nicholas"];
         for (i = 0; i < people.length; i++) {
             addPersonBlock(people[i]);
         }
@@ -67,46 +67,58 @@
           return defaultTranslationForStartup(i)
         });
 
+
+
+        // drawBetweenIds('Clinsense', 'Waymo')
+        moveBlockToBlock("Lucia D'Onofrio", 'Apple')
+
+        companies.push('Glusha')
+        addCompanyBlock('Glusha');
+
         /* ANIMATIONS */
-
-        // companies.push("Glusha")
-        // addCompanyBlock("Glusha");
-        // svg.selectAll('g.company')
-        // .transition()
-        // .delay(500)
-        // .duration(2000)
-        // .attr("transform", function(d, i) {
-        //   return defaultTranslationForCompany(i)
-        // });
-
-        moveBlockToBlock('GabeNicholas', 'Waymo')
-        function moveBlockToBlock(moverId, locationId) {
-          xy = centerForId(locationId);
-          d3.selectAll('g#' + moverId)
+        function moveBlockToBlock(moverName, locationName) {
+          xy = centerForId(idFromName(locationName));
+          d3.selectAll('g#' + idFromName(moverName))
             .transition()
-            .duration(1000)
+            .duration(2000)
             .delay(1000)
             .attr("transform", translateXY(xy[0], xy[1]));
         }
 
         // Let's draw a path!
+        /*
+         *  LINE DRAWING
+         */
+        function drawBetweenIds(fromId, toId) {
+            start = centerForId(fromId)
+            end = centerForId(toId)
 
+            lineData = [{"x" : start[0], "y" : start[1]},
+                        {"x" : end[0], "y" : end[1]}];
+            lineFunction = d3.svg.line()
+                              .x(function(d) { return d.x;})
+                              .y(function(d) { return d.y;});
+            line = svg.append("path")
+                      .attr("d", lineFunction(lineData))                    
+                      .attr("stroke", "blue");
+        }
 
         /*
          * PEOPLE METHODS
          */
-
          function addPersonBlock(name) {
           g = svg.append("g")
-              .attr("id", name)
+              .attr("id", idFromName(name))
               .attr("class", "person");
           g.append("circle")
              .attr("fill", personColor)
              .attr("r", personRadius + unit)
           g.append("text")
-            .attr("text-anchor", "middle")
+            .style("alignment-baseline", "middle")
+            .attr("text-anchor", "left")
+            .attr("x", 10) // Add a margin
+            .attr("y", personRadius/2)
             .text(name)
-            .attr("dy", -personRadius + unit);
          }
 
         /*                  
@@ -114,7 +126,7 @@
          */
          function addStartupBlock(name) {
           g = svg.append("g")
-              .attr("id", name)
+              .attr("id", idFromName(name))
               .attr("class", "startup");
           g.append("circle")
              .attr("fill", startupColor)
@@ -137,12 +149,11 @@
         /*                  
          * COMPANY METHODS
          */
-
         function addCompanyBlock(name) {
           startX = (width - companyWidth)/2;
           startY = -companyHeight;
           g = svg.append("g")
-              .attr("id", name)
+              .attr("id", idFromName(name))
               .attr("class", "company")
               .attr("transform", translateXY(startX, startY));
 
@@ -151,10 +162,10 @@
               .attr("height", companyHeight + unit)
               .attr("width", companyWidth + unit);
           g.append("text")
-              .attr("y", companyHeight/2 + unit)
               .attr("x", companyWidth/2 + unit)
+              .attr("y", -5 + unit) // Add a slight margin
               .attr("text-anchor", "middle")
-              .attr("alignment-baseline", "middle")
+              .attr("alignment-baseline", "top")
               .text(name);
 
           return g;
@@ -170,6 +181,11 @@
         /*
         * HELPER METHODS
         */
+
+         function idFromName(name) {
+          return name.replace(/\W/g, '')
+         }
+
         function translateXY(x, y) {
           return 'translate(' + x + ',' + y + ')';
         }
@@ -184,21 +200,21 @@
           return translate;
         }
 
-        function centerForId(locationId) {
+        function centerForId(locationName) {
                     isRect = false;
-          d3.select('g#' + locationId)
+          d3.select('g#' + idFromName(locationName))
             .selectAll("rect")
             .each(function() {
               isRect = true;
             })
-          translate = d3.select("g#" + locationId)
+          translate = d3.select("g#" + locationName)
                         .attr("transform")
           xy = xyTranslate(translate);
           if (isRect) {
-            width = d3.select('g#' + locationId)
+            width = d3.select('g#' + idFromName(locationName))
               .select("rect")
               .attr("width")
-            height = d3.select('g#' + locationId)
+            height = d3.select('g#' + idFromName(locationName))
               .select("rect")
               .attr("height");
             xy[0] = xy[0] + width/2;
