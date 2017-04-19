@@ -12,17 +12,17 @@
         
         /* CONSTANTS */
 
-        width = 700.0;
-        height = 700.0;
+        canvasWidth = 700.0;
+        canvasHeight = 700.0;
         
-        companyWidth = width / 6.0;
-        companyHeight = height / 8.0;
+        companyWidth = canvasWidth / 6.0;
+        companyHeight = canvasHeight / 8.0;
         companyColor = "#32CD32";
 
-        startupRadius = width / 15.0;
+        startupRadius = canvasWidth / 15.0;
         startupColor = "#4682B4";
 
-        personRadius = width / 200.0;
+        personRadius = canvasWidth / 200.0;
         personColor = "#D3D3D3";
 
         unit = ""
@@ -31,8 +31,8 @@
 
         svg = d3.select("#svgCanvas")
                 .append("svg")
-                .attr("width", width  + unit)
-                .attr("height", height + unit);
+                .attr("width", canvasWidth  + unit)
+                .attr("height", canvasHeight + unit);
         // Add a rectangle so we can always see our canvas size
         svg.append("rect")
             .attr("width", "100%")
@@ -68,24 +68,34 @@
         });
 
 
-
-        // drawBetweenIds('Clinsense', 'Waymo')
-        moveBlockToBlock("Lucia D'Onofrio", 'Apple')
+        moveBlockToBlock("Lucia D'Onofrio", 'Apple', 0, function() {
+          console.log("TADA")
+        });
 
         companies.push('Glusha')
-        addCompanyBlock('Glusha');
+        console.log(companies)
+        addCompanyBlock('Glusha')
+        svg.selectAll('g.company')
+        .transition()
+        .delay(1000)
+        .duration(1500)
+        .attr("transform", function(d, i) {
+          return defaultTranslationForCompany(i)
+        });
 
         /* ANIMATIONS */
-        function moveBlockToBlock(moverName, locationName) {
+      function moveBlockToBlock(moverName, locationName, delay=1000, callback=function(){}) {
           xy = centerForId(idFromName(locationName));
-          d3.selectAll('g#' + idFromName(moverName))
+          d3.select('g#' + idFromName(moverName))
             .transition()
-            .duration(2000)
-            .delay(1000)
-            .attr("transform", translateXY(xy[0], xy[1]));
+            .duration(1000)
+            .delay(delay)
+            .attr("transform", translateXY(xy[0], xy[1]))
+            .each("end", function(){
+              callback();
+            });
         }
 
-        // Let's draw a path!
         /*
          *  LINE DRAWING
          */
@@ -140,9 +150,9 @@
          }
 
          function defaultTranslationForStartup(i) {
-            margin = (width - (width * (startups.length - 1))/startups.length) / 2;
-            x = (width * i)/startups.length + margin;
-            y = 4 * height/5 -startupRadius/2; // Put it 4/5th of the way down
+            margin = (canvasWidth - (canvasWidth * (startups.length - 1))/startups.length) / 2;
+            x = (canvasWidth * i)/startups.length + margin;
+            y = 4 * canvasHeight/5 -startupRadius/2; // Put it 4/5th of the way down
             return translateXY(x, y);
          }
 
@@ -150,7 +160,7 @@
          * COMPANY METHODS
          */
         function addCompanyBlock(name) {
-          startX = (width - companyWidth)/2;
+          startX = (canvasWidth - companyWidth)/2;
           startY = -companyHeight;
           g = svg.append("g")
               .attr("id", idFromName(name))
@@ -172,9 +182,10 @@
         };
 
         function defaultTranslationForCompany(i) {
-            margin = (width - (width * (companies.length - 1))/companies.length - companyWidth) / 2; // Used to center
-            x = (width * i)/companies.length + margin;
-            y = height/5 -companyHeight/2; // Put it 1/5th of the way up
+            margin = (canvasWidth - (canvasWidth * (companies.length - 1))/companies.length - companyWidth) / 2; // Used to center
+            x = (canvasWidth * i)/companies.length + margin;
+            y = canvasHeight/5 -companyHeight/2; // Put it 1/5th of the way up
+            // console.log(translateXY(x, y))
             return translateXY(x, y);
         }
 
