@@ -12,17 +12,20 @@
         
         /* CONSTANTS */
 
-        width = 600.0;
-        height = 600.0;
+        width = 700.0;
+        height = 700.0;
         
-        companyWidth = width / 7.0;
-        companyHeight = height / 7.0;
+        companyWidth = width / 8.0;
+        companyHeight = height / 8.0;
         companyColor = "#32CD32";
 
         startupRadius = width / 15.0;
         startupColor = "#4682B4";
 
-        unit = "px"
+        personRadius = width / 50.0;
+        personColor = "#D3D3D3";
+
+        unit = ""
 
          /* CANVAS SETUP */
 
@@ -37,7 +40,7 @@
             .attr("fill", "#faebd7");
 
 
-        companies = ['Waymo', 'Uber', 'Apple', 'Tesla']
+        companies = ['Waymo', 'Uber', 'Apple', 'Tesla', 'Glusha']
         for (i = 0; i < companies.length; i++) {
             addCompanyBlock(companies[i]);
         }
@@ -46,39 +49,95 @@
           return defaultTranslationForCompany(i)
         });
 
-        startups = ['Otto', 'Argo AI', 'Faraday Futures', 'Clinsense']
+        startups = ['Otto', 'Argo AI', 'Faraday Futures', 'Clinsense'];
         for (i = 0; i < startups.length; i++) {
             addStartupBlock(startups[i]);
         }
         svg.selectAll('g.startup')
-        // .transition()
-        // .delay(1500)
-        // .duration(2000)
+        .attr("transform", function(d, i) {
+          return defaultTranslationForStartup(i)
+        });
+
+        people = ['Nisha Pathak', "Lucia D'Onofio", "GabeNicholas"];
+        for (i = 0; i < people.length; i++) {
+            addPersonBlock(people[i]);
+        }
+        svg.selectAll('g.person')
         .attr("transform", function(d, i) {
           return defaultTranslationForStartup(i)
         });
 
         /* ANIMATIONS */
 
-        companies.push("Glusha")
-        addCompanyBlock("Glusha");
-        svg.selectAll('g.company')
-        .transition()
-        .delay(1500)
-        .duration(2000)
-        .attr("transform", function(d, i) {
-          return defaultTranslationForCompany(i)
-        });
+        // companies.push("Glusha")
+        // addCompanyBlock("Glusha");
+        // svg.selectAll('g.company')
+        // .transition()
+        // .delay(500)
+        // .duration(2000)
+        // .attr("transform", function(d, i) {
+        //   return defaultTranslationForCompany(i)
+        // });
+
+        moveBlockToBlock('GabeNicholas', 'Waymo')
+        function moveBlockToBlock(moverId, locationId) {
+          isRect = false;
+          d3.select('g#' + locationId)
+            .selectAll("rect")
+            .each(function() {
+              isRect = true;
+            })
+
+          // boundingRect = d3.select('g#' + locationId)
+          //               .select("circle")
+          //               .node()
+          //               .getBBox();
+          // centerX = (boundingRect.right + boundingRect.left)/2;
+          // centerY = (boundingRect.top + boundingRect.bottom)/2;
+          // console.log(boundingRect)
+          translate = d3.select("g#" + locationId)
+                        .attr("transform")
+          xy = xyTranslate(translate);
+          if (isRect) {
+            width = d3.select('g#' + locationId)
+              .select("rect")
+              .attr("width")
+            height = d3.select('g#' + locationId)
+              .select("rect")
+              .attr("height");
+            console.log(width)
+            xy[0] = xy[0] + width/2;
+            xy[1] = xy[1] + height/2;
+          }
+
+          d3.selectAll('g#' + moverId)
+            .transition()
+            .duration(1000)
+            .delay(1000)
+            .attr("transform", translateXY(xy[0], xy[1]));
+        }
 
 
-        defaultTranslationForStartup
-        // startup.select("circle")
-        //         .attr("cx", startupRadius)
-        //         .attr("cy", startupRadius);
+        /*
+         * PEOPLE METHODS
+         */
+
+         function addPersonBlock(name) {
+          g = svg.append("g")
+              .attr("id", name)
+              .attr("class", "person");
+          g.append("circle")
+             .attr("fill", personColor)
+             .attr("r", personRadius + unit)
+          g.append("text")
+            .attr("text-anchor", "middle")
+            .text(name)
+            .attr("dy", -personRadius + unit);
+         }
+
         /*                  
          * STARTUP METHODS
          */
-
          function addStartupBlock(name) {
           g = svg.append("g")
               .attr("id", name)
@@ -87,8 +146,9 @@
              .attr("fill", startupColor)
              .attr("r", startupRadius + unit)
           g.append("text")
+            .attr("dy", -startupRadius * 1.1 + unit)
             .style("text-anchor", "middle")
-            .style("alignment-baseline", "middle")
+            // .style("alignment-baseline", "middle")
             .text(name);
           return g;
          }
@@ -97,18 +157,21 @@
             margin = (width - (width * (startups.length - 1))/startups.length) / 2;
             x = (width * i)/startups.length + margin;
             y = 4 * height/5 -startupRadius/2; // Put it 4/5th of the way down
-            return ("translate(" + x + "," + y + ")");
+            return translateXY(x, y);
          }
-
 
         /*                  
          * COMPANY METHODS
          */
 
         function addCompanyBlock(name) {
+          startX = (width - companyWidth)/2;
+          startY = -companyHeight;
           g = svg.append("g")
               .attr("id", name)
-              .attr("class", "company");
+              .attr("class", "company")
+              .attr("transform", translateXY(startX, startY));
+
           g.append("rect")
               .attr("fill", companyColor)
               .attr("height", companyHeight + unit)
@@ -116,8 +179,8 @@
           g.append("text")
               .attr("y", companyHeight/2 + unit)
               .attr("x", companyWidth/2 + unit)
-              .style("text-anchor", "middle")
-              .style("alignment-baseline", "middle")
+              .attr("text-anchor", "middle")
+              .attr("alignment-baseline", "middle")
               .text(name);
 
           return g;
@@ -127,8 +190,27 @@
             margin = (width - (width * (companies.length - 1))/companies.length - companyWidth) / 2; // Used to center
             x = (width * i)/companies.length + margin;
             y = height/5 -companyHeight/2; // Put it 1/5th of the way up
-            return ("translate(" + x + "," + y + ")");
+            return translateXY(x, y);
         }
+
+        /*
+        * HELPER METHODS
+        */
+        function translateXY(x, y) {
+          return 'translate(' + x + ',' + y + ')';
+        }
+
+        function xyTranslate(translate) {
+          translate = translate.replace('translate(', '')
+          translate = translate.replace(')', '');
+          translate = translate.split(',');
+          for (var i in translate) {
+            translate[i] = +translate[i];
+          }
+          console.log(translate)
+          return translate;
+        }
+
 
         </script>
     </body>
