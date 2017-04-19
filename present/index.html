@@ -81,41 +81,15 @@
 
         moveBlockToBlock('GabeNicholas', 'Waymo')
         function moveBlockToBlock(moverId, locationId) {
-          isRect = false;
-          d3.select('g#' + locationId)
-            .selectAll("rect")
-            .each(function() {
-              isRect = true;
-            })
-
-          // boundingRect = d3.select('g#' + locationId)
-          //               .select("circle")
-          //               .node()
-          //               .getBBox();
-          // centerX = (boundingRect.right + boundingRect.left)/2;
-          // centerY = (boundingRect.top + boundingRect.bottom)/2;
-          // console.log(boundingRect)
-          translate = d3.select("g#" + locationId)
-                        .attr("transform")
-          xy = xyTranslate(translate);
-          if (isRect) {
-            width = d3.select('g#' + locationId)
-              .select("rect")
-              .attr("width")
-            height = d3.select('g#' + locationId)
-              .select("rect")
-              .attr("height");
-            console.log(width)
-            xy[0] = xy[0] + width/2;
-            xy[1] = xy[1] + height/2;
-          }
-
+          xy = centerForId(locationId);
           d3.selectAll('g#' + moverId)
             .transition()
             .duration(1000)
             .delay(1000)
             .attr("transform", translateXY(xy[0], xy[1]));
         }
+
+        // Let's draw a path!
 
 
         /*
@@ -207,8 +181,30 @@
           for (var i in translate) {
             translate[i] = +translate[i];
           }
-          console.log(translate)
           return translate;
+        }
+
+        function centerForId(locationId) {
+                    isRect = false;
+          d3.select('g#' + locationId)
+            .selectAll("rect")
+            .each(function() {
+              isRect = true;
+            })
+          translate = d3.select("g#" + locationId)
+                        .attr("transform")
+          xy = xyTranslate(translate);
+          if (isRect) {
+            width = d3.select('g#' + locationId)
+              .select("rect")
+              .attr("width")
+            height = d3.select('g#' + locationId)
+              .select("rect")
+              .attr("height");
+            xy[0] = xy[0] + width/2;
+            xy[1] = xy[1] + height/2;
+          }
+          return xy;
         }
 
 
