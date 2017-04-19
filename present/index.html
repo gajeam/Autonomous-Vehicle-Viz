@@ -9,14 +9,23 @@
         <div id="svgCanvas"></div>
 
         <script type="text/javascript">
-        // Build our SVG
-        width = 500.0;
-        height = 500.0;
-        companyWidth = width / 6.0;
-        companyHeight = height / 10.0;
+        
+        /* CONSTANTS */
+
+        width = 600.0;
+        height = 600.0;
+        
+        companyWidth = width / 7.0;
+        companyHeight = height / 7.0;
         companyColor = "#32CD32";
 
+        startupRadius = width / 15.0;
+        startupColor = "#4682B4";
+
         unit = "px"
+
+         /* CANVAS SETUP */
+
         svg = d3.select("#svgCanvas")
                 .append("svg")
                 .attr("width", width  + unit)
@@ -27,27 +36,74 @@
             .attr("height", "100%")
             .attr("fill", "#faebd7");
 
+
         companies = ['Waymo', 'Uber', 'Apple', 'Tesla']
         for (i = 0; i < companies.length; i++) {
             addCompanyBlock(companies[i]);
         }
-        // svg.selectAll('g.company')
-        // .attr("transform", function(d, i) {
-        //   return centerTranslationForCompany(i)
-        // });
+        svg.selectAll('g.company')
+        .attr("transform", function(d, i) {
+          return defaultTranslationForCompany(i)
+        });
 
+        startups = ['Otto', 'Argo AI', 'Faraday Futures', 'Clinsense']
+        for (i = 0; i < startups.length; i++) {
+            addStartupBlock(startups[i]);
+        }
+        svg.selectAll('g.startup')
+        // .transition()
+        // .delay(1500)
+        // .duration(2000)
+        .attr("transform", function(d, i) {
+          return defaultTranslationForStartup(i)
+        });
 
-        // uber.attr("transform", "translate(" + (width - companyWidth) / 2 + "," + (height-companyHeight)/2 + ")");
+        /* ANIMATIONS */
+
         companies.push("Glusha")
         addCompanyBlock("Glusha");
         svg.selectAll('g.company')
         .transition()
-        .delay(3.0)
-        .duration(3.0)
+        .delay(1500)
+        .duration(2000)
         .attr("transform", function(d, i) {
-          return centerTranslationForCompany(i)
+          return defaultTranslationForCompany(i)
         });
 
+
+        defaultTranslationForStartup
+        // startup.select("circle")
+        //         .attr("cx", startupRadius)
+        //         .attr("cy", startupRadius);
+        /*                  
+         * STARTUP METHODS
+         */
+
+         function addStartupBlock(name) {
+          g = svg.append("g")
+              .attr("id", name)
+              .attr("class", "startup");
+          g.append("circle")
+             .attr("fill", startupColor)
+             .attr("r", startupRadius + unit)
+          g.append("text")
+            .style("text-anchor", "middle")
+            .style("alignment-baseline", "middle")
+            .text(name);
+          return g;
+         }
+
+         function defaultTranslationForStartup(i) {
+            margin = (width - (width * (startups.length - 1))/startups.length) / 2;
+            x = (width * i)/startups.length + margin;
+            y = 4 * height/5 -startupRadius/2; // Put it 4/5th of the way down
+            return ("translate(" + x + "," + y + ")");
+         }
+
+
+        /*                  
+         * COMPANY METHODS
+         */
 
         function addCompanyBlock(name) {
           g = svg.append("g")
@@ -67,8 +123,7 @@
           return g;
         };
 
-
-        function centerTranslationForCompany(i) {
+        function defaultTranslationForCompany(i) {
             margin = (width - (width * (companies.length - 1))/companies.length - companyWidth) / 2; // Used to center
             x = (width * i)/companies.length + margin;
             y = height/5 -companyHeight/2; // Put it 1/5th of the way up
