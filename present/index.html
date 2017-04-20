@@ -68,7 +68,7 @@
         });
 
 
-        moveBlockToBlock("Lucia D'Onofrio", 'Apple', 0, function() {
+        movePersonToBlock("Lucia D'Onofrio", 'Uber', 0, function() {
           console.log("TADA")
         });
 
@@ -84,14 +84,36 @@
         });
 
         /* ANIMATIONS */
-      function moveBlockToBlock(moverName, locationName, delay=1000, callback=function(){}) {
+
+      function movePersonToBlock(moverName, locationName, delay=1000, callback=function(){}) {
+          // clientRect = d3.select("g#" + idFromName(locationName))
+          //               .select("rect")
+          //               .node()
+          //               .getBBox();
+          // console.log(clientRect);
+          // bbox = d3.select("g#" + idFromName(locationName))
+          //     .node()
+          //     .getBBox();
+          // console.log(bbox);
+
+
           xy = centerForId(idFromName(locationName));
+          console.log(xy)
+
+          xOffset = -companyWidth/2 + 5
+          yOffset = companyHeight/2 - 10
           d3.select('g#' + idFromName(moverName))
             .transition()
             .duration(1000)
             .delay(delay)
-            .attr("transform", translateXY(xy[0], xy[1]))
+            .attr("transform", translateXY(xy[0] + xOffset, xy[1] + yOffset))
             .each("end", function(){
+              child = this
+              d3.select("g#" + idFromName(locationName))
+                .append(function() {
+                  return child;
+                })
+                .attr("transform", translateXY(companyWidth/2 + xOffset, companyHeight/2 + yOffset))
               callback();
             });
         }
@@ -159,6 +181,13 @@
         /*                  
          * COMPANY METHODS
          */
+
+        // Do something where you create a little cubby where people can go
+        // Potentially shift around the cubbies as people come in but maybe not
+        // Then either still do the add parent/remove parent thing or see if there's
+        // an easy way to make one thing follow another.
+
+
         function addCompanyBlock(name) {
           startX = (canvasWidth - companyWidth)/2;
           startY = -companyHeight;
@@ -178,6 +207,8 @@
               .attr("alignment-baseline", "top")
               .text(name);
 
+            // .attr("x", 5) // margin
+            // .attr("y", companyHeight)
           return g;
         };
 
@@ -212,7 +243,7 @@
         }
 
         function centerForId(locationName) {
-                    isRect = false;
+          isRect = false;
           d3.select('g#' + idFromName(locationName))
             .selectAll("rect")
             .each(function() {
