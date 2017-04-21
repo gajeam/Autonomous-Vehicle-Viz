@@ -102,15 +102,38 @@
         /*
          *  STARTUP METHODS
          */
-         function companyAcquireStartup(startupName, acquirerName) {
+         function companyAcquireStartup(acquirerName, startupName) {
+            startup = companyTypes[kIndexStartUp];
+
             acquirer = d3.select("g#" + acquirerName);
             acquirerTransform = acquirer.attr("transform")
 
+            duration = 1500;
+
             // Move the startup
             svg.select("#" + startupName)
+                .attr("class", "to-remove")
                 .transition()
-                .duration(1500)
+                .duration(duration)
                 .attr("transform", acquirerTransform);
+
+            // Shift all the other startups
+            shiftDelay = 500;
+            companyIter = 0;
+            companyCount = countCompanyType(startup.type)
+            svg.selectAll("." + startup.type)
+            .filter(function() {
+                return d3.select(this).attr("id") != startupName;
+            })
+            .each(function() {
+                d3.select(this)
+                    .transition()
+                    .delay(shiftDelay)
+                    .duration(duration - shiftDelay)
+                    .attr("transform", transForEdgeIndex(startup.path, companyIter + 1, companyCount + 1));
+                companyIter++;
+            });
+
          }
 
         /*
@@ -119,23 +142,23 @@
 
          function addCompany(indexType, name) {
             company = companyTypes[indexType];
-            companyCount = 0;
-            svg.selectAll("." + company.type)
-                .each(function() {
-                    companyCount++;
-                });
+            companyCount = countCompanyType(company.type);
             companyIter = 0;
+
+            // Shift all the other companies
             svg.selectAll("." + company.type)
                 .each(function() {
                     d3.select(this)
                         .transition()
-                        .attr("transform", transForEdgeIndex(company, companyIter + 1, companyCount + 2));
+                        // .duration(500)
+                        .attr("transform", transForEdgeIndex(company.path, companyIter + 1, companyCount + 2));
                     companyIter++;
                 });
+
             g = svg.append("g")
                 .attr("class", company.type)
                 .attr("id", name)
-                .attr("transform", transForEdgeIndex(company, companyCount + 1, companyCount + 2))
+                .attr("transform", transForEdgeIndex(company.path, companyCount + 1, companyCount + 2))
 
             g.append("circle")
             .attr("fill", company.color)
@@ -147,15 +170,30 @@
              .text(name);
          }
 
-         function transForEdgeIndex(company, index, total) {
-            trans = xyTranslate(d3.select(company.path).attr("transform"));
-            path = company.path;
+         // COMPANY HELPER FUNCTIONS
+
+         function transForEdgeIndex(companyPath, index, total) {
+            trans = xyTranslate(d3.select(companyPath).attr("transform"));
+            path = companyPath
             totalLength = path.getTotalLength();
             newPoint = path.getPointAtLength((index/total) * (totalLength/2));
             trans[0] = newPoint.x + trans[0];
             trans[1] = newPoint.y + trans[1];
             return translateXY(trans)
         }
+
+        function countCompanyType(companyType) {
+            companyCount = 0;
+            svg.selectAll("." + companyType)
+                .each(function() {
+                    companyCount++;
+                });
+            return companyCount;
+        }
+
+        /*
+         * TEST FUNCTIONS
+         */
 
         function demonstrateCompanyAdds() {
             count = 0;
@@ -174,7 +212,7 @@
         }
 
         // Populate some companies
-        for (i = 0; i < 12; i++) {
+        for (i = 0; i < 10; i++) {
             c = 0;
             callAfterDelay(i * 100, function(){
                 addCompany(c%3, "Gabbels" + c);
@@ -182,8 +220,12 @@
             })
         }
         callAfterDelay(1600, function() {
-            // companyAcquireStartup("Gabbels5", "Gabbels6")
-            addPersonToTypeCompany("Lucia", "Gabbels1");
+            companyAcquireStartup("Gabbels0", "Gabbels5")
+            // addPersonToTypeCompany("Lucia", "Gabbels1");
+        });
+
+        callAfterDelay(4500, function() {
+            addCompany(kIndexStartUp, "Snabbels")
         });
 
 
