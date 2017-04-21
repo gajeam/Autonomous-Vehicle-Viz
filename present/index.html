@@ -129,7 +129,7 @@
             .attr("fill", company.color)
             .attr("r", 0)
             .transition()
-                .attr("r", companyRadius)
+                .attr("r", company.radius)
 
             g.append("text")
              .text(name);
@@ -170,8 +170,8 @@
             })
         }
         callAfterDelay(1600, function() {
-            companyAcquireStartup("Gabbels5", "Gabbels6")
-            // addPersonToTypeCompany("Lucia", "Gabbels1");
+            // companyAcquireStartup("Gabbels5", "Gabbels6")
+            addPersonToTypeCompany("Lucia", "Gabbels1");
         });
 
 
