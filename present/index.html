@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src="http://d3js.org/d3.v4.min.js"></script>
+    </head>
+    <body>
+        <h1>Autonomous Vehicles</h1>
+        <div id="svgCanvas"></div>
+
+        <script type="text/javascript">
+        
+        /* CONSTANTS */
+
+        canvasWidth = 800.0;
+        canvasHeight = 700.0;
+
+        mainRadius = 300.0;
+        mainStrokeWidth = 5.0
+
+        personRadius = 15;
+
+        companyRadius = 25;
+
+        techColor = "#32CD32";
+        carColor = "#DB7093";
+        startupColor = "#4682B4";
+        neutralColor = "#A0A0A0"
+
+        kIndexTech = 0;
+        kIndexCar = 1;
+        kIndexStartUp = 2;
+
+        companyTypes = [{'type': 'tech', 'color' : techColor},
+                        {'type' :'car', 'color' :carColor},
+                        { 'type': 'startup', 'color' : startupColor}];
+
+        svg = d3.select("#svgCanvas")
+                .append("svg")
+                .attr("width", canvasWidth)
+                .attr("height", canvasHeight)
+
+        // Add a rectangle so we can always see our canvas size
+        svg.append("rect")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("fill", "#faebd7");
+
+        // Add the different arcs
+        for (i = 0; i < companyTypes.length; i++) {
+            angle = (2/3 * Math.PI);
+            var arc = d3.arc()
+                .innerRadius(mainRadius)
+                .outerRadius(mainRadius + 5)
+                .startAngle(angle * i) 
+                .endAngle(angle * (i+1));
+            svg.append("path")
+                .attr("id", companyTypes[i].type)
+                .attr("fill", companyTypes[i].color)
+                .attr("d", arc)
+                .attr("transform", translateXY([canvasWidth/2, canvasHeight/2]))
+                .each(function(d) {
+                    companyTypes[i]['path'] = this;
+                });
+        }
+
+        /*
+         *  PEOPLE METHODS
+         */
+        function addPersonToTypeIndex(index) {
+            company = companyTypes[index];
+            trans = xyTranslate(d3.select(company.path).attr("transform"));
+            path = d3.select(company.path).node();
+            totalLength = path.getTotalLength();
+            // TODO: add where on path it goes here
+            newPoint = path.getPointAtLength(totalLength * 0);
+
+            neutralPerson()
+                .transition()
+                .delay(500)
+                .duration(1200)
+                .ease(d3.easeCubic)
+                .attr("transform", translateXY([trans[0] + newPoint.x, trans[1] + newPoint.y]))
+                .attr("fill", company.color);
+        }
+
+        function neutralPerson() {
+            return svg.append("circle")
+                        .attr("class", "person")
+                        .attr("fill", neutralColor)
+                        .attr("transform", translateXY([canvasWidth/2, canvasHeight/2]))
+                        .attr("r", 0)
+                        .transition()
+                        .ease(d3.easeElastic)
+                        .delay(250)
+                        .duration(750)
+                        .attr("r", personRadius);
+
+        }
+
+        /*
+         *  COMPANY METHODS
+         */
+
+         function addCompany(indexType, name) {
+            company = companyTypes[indexType];
+            companyCount = 0;
+            svg.selectAll("." + company.type)
+                .each(function() {
+                    companyCount++;
+                });
+            companyIter = 0;
+            svg.selectAll("." + company.type)
+                .each(function() {
+                    d3.select(this)
+                        .transition()
+                        .attr("transform", transForEdgeIndex(companyIter + 1, companyCount + 2));
+                    companyIter++;
+
+
+                });
+            g = svg.append("g")
+                .attr("class", company.type)
+                .attr("id", name)
+                .attr("transform", transForEdgeIndex(companyCount + 1, companyCount + 2))
+
+            g.append("circle")
+            .attr("fill", company.color)
+            .attr("r", 0)
+            .transition()
+                .attr("r", companyRadius)
+
+            g.append("text")
+             .text(name);
+
+
+            function transForEdgeIndex(index, total) {
+                trans = xyTranslate(d3.select(company.path).attr("transform"));
+                path = company.path;
+                totalLength = path.getTotalLength();
+                newPoint = path.getPointAtLength((index/total) * (totalLength/2));
+                trans[0] = newPoint.x + trans[0];
+                trans[1] = newPoint.y + trans[1];
+                return translateXY(trans)
+            }
+         }
+
+        function demonstrateCompanyAdds() {
+            count = 0;
+            setInterval(function() {
+                addCompany(count, "Gabells");
+                count = (count+1) % 3;
+            }, 2000);
+        }
+
+        function demonstratePeopleAdds() {
+            count = 0;
+            setInterval(function() {
+                addPersonToTypeIndex(count);
+                count = (count+1) % 3;
+            }, 2000);
+        }
+
+        // Populate some companies
+        for (i = 0; i < 12; i++) {
+            c = 0;
+            callAfterDelay(i * 100, function(){
+                addCompany(c%3, "Gabbels" + c);
+                c++;
+            })
+        }
+
+
+        // demonstratePeopleAdds()
+        // demonstrateCompanyAdds();
+
+
+        /*
+        * HELPER METHODS
+        */
+        function callAfterDelay(delay, func) {
+            setTimeout(func, delay);
+        }
+        function translateXY(xy) {
+          return 'translate(' + xy[0] + ',' + xy[1] + ')';
+        }
+
+        function xyTranslate(translate) {
+          translate = translate.replace('translate(', '')
+          translate = translate.replace(')', '');
+          translate = translate.split(',');
+          for (var i in translate) {
+            translate[i] = +translate[i];
+          }
+          return translate;
+        }
+        </script>
+    </body>
+</html>  

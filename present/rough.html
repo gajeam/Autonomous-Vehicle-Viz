@@ -72,15 +72,15 @@
           movePersonToCompany("Gabe Nicholas", "Uber");
         });
 
-        companies.push('Glusha')
-        addCompanyBlock('Glusha')
-        svg.selectAll('g.company')
-        .transition()
-        .delay(5000)
-        .duration(1500)
-        .attr("transform", function(d, i) {
-          return defaultTranslationForCompany(i)
-        });
+        // companies.push('Glusha')
+        // addCompanyBlock('Glusha')
+        // svg.selectAll('g.company')
+        // .transition()
+        // .delay(1000)
+        // .duration(1500)
+        // .attr("transform", function(d, i) {
+        //   return defaultTranslationForCompany(i)
+        // });
 
         /* ANIMATIONS */
 
@@ -106,7 +106,6 @@
           function recalculatePeoplePositions(locationName) {
             d3.select('g#' + idFromName(locationName))
               .selectAll(".person")
-              .transition()
               .attr("transform", function() {
                 order = +d3.select(this)
                           .attr("personorder");
@@ -127,6 +126,7 @@
             }
             translate = translateXY(xy[0] + xOffset,
                                     xy[1] + yOffset - nameSpacing * i)
+            console.log(translate)
             return translate;
           }
 
