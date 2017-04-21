@@ -100,6 +100,20 @@
         }
 
         /*
+         *  STARTUP METHODS
+         */
+         function companyAcquireStartup(startupName, acquirerName) {
+            acquirer = d3.select("g#" + acquirerName);
+            acquirerTransform = acquirer.attr("transform")
+
+            // Move the startup
+            svg.select("#" + startupName)
+                .transition()
+                .duration(1500)
+                .attr("transform", acquirerTransform);
+         }
+
+        /*
          *  COMPANY METHODS
          */
 
@@ -115,15 +129,13 @@
                 .each(function() {
                     d3.select(this)
                         .transition()
-                        .attr("transform", transForEdgeIndex(companyIter + 1, companyCount + 2));
+                        .attr("transform", transForEdgeIndex(company, companyIter + 1, companyCount + 2));
                     companyIter++;
-
-
                 });
             g = svg.append("g")
                 .attr("class", company.type)
                 .attr("id", name)
-                .attr("transform", transForEdgeIndex(companyCount + 1, companyCount + 2))
+                .attr("transform", transForEdgeIndex(company, companyCount + 1, companyCount + 2))
 
             g.append("circle")
             .attr("fill", company.color)
@@ -133,17 +145,17 @@
 
             g.append("text")
              .text(name);
-
-            function transForEdgeIndex(index, total) {
-                trans = xyTranslate(d3.select(company.path).attr("transform"));
-                path = company.path;
-                totalLength = path.getTotalLength();
-                newPoint = path.getPointAtLength((index/total) * (totalLength/2));
-                trans[0] = newPoint.x + trans[0];
-                trans[1] = newPoint.y + trans[1];
-                return translateXY(trans)
-            }
          }
+
+         function transForEdgeIndex(company, index, total) {
+            trans = xyTranslate(d3.select(company.path).attr("transform"));
+            path = company.path;
+            totalLength = path.getTotalLength();
+            newPoint = path.getPointAtLength((index/total) * (totalLength/2));
+            trans[0] = newPoint.x + trans[0];
+            trans[1] = newPoint.y + trans[1];
+            return translateXY(trans)
+        }
 
         function demonstrateCompanyAdds() {
             count = 0;
