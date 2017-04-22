@@ -4,6 +4,11 @@
         <meta charset="utf-8">
         <script src="http://d3js.org/d3.v4.min.js"></script>
     </head>
+    <style>
+        body {
+          font-family: "courier";
+        }
+    </style>
     <body>
         <h1>Autonomous Vehicles</h1>
         <div id="svgCanvas"></div>
@@ -39,38 +44,95 @@
                             'color' : startupColor,
                             'radius' : 20}];
 
-        svg = d3.select("#svgCanvas")
-                .append("svg")
-                .attr("width", canvasWidth)
-                .attr("height", canvasHeight)
 
-        // Add a rectangle so we can always see our canvas size
-        svg.append("rect")
-            .attr("width", "100%")
-            .attr("height", "100%")
-            .attr("fill", "#faebd7");
+        d3.csv("industry.csv", function(d) {
+            allData = {};
+            for (row in d) {
+                item = d[row];
+                if (allData[item.year] == undefined) {
+                    allData[item.year] = []
+                }
+                allData[item.year].push(item)
+            }
+            setupCanvas();
+            runYear(2008)
+        });
 
-        // Add the different arcs
-        for (i = 0; i < companyTypes.length; i++) {
-            angle = (2/3 * Math.PI);
-            var arc = d3.arc()
-                .innerRadius(mainRadius)
-                .outerRadius(mainRadius + 5)
-                .startAngle(angle * i) 
-                .endAngle(angle * (i+1));
-            svg.append("path")
-                .attr("id", companyTypes[i].type)
-                .attr("fill", companyTypes[i].color)
-                .attr("d", arc)
-                .attr("transform", translateXY([canvasWidth/2, canvasHeight/2]))
-                .each(function(d) {
-                    companyTypes[i]['path'] = this;
-                });
+
+        /*
+         *  ANIMATION FUNCTIONS
+         */
+        function runYear(year) {
+            yearData = allData['2008']
+            actionFunctions = {}
+            for (i in yearData) {                
+                a = yearData[i]
+                if (actionFunctions[a.action] == undefined) {
+                    actionFunctions[a.action] = []
+                }
+                actionFunctions[a.action].push([funcForAction(a.action), a]);
+            }
+            // console.log(actionFunctions)
+
+            // Run start functions
+            callAfterDelay(500, function() {
+                for (s in actionFunctions.start) {
+                    count = 0;
+                    callAfterDelay(s * 20, function() {
+                        func = actionFunctions.start[count][0]
+                        a = actionFunctions.start[count][1]
+                        func(a.actor, a.actorType, a.obj1)
+                        count++;
+                    });
+                }
+            });
+        }
+
+         function funcForAction(action) {
+            if (action == "start") {
+                return animateCompanyStart;
+            }
+         }
+
+         function animateCompanyStart(actor, actorType, obj1) {
+            addCompany(indexForActorType(actorType), actor);
+         }
+
+        function setupCanvas() {
+            svg = d3.select("#svgCanvas")
+                    .append("svg")
+                    .attr("width", canvasWidth)
+                    .attr("height", canvasHeight)
+
+            // Add a rectangle so we can always see our canvas size
+            svg.append("rect")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("fill", "#faebd7");
+
+            // Add the different arcs
+            for (i = 0; i < companyTypes.length; i++) {
+                angle = (2/3 * Math.PI);
+                var arc = d3.arc()
+                    .innerRadius(mainRadius)
+                    .outerRadius(mainRadius + 5)
+                    .startAngle(angle * i) 
+                    .endAngle(angle * (i+1));
+                svg.append("path")
+                    .attr("id", companyTypes[i].type)
+                    .attr("fill", companyTypes[i].color)
+                    .attr("d", arc)
+                    .attr("transform", translateXY([canvasWidth/2, canvasHeight/2]))
+                    .each(function(d) {
+                        companyTypes[i]['path'] = this;
+                    });
+            }
         }
 
         /*
          *  PEOPLE METHODS
          */
+
         function addPersonToTypeCompany(personName, companyName) {
             company = d3.select("g#" + companyName);
             companyTransform = company.attr("transform")
@@ -194,7 +256,6 @@
         /*
          * TEST FUNCTIONS
          */
-
         function demonstrateCompanyAdds() {
             count = 0;
             setInterval(function() {
@@ -211,24 +272,26 @@
             }, 2000);
         }
 
-        // Populate some companies
-        for (i = 0; i < 10; i++) {
-            c = 0;
-            callAfterDelay(i * 100, function(){
-                addCompany(c%3, "Gabbels" + c);
-                c++;
-            })
+        function testAnimations() {
+            // Populate some companies
+            for (i = 0; i < 10; i++) {
+                c = 0;
+                callAfterDelay(i * 100, function(){
+                    addCompany(c%3, "Gabbels" + c);
+                    c++;
+                })
+            }
+            callAfterDelay(1600, function() {
+                companyAcquireStartup("Gabbels0", "Gabbels5")
+                // addPersonToTypeCompany("Lucia", "Gabbels1");
+            });
+
+            callAfterDelay(4500, function() {
+                addCompany(kIndexStartUp, "Snabbels")
+            });
         }
-        callAfterDelay(1600, function() {
-            companyAcquireStartup("Gabbels0", "Gabbels5")
-            // addPersonToTypeCompany("Lucia", "Gabbels1");
-        });
 
-        callAfterDelay(4500, function() {
-            addCompany(kIndexStartUp, "Snabbels")
-        });
-
-
+        // testAnimations();
         // demonstratePeopleAdds()
         // demonstrateCompanyAdds();
 
@@ -239,6 +302,7 @@
         function callAfterDelay(delay, func) {
             setTimeout(func, delay);
         }
+
         function translateXY(xy) {
           return 'translate(' + xy[0] + ',' + xy[1] + ')';
         }
@@ -251,6 +315,18 @@
             translate[i] = +translate[i];
           }
           return translate;
+        }
+
+        function indexForActorType(cType) {
+            if (cType == "tech") {
+                return kIndexTech;
+            } else if (cType == "car") {
+                return kIndexCar;
+            } else if (cType == "startup") {
+                return kIndexStartUp;
+            } else {
+                console.log("Bad type " + cType);
+            }
         }
         </script>
     </body>
