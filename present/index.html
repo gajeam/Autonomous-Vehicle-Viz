@@ -73,16 +73,18 @@
         function updateData() {
             currentYear++;
             maxYear = 2011;
+
             if (currentYear > maxYear) {
                 resetCanvas();
                 currentYear = 2007;
+                updateYearText();
                 return;
             }
-            console.log(currentYear);
             runYear(currentYear);
         }
 
         function runYear(year) {
+            updateYearText();
             yearData = allData[year]
             actionFunctions = {}
             for (i in yearData) {                
@@ -121,18 +123,6 @@
                     }
                 });
             }
-
-            // callAfterDelay(betweenDelay * 2, function() {
-            //     for (s in actionFunctions.start) {
-            //         count = 0;
-            //         callAfterDelay(s * 20, function() {
-            //             func = actionFunctions.hire[count][0]
-            //             a = actionFunctions.start[count][1]
-            //             func(a.actor, a.actorType, a.obj1)
-            //             count++;
-            //         });
-            //     }
-            // });
         }
 
          function funcForAction(action) {
@@ -183,6 +173,15 @@
                         companyTypes[i]['path'] = this;
                     });
             }
+
+            // Add the year text
+            yearFont = 45.0;
+            margin = 10;
+            svg.append("text")
+                .attr("id", "yearText")
+                .style("font-size", yearFont)
+                .attr("x", margin)
+                .attr("y", yearFont + margin);
             runYear(currentYear);
         }
 
@@ -213,6 +212,11 @@
                         })
                 })
 
+        }
+
+        function updateYearText() {
+            d3.select("#yearText")
+                .text(currentYear);
         }
 
         /*
