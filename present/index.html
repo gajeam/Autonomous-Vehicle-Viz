@@ -2,9 +2,24 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+
+        <!-- BOOTSTRAP STUFF -->
+        <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+        <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+        
+        <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+        <script src="https://npmcdn.com/bootstrap@4.0.0-alpha.5/dist/js/bootstrap.min.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+        <!-- D3 -->
         <script src="http://d3js.org/d3.v4.min.js"></script>
+
     </head>
-    <style>
+
+
+        <style>
         body {
           font-family: "courier";
         }
@@ -24,8 +39,10 @@
         
         /* CONSTANTS */
 
+        LOG_ACTIONS = true;
+
         canvasWidth = 750.0;
-        canvasHeight = 750.0;
+        canvasHeight = 700.0;
 
         mainRadius = 250.0;
         mainStrokeWidth = 5.0
@@ -121,7 +138,7 @@
                         callAfterDelay(s * btwTime, function() {
                             func = actions[count][0]
                             a = actions[count][1]
-                            console.log(a.actor + " " + a.action)
+                            if (LOG_ACTIONS == true) console.log(a.actor + " " + a.action);
                             func(a.actor, a.actorType, a.obj1)
                             count++;
                         });
@@ -253,8 +270,6 @@
 
         }
 
-
-
         function updateYearText() {
             d3.select("#yearText")
                 .text(currentYear);
@@ -318,6 +333,9 @@
                 person.append("text")
                  .attr("fill-opacity", 1.0)
                  .text(name)
+                 .each(function() {
+                    orientText(this.parentNode, "top", personRadius);
+                 })
 
 
             // return person;
@@ -392,7 +410,10 @@
 
             g.append("text")
              .attr("fill-opacity", 1.0)
-             .text(name);
+             .text(name)
+             .each(function() {
+                orientText(this.parentNode, orientationForIndex(indexType), company.radius)
+             });
          }
 
          // COMPANY HELPER FUNCTIONS
@@ -462,6 +483,49 @@
         /*
         * HELPER METHODS
         */
+
+        function orientText(element, orientation, radius) {
+            margin = 4.0;
+            // if (radius == undefined) {
+            //     radius = d3.select(element)
+            //                 .select("circle")
+            //                 .attr("r")
+            //     console.log("Overridden radius: " + radius);
+            // }
+            if (orientation == "right") {
+                d3.select(element)
+                    .select("text")
+                    .style("alignment-baseline", "middle")
+                    .attr("text-anchor", "left")
+                    .attr("x", radius + margin)
+            } else if (orientation == "left") {
+                d3.select(element)
+                    .select("text")
+                    .style("alignment-baseline", "middle")
+                    .attr("text-anchor", "end")
+                    .attr("x", 0- (radius + margin))
+            } else if (orientation == "bottom") {
+                d3.select(element)
+                    .select("text")
+                    .style("alignment-baseline", "hanging")
+                    .attr("text-anchor", "middle")
+                    .attr("y", radius + margin)
+            } else if (orientation == "top") {
+                d3.select(element)
+                    .select("text")
+                    .style("alignment-baseline", "baseline")
+                    .attr("text-anchor", "middle")
+                    .attr("y", 0 - (radius + margin))
+
+            }
+        }
+
+        function orientationForIndex(companyIndex) {
+            if (companyIndex == 0) return "right";
+            if (companyIndex == 1) return "top";
+            if (companyIndex == 2) return "left";
+        }
+
         function callAfterDelay(delay, func) {
             setTimeout(func, delay);
         }
