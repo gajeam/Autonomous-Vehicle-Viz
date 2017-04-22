@@ -24,10 +24,10 @@
         
         /* CONSTANTS */
 
-        canvasWidth = 800.0;
-        canvasHeight = 700.0;
+        canvasWidth = 750.0;
+        canvasHeight = 750.0;
 
-        mainRadius = 300.0;
+        mainRadius = 250.0;
         mainStrokeWidth = 5.0
 
         personRadius = 15;
@@ -45,10 +45,10 @@
 
         companyTypes = [{   'type': 'tech',
                             'color' : techColor,
-                            'radius' : 25},
+                            'radius' : 35},
                         {   'type' :'car',
                             'color' :carColor,
-                            'radius' : 25},
+                            'radius' : 35},
                         {   'type': 'startup',
                             'color' : startupColor,
                             'radius' : 20}];
@@ -98,7 +98,7 @@
             // Run start functions
 
             betweenDelay = 200;
-            removeAllPeople(betweenDelay);
+            clearCanvas(betweenDelay);
             if (actionFunctions.start != undefined) {
                 runActionsWithDelay(actionFunctions.start, betweenDelay);
                 betweenDelay += 1000;
@@ -106,6 +106,10 @@
             }
             if (actionFunctions.hire != undefined) {
                 runActionsWithDelay(actionFunctions.hire, betweenDelay, btwTime=500);
+                betweenDelay += 1000;
+            }
+            if (actionFunctions.acquire != undefined) {
+                runActionsWithDelay(actionFunctions.acquire, betweenDelay, btwTime=500);
                 betweenDelay += 1000;
             }
 
@@ -128,9 +132,10 @@
          function funcForAction(action) {
             if (action == "start") {
                 return animateCompanyStart;
-            }
-            if (action == "hire") {
+            } if (action == "hire") {
                 return animateHire;
+            } if (action == "acquire") {
+                return animateAcquire;
             }
          }
 
@@ -140,6 +145,11 @@
          function animateHire(actor, actorType, obj1) {
             addPersonToTypeCompany(actor, obj1);
          }
+          function animateAcquire(actor, actorType, obj1) {
+            acquireStartup(actor, obj1);
+         }
+
+
 
          /*
           * CANVAS
@@ -189,7 +199,7 @@
             // called = false;
             svg.selectAll('g')
                 .filter(function() {
-                    return ['person', 'tech', 'car', 'startup'].indexOf(d3.select(this).attr("class")) != -1;
+                    return ['person', 'tech', 'car', 'startup', 'to-remove'].indexOf(d3.select(this).attr("class")) != -1;
                 })
                 .each(function() {
                     d = 250;
@@ -211,8 +221,36 @@
                             // d3.select(this.parentNode()).remove()
                         })
                 })
-
         }
+
+        function clearCanvas(duration) {
+            if (duration == undefined) duration = 250;
+            // Remove people
+            d3.selectAll(".person")
+                .transition()
+                .duration(duration)
+                .select("circle")
+                .attr("r", 0)
+                .on("end", function(){
+                    this.parentNode.remove();
+                });
+            // Remove startups
+            toRemoves = d3.selectAll(".to-remove")
+            toRemoves.transition()
+                .duration(duration)
+                .select("text")
+                .attr("fill-opacity", 0);
+
+            toRemoves.transition()
+                        .duration(duration)
+                        .select("circle")
+                        .attr("r", 0)
+                        .on("end", function(){
+                            this.parentNode.remove();
+                        });
+        }
+
+        
 
         function updateYearText() {
             d3.select("#yearText")
@@ -238,7 +276,7 @@
         }
 
         function neutralPerson() {
-            return svg.append("g")
+            return svg.insert("g", "#yearText")
                         .attr("class", "person")
                         .append("circle")
                         .attr("fill", neutralColor)
@@ -252,21 +290,10 @@
 
         }
 
-        function removeAllPeople(duration) {
-            if (duration == undefined) duration = 250;
-            d3.selectAll(".person")
-                .transition()
-                .duration(duration)
-                .select("circle")
-                .attr("r", 0)
-                .on("end", function(){
-                    this.parentNode.remove();
-                });
-        }
         /*
          *  STARTUP METHODS
          */
-         function companyAcquireStartup(acquirerName, startupName) {
+         function acquireStartup(acquirerName, startupName) {
             startup = companyTypes[kIndexStartUp];
 
             acquirer = d3.select("g#" + acquirerName);
@@ -385,7 +412,7 @@
                 })
             }
             callAfterDelay(1600, function() {
-                companyAcquireStartup("Gabbels0", "Gabbels5")
+                acquireStartup("Gabbels0", "Gabbels5")
                 // addPersonToTypeCompany("Lucia", "Gabbels1");
             });
 
@@ -428,7 +455,7 @@
             } else if (cType == "startup") {
                 return kIndexStartUp;
             } else {
-                console.log("Bad type " + cType);
+                console.warn("Bad type " + cType);
             }
         }
         </script>

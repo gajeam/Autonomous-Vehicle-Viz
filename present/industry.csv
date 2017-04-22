@@ -3,6 +3,7 @@ year,actor,actorType,action,obj1,obj2,note
 2008,deCarta,startup,start,,,
 2008,AutoNavi,startup,start,,,
 2009,Google,tech,start,,,
+2009,Uber,tech,start,,,
 2009,Tesla,car,start,,,
 2009,Sebastian Thrun,person,hire,Google,,Internal move
 2009,Anthony Levandowski,person,hire,Google,,Internal move
@@ -11,6 +12,7 @@ year,actor,actorType,action,obj1,obj2,note
 2009,Dag Reckhorn,person,hire,Tesla,,
 2009,Peter Rawlinson,person,hire,Tesla,,
 2009,Tom Wessner,person,hire,Tesla,,
+2009,Uber,tech,acquire,deCarta,,
 2010,Don Burnette,person,hire,Google,,
 2010,Nick Sampson,person,hire,Tesla,,
 2010,Sylpheo,startup,start,,,
