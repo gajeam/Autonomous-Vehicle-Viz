@@ -41,7 +41,7 @@
         kIndexCar = 1;
         kIndexStartUp = 2;
 
-        currentYear = 2007;
+        currentYear = 2008;
 
         companyTypes = [{   'type': 'tech',
                             'color' : techColor,
@@ -67,12 +67,18 @@
         });
 
 
-
         /*
          *  ANIMATION FUNCTIONS
          */
         function updateData() {
             currentYear++;
+            maxYear = 2011;
+            if (currentYear > maxYear) {
+                resetCanvas();
+                currentYear = 2007;
+                return;
+            }
+            console.log(currentYear);
             runYear(currentYear);
         }
 
@@ -86,18 +92,19 @@
                 }
                 actionFunctions[a.action].push([funcForAction(a.action), a]);
             }
-            console.log(actionFunctions)
 
             // Run start functions
 
-            betweenDelay = 0;
+            betweenDelay = 200;
+            removeAllPeople(betweenDelay);
             if (actionFunctions.start != undefined) {
-                betweenDelay += 1000;
                 runActionsWithDelay(actionFunctions.start, betweenDelay);
+                betweenDelay += 1000;
+
             }
             if (actionFunctions.hire != undefined) {
-                betweenDelay += 1000;
                 runActionsWithDelay(actionFunctions.hire, betweenDelay, btwTime=500);
+                betweenDelay += 1000;
             }
 
             function runActionsWithDelay(actions, delay,  btwTime=20) {
@@ -143,6 +150,9 @@
             addPersonToTypeCompany(actor, obj1);
          }
 
+         /*
+          * CANVAS
+          */
         function setupCanvas() {
             svg = d3.select("#svgCanvas")
                     .append("svg")
@@ -172,6 +182,36 @@
                         companyTypes[i]['path'] = this;
                     });
             }
+            runYear(currentYear);
+        }
+
+        function resetCanvas() {
+            // called = false;
+            svg.selectAll('g')
+                .filter(function() {
+                    return ['person', 'tech', 'car', 'startup'].indexOf(d3.select(this).attr("class")) != -1;
+                })
+                .each(function() {
+                    d = 250;
+                    g = d3.select(this)
+                    g.select('circle')
+                        .transition()
+                        .duration(d)
+                        .attr("r", 0);
+                    g.select('text')
+                        .transition()
+                        .duration(d)
+                        .attr("fill-opacity", 0)
+                        .on("end", function(){
+                            this.parentNode.remove();
+                            // if (called == false) {
+                            //     runYear(currentYear);
+                            //     called = true;
+                            // }
+                            // d3.select(this.parentNode()).remove()
+                        })
+                })
+
         }
 
         /*
@@ -193,8 +233,9 @@
         }
 
         function neutralPerson() {
-            return svg.append("circle")
+            return svg.append("g")
                         .attr("class", "person")
+                        .append("circle")
                         .attr("fill", neutralColor)
                         .attr("transform", translateXY([canvasWidth/2, canvasHeight/2]))
                         .attr("r", 0)
@@ -206,6 +247,16 @@
 
         }
 
+        function removeAllPeople(duration=250) {
+            d3.selectAll(".person")
+                .transition()
+                .duration(duration)
+                .select("circle")
+                .attr("r", 0)
+                .on("end", function(){
+                    this.parentNode.remove();
+                });
+        }
         /*
          *  STARTUP METHODS
          */
@@ -274,6 +325,7 @@
                 .attr("r", company.radius)
 
             g.append("text")
+             .attr("fill-opacity", 1.0)
              .text(name);
          }
 
