@@ -11,7 +11,14 @@
     </style>
     <body>
         <h1>Autonomous Vehicles</h1>
+        <div id="option">
+            <input name="nextButton" 
+                   type="button" 
+                   value="Next Year" 
+                   onclick="updateData()" />
+        </div>
         <div id="svgCanvas"></div>
+
 
         <script type="text/javascript">
         
@@ -34,6 +41,8 @@
         kIndexCar = 1;
         kIndexStartUp = 2;
 
+        currentYear = 2007;
+
         companyTypes = [{   'type': 'tech',
                             'color' : techColor,
                             'radius' : 25},
@@ -55,15 +64,20 @@
                 allData[item.year].push(item)
             }
             setupCanvas();
-            runYear(2008)
         });
+
 
 
         /*
          *  ANIMATION FUNCTIONS
          */
+        function updateData() {
+            currentYear++;
+            runYear(currentYear);
+        }
+
         function runYear(year) {
-            yearData = allData['2008']
+            yearData = allData[year]
             actionFunctions = {}
             for (i in yearData) {                
                 a = yearData[i]
@@ -72,30 +86,61 @@
                 }
                 actionFunctions[a.action].push([funcForAction(a.action), a]);
             }
-            // console.log(actionFunctions)
+            console.log(actionFunctions)
 
             // Run start functions
-            callAfterDelay(500, function() {
-                for (s in actionFunctions.start) {
-                    count = 0;
-                    callAfterDelay(s * 20, function() {
-                        func = actionFunctions.start[count][0]
-                        a = actionFunctions.start[count][1]
-                        func(a.actor, a.actorType, a.obj1)
-                        count++;
-                    });
-                }
-            });
+
+            betweenDelay = 0;
+            if (actionFunctions.start != undefined) {
+                betweenDelay += 1000;
+                runActionsWithDelay(actionFunctions.start, betweenDelay);
+            }
+            if (actionFunctions.hire != undefined) {
+                betweenDelay += 1000;
+                runActionsWithDelay(actionFunctions.hire, betweenDelay, btwTime=500);
+            }
+
+            function runActionsWithDelay(actions, delay,  btwTime=20) {
+                callAfterDelay(betweenDelay, function() {
+                    for (s in actions) {
+                        count = 0;
+                        callAfterDelay(s * btwTime, function() {
+                            func = actions[count][0]
+                            a = actions[count][1]
+                            func(a.actor, a.actorType, a.obj1)
+                            count++;
+                        });
+                    }
+                });
+            }
+
+            // callAfterDelay(betweenDelay * 2, function() {
+            //     for (s in actionFunctions.start) {
+            //         count = 0;
+            //         callAfterDelay(s * 20, function() {
+            //             func = actionFunctions.hire[count][0]
+            //             a = actionFunctions.start[count][1]
+            //             func(a.actor, a.actorType, a.obj1)
+            //             count++;
+            //         });
+            //     }
+            // });
         }
 
          function funcForAction(action) {
             if (action == "start") {
                 return animateCompanyStart;
             }
+            if (action == "hire") {
+                return animateHire;
+            }
          }
 
          function animateCompanyStart(actor, actorType, obj1) {
             addCompany(indexForActorType(actorType), actor);
+         }
+         function animateHire(actor, actorType, obj1) {
+            addPersonToTypeCompany(actor, obj1);
          }
 
         function setupCanvas() {
@@ -140,7 +185,7 @@
 
             neutralPerson()
                 .transition()
-                .delay(500)
+                .delay(50)
                 .duration(1200)
                 .ease(d3.easeCubic)
                 .attr("transform", companyTransform)
@@ -155,7 +200,7 @@
                         .attr("r", 0)
                         .transition()
                         .ease(d3.easeElastic)
-                        .delay(250)
+                        .delay(50)
                         .duration(750)
                         .attr("r", personRadius);
 
