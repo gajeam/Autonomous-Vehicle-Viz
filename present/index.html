@@ -107,7 +107,8 @@
                 betweenDelay += 1000;
             }
 
-            function runActionsWithDelay(actions, delay,  btwTime=20) {
+            function runActionsWithDelay(actions, delay, btwTime) {
+                if (btwTime == undefined) btwTime = 20;
                 callAfterDelay(betweenDelay, function() {
                     for (s in actions) {
                         count = 0;
@@ -247,7 +248,8 @@
 
         }
 
-        function removeAllPeople(duration=250) {
+        function removeAllPeople(duration) {
+            if (duration == undefined) duration = 250;
             d3.selectAll(".person")
                 .transition()
                 .duration(duration)
