@@ -42,10 +42,10 @@
         LOG_ACTIONS = false;
         RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
-        canvasWidth = 750.0;
-        canvasHeight = 700.0;
+        canvasWidth = 900.0;
+        canvasHeight = 750.0;
 
-        mainRadius = 250.0;
+        mainRadius = 300.0;
         mainStrokeWidth = 5.0
 
         personRadius = 15;
@@ -91,7 +91,7 @@
          */
         function updateData() {
             currentYear++;
-            maxYear = 2011;
+            maxYear = 2010;
 
             if (currentYear > maxYear) {
                 resetCanvas();
@@ -104,8 +104,9 @@
 
         function runYear(year) {
             updateYearText();
+            clearCanvas();
 
-            totalDelay = 0;
+            totalDelay = 800;
 
             // Run some things first
             d3.selectAll("dataTest")
@@ -115,37 +116,56 @@
                     return d.action == "start"
                 })
                 .each(function(d) {
-                    totalDelay += 100;
-                    addCompany(indexForActorType(d.actorType), d.actor);
-                })
-
-            svg.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return d.action == "hire"
-                })
-                .each(function(d, i) {
-                    beforeDelay = 50;
-                    btwDelay = 50
-                    totalDelay += btwDelay + beforeDelay;
+                    totalDelay += 50;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
-                        addPersonToTypeCompany(d.actor, d.obj1);
+                        addCompany(indexForActorType(d.actorType), d.actor);
                     });
-                });
+                })
 
             svg.data(allData[year])
                 .enter()
+                .call(function() {
+                    totalDelay += 500;
+                })
                 .filter(function(d) {
                     return d.action == "acquire"
                 })
                 .each(function(d, i) {
-                    beforeDelay = 1000;
-                    btwDelay = 500;
-                    totalDelay += btwDelay + beforeDelay;
+                    btwDelay = 100.0;
+                    totalDelay += btwDelay;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
                         acquireStartup(d.actor, d.obj1);
+                    });
+                });
+
+                totalHires = {};
+                iteratorHires = {}
+               svg.data(allData[year])
+                .enter()
+                .call(function(d) {
+                    totalDelay += 1000;
+                })
+                .filter(function(d) {
+                    if (d.action == "hire") {
+                        if (totalHires[d.obj1] == undefined) {
+                            totalHires[d.obj1] = 0;
+                        }
+                        totalHires[d.obj1] = totalHires[d.obj1] + 1;
+                        iteratorHires[d.obj1] = 0;
+                        return true;
+                    }
+                    return false;
+                })
+                .each(function(d, i, a) {
+                    btwDelay = 250
+
+                    totalDelay += btwDelay;
+                    delay = totalDelay;
+                    callAfterDelay(delay, function() {
+                        addPersonToTypeCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
+                        iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
                     });
                 });
         }
@@ -207,7 +227,7 @@
                 .attr("y", yearFont + margin);
             runYear(currentYear);
 
-            radialMultiplier = 2.0;
+            radialMultiplier = 2.5;
             calcArc = d3.arc()
                         .innerRadius(companyRadius * radialMultiplier)
                         .outerRadius(companyRadius * radialMultiplier + 1)
@@ -220,18 +240,8 @@
                             .append("path")
                             .attr("id", "calcArc")
                             .attr("d", calcArc)
-                            // .attr("fill", "none")
+                            .attr("fill", "none")
                             ;
-
-            testArc =   d3.arc()
-                        .innerRadius(companyRadius * radialMultiplier)
-                        .outerRadius(companyRadius * radialMultiplier + 1)
-                        .startAngle(0 * -Math.PI / 2.0)
-                        .endAngle(Math.PI /2.0);
-            d3.select("#arcCont")
-                .append("path")
-                .attr("d", testArc)
-                .attr("fill", "red")
 
         }
 
@@ -294,11 +304,12 @@
         /*
          *  PEOPLE METHODS
          */
-
-        function addPersonToTypeCompany(personName, companyName) {            
+        function addPersonToTypeCompany(personName, companyName, index, total) {            
             neutralPerson(personName, d3.select("g#" + companyName), function(person, company) {
-                company = d3.select("g#" + companyName);
-                companyTransform = personLocationForCompany(companyName)
+                // company = d3.select("g#" + companyName);
+                companyTransform = personLocationForCompany(companyName, index, total)
+                console.log(personName)
+
                 color = company.select("circle").attr("fill");
 
                 duration = 1200;
@@ -311,13 +322,13 @@
                     .duration(duration * colorChangeRatio)
                     .attr("fill", color)
                     // TODO Remove this l8r
-                    .on("end", function() {
-                        d3.select(this.parentNode)
-                        .transition()
-                        .delay(duration * (1 - colorChangeRatio))
-                        .select("text")
-                            .attr("fill-opacity", 0.0);
-                    });
+                    // .on("end", function() {
+                    //     d3.select(this.parentNode)
+                    //     .transition()
+                    //     .delay(duration * (1 - colorChangeRatio))
+                    //     .select("text")
+                    //         .attr("fill-opacity", 0.0);
+                    // });
                 p.transition()
                     .duration(duration)
                     .ease(d3.easeCubic)
@@ -326,7 +337,7 @@
         }
 
         function neutralPerson(name, company, completion) {
-            person = svg.insert("g", "#yearText")
+            person = svg.append("g")
             person.attr("class", "person")
                 .attr("transform", translateXY([canvasWidth/2, canvasHeight/2]))
             person.append("circle")
@@ -344,12 +355,11 @@
                 person.append("text")
                  .attr("fill-opacity", 1.0)
                  .text(name)
+                 .attr("font-size", 12 + "px")
                  .each(function() {
-                    orientText(this.parentNode, "top", personRadius);
+                    orient = rotateOrientation(company.select("text").attr("_orientation"), 2);
+                    orientText(this.parentNode, orient, personRadius);
                  })
-
-
-            // return person;
         }
 
         /*
@@ -451,15 +461,22 @@
             return companyCount;
         }
 
-        function personLocationForCompany(companyName) {
+        function personLocationForCompany(companyName, index, total) {
             element = d3.select("#" + companyName);
             type = element.attr("class");
 
             translate = xyTranslate(element.attr("transform"));
 
             calcCircle = d3.select("#calcArc").node();
-            // console.log(calcCircle);
-            percent = complement(radiansOfCompany(companyName))/(2.0 * Math.PI);
+            radialDiff = Math.PI * 1.2;
+            radians = complement(radiansOfCompany(companyName));
+            radians += radialDiff/2.0 - (radialDiff * (index + 1)/(total + 1));
+            // Hack to get around negative percents
+            if (radians < 0.0) {
+                radians += 2.0 * Math.PI
+            }
+
+            percent = radians /(2.0 * Math.PI);
             point = calcCircle.getPointAtLength(calcCircle.getTotalLength() * percent/2.0)
 
             translate[0] += point.x;
@@ -518,7 +535,7 @@
             element = d3.select("#" + companyName);
             relIndex = +(element.attr("_relIndex"));
             type = element.attr("class")
-            elementCount = 0;
+            elementCount = 0.0;
 
             d3.selectAll("." + type)
                 .each(function() {
@@ -527,51 +544,57 @@
 
             smallArc = (2.0/3.0 * Math.PI)
             radians = smallArc * parseFloat(indexForActorType(type))
-            radians += smallArc * (relIndex + 1)/(elementCount + 1)
+            radians += smallArc * (relIndex + 1.0)/(elementCount + 1.0)
             return radians;
         }
 
         function complement(radians) {
             // Hacky but it works.
-            if (radians <= Math.PI) c = Math.PI + radians;
-            else c = Math.abs(radians - Math.PI);
-            return c;
+            if (radians == Math.PI || radians == -Math.PI) return 0.0;
+            if (radians < Math.PI) c = Math.PI + radians;
+            else c = radians - Math.PI;
+            return +c;
         }
 
         function orientText(element, orientation, radius) {
             margin = 4.0;
-            // if (radius == undefined) {
-            //     radius = d3.select(element)
-            //                 .select("circle")
-            //                 .attr("r")
-            //     console.log("Overridden radius: " + radius);
-            // }
-            if (orientation == "right") {
-                d3.select(element)
-                    .select("text")
-                    .style("alignment-baseline", "middle")
-                    .attr("text-anchor", "left")
-                    .attr("x", radius + margin)
-            } else if (orientation == "left") {
-                d3.select(element)
-                    .select("text")
-                    .style("alignment-baseline", "middle")
-                    .attr("text-anchor", "end")
-                    .attr("x", 0- (radius + margin))
-            } else if (orientation == "bottom") {
-                d3.select(element)
-                    .select("text")
-                    .style("alignment-baseline", "hanging")
-                    .attr("text-anchor", "middle")
-                    .attr("y", radius + margin)
-            } else if (orientation == "top") {
-                d3.select(element)
-                    .select("text")
-                    .style("alignment-baseline", "baseline")
-                    .attr("text-anchor", "middle")
-                    .attr("y", 0 - (radius + margin))
 
+            baseline = "middle"
+            textAnchor = "middle"
+            offset = radius + margin;
+            x = 0;
+            y = 0;
+
+            if (orientation == "right") {
+                x = offset;
+                textAnchor = "left";
+            } else if (orientation == "left") {
+                x = -offset;
+                textAnchor = "end";
+            } else if (orientation == "bottom") {
+                y = offset;
+                baseline = "hanging";
+            } else if (orientation == "top") {
+                y = -offset;
+                baseline = "baseline";
+            } else {
+                console.warn("Bad orientation " + orientation);
+                return;
             }
+
+            d3.select(element)
+                .select("text")
+                .style("alignment-baseline", baseline)
+                .attr("text-anchor", textAnchor)
+                .attr("x", x)
+                .attr("y", y)
+                .attr("_orientation", orientation);
+        }
+
+        function rotateOrientation(o, cardDegrees) {
+            // Each cardDegree turns it 90 degrees to the right
+            orientations = ["top", "right", "bottom", "left"];
+            return orientations[(orientations.indexOf(o) + 2)%4]
         }
 
         function orientationForIndex(companyIndex) {
