@@ -91,7 +91,7 @@
          */
         function updateData() {
             currentYear++;
-            maxYear = 2010;
+            maxYear = 2011;
 
             if (currentYear > maxYear) {
                 resetCanvas();
@@ -157,7 +157,6 @@
                     totalDelay += btwDelay;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
-                        console.log("Yah!")
                         personPoachedByCompany(d.actor, d.obj1);
                     })
                 })
@@ -358,6 +357,7 @@
             person = svg.append("g")
             person.attr("class", "person")
                 .attr("id", id(name))
+                .attr("_companyId", company.attr("id"))
                 .attr("transform", translateXY([canvasWidth/2, canvasHeight/2]))
             person.append("circle")
                 .attr("fill", neutralColor)
@@ -381,16 +381,36 @@
                  })
         }
 
-        function personPoachedByCompany(personName, companyName) {
+        function personPoachedByCompany(personName, poacherName) {
             // TODO deal with indices
-            companyTransform = personLocationForCompany(companyName, 1, 1)
-            d3.select("#" + id(personName))
-                .attr("class", "person")
+            person = d3.select("#" + id(personName));
+            // Move them to their original company
+            origCompanyId = person.attr("_companyId");
+            origTransform = d3.select("#" + origCompanyId)
+                                .attr("transform");
+            person.attr("transform", origTransform);
+
+            poacher = d3.select("#" + id(poacherName))
+            poacherColor = poacher.select("circle")
+                                .attr("fill");
+
+
+            poacherTransform = personLocationForCompany(poacherName, 0, 1)
+
+            person.select("text")
+                     .each(function() {
+                        orient = rotateOrientation(poacher.select("text").attr("_orientation"), 2);
+                        orientText(this.parentNode, orient, personRadius);
+                 });
+
+            person.attr("class", "person")
+                .attr("_companyId", id(poacherName))
                 .attr("opacity", 1.0) // Show the person again.
                 .transition()
-                .ease(d3.easeElastic)
-                .duration(500)
-                .attr("transform", companyTransform);
+                .duration(1500)
+                .attr("transform", poacherTransform)
+                .select("circle")
+                    .attr("fill", poacherColor)
                 ;
         }
 
