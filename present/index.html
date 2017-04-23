@@ -113,7 +113,7 @@
             updateYearText();
             clearCanvas();
 
-            totalDelay = 800;
+            totalDelay = 1200;
 
             // Hack to not cut off the first item
             dataRun = d3.selectAll("something");
@@ -136,7 +136,7 @@
             dataRun.data(allData[year])
                 .enter()
                 .call(function() {
-                    totalDelay += 1500;
+                    totalDelay += 2000;
                 })
                 .filter(function(d) {
                     return d.action == "acquire"
@@ -179,7 +179,7 @@
            dataRun.data(allData[year])
                 .enter()
                 .call(function(d) {
-                    totalDelay += 1000;
+                    totalDelay += 1500;
                 })
                 .filter(function(d) {
                     return (d.action == "hire") && addToHires(d.obj1)
@@ -407,9 +407,12 @@
                 .attr("_companyId", id(poacherName))
                 .style("opacity", 1.0) // Show the person again.
                 .transition()
-                .duration(1500)
+                .duration(1800)
                 .attr("transform", poacherTransform)
-                .select("circle")
+            person.select("circle")
+                    .transition()
+                    .delay(600) // Wait a bit to change the color
+                    .duration(1500)
                     .attr("fill", poacherColor)
                 ;
         }
