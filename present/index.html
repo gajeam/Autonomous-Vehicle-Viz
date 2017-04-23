@@ -104,49 +104,99 @@
 
         function runYear(year) {
             updateYearText();
-            yearData = allData[year]
-            actionFunctions = {}
-            for (i in yearData) {                
-                a = yearData[i]
-                if (actionFunctions[a.action] == undefined) {
-                    actionFunctions[a.action] = []
-                }
-                actionFunctions[a.action].push([funcForAction(a.action), a]);
-            }
 
-            // Run start functions
+            totalDelay = 0;
 
-            betweenDelay = 200;
-            clearCanvas(betweenDelay);
-            if (actionFunctions.start != undefined) {
-                runActionsWithDelay(actionFunctions.start, betweenDelay);
-                betweenDelay += 1000;
+            // Run some things first
+            d3.selectAll("dataTest")
+                .data(allData[year])
+                .enter()
+                .filter(function(d) {
+                    return d.action == "start"
+                })
+                .each(function(d) {
+                    totalDelay += 100;
+                    addCompany(indexForActorType(d.actorType), d.actor);
+                })
 
-            }
-            if (actionFunctions.hire != undefined) {
-                runActionsWithDelay(actionFunctions.hire, betweenDelay, btwTime=1000);
-                betweenDelay += 1000;
-            }
-            if (actionFunctions.acquire != undefined) {
-                runActionsWithDelay(actionFunctions.acquire, betweenDelay, btwTime=500);
-                betweenDelay += 1000;
-            }
-
-            function runActionsWithDelay(actions, delay, btwTime) {
-                if (btwTime == undefined) btwTime = 20;
-                callAfterDelay(betweenDelay, function() {
-                    for (s in actions) {
-                        count = 0;
-                        callAfterDelay(s * btwTime, function() {
-                            func = actions[count][0]
-                            a = actions[count][1]
-                            if (LOG_ACTIONS == true) console.log(a.actor + " " + a.action);
-                            func(a.actor, a.actorType, a.obj1)
-                            count++;
-                        });
-                    }
+            svg.data(allData[year])
+                .enter()
+                .filter(function(d) {
+                    return d.action == "hire"
+                })
+                .each(function(d, i) {
+                    beforeDelay = 50;
+                    btwDelay = 100
+                    totalDelay += btwDelay + beforeDelay;
+                    delay = totalDelay;
+                    callAfterDelay(delay, function() {
+                        addPersonToTypeCompany(d.actor, d.obj1);
+                    });
                 });
-            }
+
+            svg.data(allData[year])
+                .enter()
+                .filter(function(d) {
+                    return d.action == "acquire"
+                })
+                .each(function(d, i) {
+                    beforeDelay = 1000;
+                    btwDelay = 500;
+                    totalDelay += btwDelay + beforeDelay;
+                    delay = totalDelay;
+                    callAfterDelay(delay, function() {
+                        acquireStartup(d.actor, d.obj1);
+                    });
+                });
+
+
+
+                // .on("end", function(d) {
+
+                // })
+            // yearData = allData[year]
+            // actionFunctions = {}
+            // for (i in yearData) {                
+            //     a = yearData[i]
+            //     if (actionFunctions[a.action] == undefined) {
+            //         actionFunctions[a.action] = []
+            //     }
+            //     actionFunctions[a.action].push([funcForAction(a.action), a]);
+            // }
+
+            // // Run start functions
+
+            // betweenDelay = 200;
+            // clearCanvas(betweenDelay);
+            // if (actionFunctions.start != undefined) {
+            //     runActionsWithDelay(actionFunctions.start, betweenDelay);
+            //     betweenDelay += 1000;
+
+            // }
+            // if (actionFunctions.hire != undefined) {
+            //     runActionsWithDelay(actionFunctions.hire, betweenDelay, btwTime=1000);
+            //     betweenDelay += 1000;
+            // }
+            // if (actionFunctions.acquire != undefined) {
+            //     runActionsWithDelay(actionFunctions.acquire, betweenDelay, btwTime=500);
+            //     betweenDelay += 1000;
+            // }
+
+            // function runActionsWithDelay(actions, delay, btwTime) {
+            //     if (btwTime == undefined) btwTime = 20;
+            //     callAfterDelay(betweenDelay, function() {
+            //         for (s in actions) {
+            //             count = 0;
+            //             callAfterDelay(s * btwTime, function() {
+            //                 func = actions[count][0]
+            //                 a = actions[count][1]
+            //                 if (LOG_ACTIONS == true) console.log(a.actor + " " + a.action);
+            //                 func(a.actor, a.actorType, a.obj1)
+            //                 count++;
+            //             });
+            //         }
+            //     });
+            // }
         }
 
          function funcForAction(action) {
@@ -304,16 +354,15 @@
          *  PEOPLE METHODS
          */
 
-        function addPersonToTypeCompany(personName, companyName) {
-            company = d3.select("g#" + companyName);
-            companyTransform = personLocationForCompany(companyName)
-            color = company.select("circle").attr("fill");
+        function addPersonToTypeCompany(personName, companyName) {            
+            neutralPerson(personName, d3.select("g#" + companyName), function(person, company) {
+                company = d3.select("g#" + companyName);
+                companyTransform = personLocationForCompany(companyName)
+                color = company.select("circle").attr("fill");
 
-            duration = 1200;
-            delay = 0;
+                duration = 1200;
+                delay = 0.0;
 
-
-            neutralPerson(personName, function(person) {
                 colorChangeRatio = .8;
                 p = d3.select(person)
                 p.select("circle")
@@ -328,17 +377,14 @@
                         .select("text")
                             .attr("fill-opacity", 0.0);
                     });
-
                 p.transition()
-                    .delay(delay)
                     .duration(duration)
                     .ease(d3.easeCubic)
                     .attr("transform", companyTransform);
-
             });
         }
 
-        function neutralPerson(name, completion) {
+        function neutralPerson(name, company, completion) {
             person = svg.insert("g", "#yearText")
             person.attr("class", "person")
                 .attr("transform", translateXY([canvasWidth/2, canvasHeight/2]))
@@ -351,7 +397,7 @@
                 .attr("r", personRadius)
                 .on("end", function() {
                     if (completion != undefined) {
-                        completion(this.parentNode);
+                        completion(this.parentNode, company);
                     }
                 });
                 person.append("text")
@@ -416,9 +462,9 @@
             svg.selectAll("." + company.type)
                 .each(function() {
                     d3.select(this)
-                        .transition()
                         // .duration(500)
                         .attr("_relIndex", companyIter)
+                        .transition()
                         .attr("transform", transForEdgeIndex(company.path, companyIter + 1, companyCount + 2));
                     companyIter++;
                 });
@@ -467,6 +513,7 @@
         function personLocationForCompany(companyName) {
             element = d3.select("#" + companyName);
             type = element.attr("class");
+
             translate = xyTranslate(element.attr("transform"));
 
             calcCircle = d3.select("#calcArc").node();
@@ -536,8 +583,6 @@
                 .each(function() {
                     elementCount++;
                 });
-
-
 
             smallArc = (2.0/3.0 * Math.PI)
             radians = smallArc * parseFloat(indexForActorType(type))
