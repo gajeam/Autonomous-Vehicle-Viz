@@ -144,10 +144,14 @@
                 });
 
 
+
+            totalHires = {};
+            iteratorHires = {}
+
             dataRun.data(allData[year])
                 .enter()
                 .filter(function(d) {
-                    return (d.action == "poach") && (pDelayAdd = 500.0);
+                    return (d.action == "poach") && addToHires(d.obj1) && (pDelayAdd = 500.0);
                 })
                 .call(function(d) {
                     totalDelay += 500.0;
@@ -157,31 +161,23 @@
                     totalDelay += btwDelay;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
-                        personPoachedByCompany(d.actor, d.obj1);
+                        console.log(totalHires);
+                        console.log(iteratorHires);
+                        personPoachedByCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
+                        iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
                     })
                 })
                 ;
     
 
                 // RUN HIRES
-
-                totalHires = {};
-                iteratorHires = {}
            dataRun.data(allData[year])
                 .enter()
                 .call(function(d) {
                     totalDelay += 1000;
                 })
                 .filter(function(d) {
-                    if (d.action == "hire") {
-                        if (totalHires[d.obj1] == undefined) {
-                            totalHires[d.obj1] = 0;
-                        }
-                        totalHires[d.obj1] = totalHires[d.obj1] + 1;
-                        iteratorHires[d.obj1] = 0;
-                        return true;
-                    }
-                    return false;
+                    return (d.action == "hire") && addToHires(d.obj1)
                 })
                 .each(function(d, i, a) {
                     btwDelay = 250
@@ -192,6 +188,15 @@
                         iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
                     });
                 });
+
+            function addToHires(d) {
+                if (totalHires[d] == undefined) {
+                    totalHires[d] = 0;
+                }
+                totalHires[d] = totalHires[d] + 1;
+                iteratorHires[d] = 0;
+                return true;
+            }
         }
 
          /*
@@ -381,7 +386,7 @@
                  })
         }
 
-        function personPoachedByCompany(personName, poacherName) {
+        function personPoachedByCompany(personName, poacherName, index, total) {
             // TODO deal with indices
             person = d3.select("#" + id(personName));
             // Move them to their original company
@@ -395,7 +400,7 @@
                                 .attr("fill");
 
 
-            poacherTransform = personLocationForCompany(poacherName, 0, 1)
+            poacherTransform = personLocationForCompany(poacherName, index, total)
 
             person.select("text")
                      .each(function() {
