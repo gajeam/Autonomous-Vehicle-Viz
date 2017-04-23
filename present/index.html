@@ -45,7 +45,7 @@
         canvasWidth = 900.0;
         canvasHeight = 750.0;
 
-        mainRadius = 300.0;
+        mainRadius = 320.0;
         mainStrokeWidth = 5.0
 
         personRadius = 15;
@@ -125,7 +125,7 @@
                     return d.action == "start"
                 })
                 .each(function(d) {
-                    totalDelay += 50;
+                    totalDelay += 100;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
                         addCompany(indexForActorType(d.actorType), d.actor);
@@ -142,7 +142,7 @@
                     return d.action == "acquire"
                 })
                 .each(function(d, i) {
-                    btwDelay = 100.0;
+                    btwDelay = 50.0;
                     totalDelay += btwDelay;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
@@ -261,7 +261,7 @@
                 .attr("y", yearFont + margin);
             runYear(currentYear);
 
-            radialMultiplier = 2.5;
+            radialMultiplier = 2.4;
             calcArc = d3.arc()
                         .innerRadius(companyRadius * radialMultiplier)
                         .outerRadius(companyRadius * radialMultiplier + 1)
@@ -306,7 +306,16 @@
             // Remove people
             d3.selectAll(".person")
                 .attr("class", "placed-person")
-                .attr("opacity", 0);
+                .transition()
+                .duration(750.0)
+                .ease(d3.easeBack)
+                .attr("transform", function() {
+                    companyId  = d3.select(this).attr("_companyId");
+                    newTrans = d3.select("#" + companyId)
+                                    .attr("transform");
+                    return newTrans;
+                })
+                .style("opacity", 0.0);
                 // .each(function() {
 
                 //     //removeElement(this)
@@ -416,7 +425,7 @@
 
             person.attr("class", "person")
                 .attr("_companyId", id(poacherName))
-                .attr("opacity", 1.0) // Show the person again.
+                .style("opacity", 1.0) // Show the person again.
                 .transition()
                 .duration(1500)
                 .attr("transform", poacherTransform)
@@ -478,7 +487,6 @@
             svg.selectAll("." + company.type)
                 .each(function() {
                     d3.select(this)
-                        // .duration(500)
                         .attr("_relIndex", companyIter)
                         .transition()
                         .attr("transform", transForEdgeIndex(company.path, companyIter + 1, companyCount + 2));
