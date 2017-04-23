@@ -49,6 +49,7 @@
         mainStrokeWidth = 5.0
 
         personRadius = 15;
+        companyRadius = 30;
 
         techColor = "#32CD32";
         carColor = "#DB7093";
@@ -63,10 +64,10 @@
 
         companyTypes = [{   'type': 'tech',
                             'color' : techColor,
-                            'radius' : 35},
+                            'radius' : companyRadius},
                         {   'type' :'car',
                             'color' :carColor,
-                            'radius' : 35},
+                            'radius' : companyRadius},
                         {   'type': 'startup',
                             'color' : startupColor,
                             'radius' : 20}];
@@ -226,6 +227,21 @@
                 .attr("x", margin)
                 .attr("y", yearFont + margin);
             runYear(currentYear);
+
+            radialMultiplier = 2.0;
+            calcArc = d3.arc()
+                        .innerRadius(companyRadius * radialMultiplier)
+                        .outerRadius(companyRadius * radialMultiplier + 1)
+                        .startAngle(0)
+                        .endAngle(2 * Math.PI);
+
+            calcCircle = svg.append("g")
+                            .attr("transform", centerTransform)
+                            .append("path")
+                            .attr("id", "calcArc")
+                            .attr("d", calcArc)
+                            .attr("fill", "none")
+                            ;
         }
 
         function resetCanvas() {
@@ -290,7 +306,7 @@
 
         function addPersonToTypeCompany(personName, companyName) {
             company = d3.select("g#" + companyName);
-            companyTransform = company.attr("transform")
+            companyTransform = personLocationForCompany(companyName)
             color = company.select("circle").attr("fill");
 
             duration = 1200;
@@ -320,7 +336,6 @@
                     .attr("transform", companyTransform);
 
             });
-
         }
 
         function neutralPerson(name, completion) {
@@ -418,7 +433,7 @@
             .attr("fill", company.color)
             .attr("r", 0)
             .transition()
-                .attr("r", company.radius)
+                .attr("r", company.radius);
 
             g.append("text")
              .attr("fill-opacity", 1.0)
@@ -426,38 +441,6 @@
              .each(function() {
                 orientText(this.parentNode, orientationForIndex(indexType), company.radius)
              });
-
-
-             d3.selectAll("." + company.type)
-                .each(function() {               
-                    radialMultiplier = 2.0;
-                    arc = d3.arc()
-                            .innerRadius(company.radius * radialMultiplier)
-                            .outerRadius(company.radius * radialMultiplier + 1)
-                            .startAngle(0)
-                            .endAngle(2 * Math.PI);
-                    group = d3.select(this);
-                    group.selectAll(".marker")
-                        .each(function() {
-                            this.remove();
-                        });
-
-                    group.append("path")
-                        .attr("id", "radiusPath")
-                        .attr("d", arc)
-                        .attr("fill", "grey");
-                    p = group.select("path").node()
-                    cName = group.attr("id");
-                    percent = complement(radiansOfCompany(cName))/(2.0 * Math.PI);
-                    point = p.getPointAtLength(p.getTotalLength() * percent/2.0)
-                    group.append("rect")
-                        .attr("class", "marker")
-                        .attr("width", 5)
-                        .attr("height", 5)
-                        .attr("x", -5.0/2.0)
-                        .attr("y", -5.0/2.0)
-                        .attr("transform", translateXY([point.x, point.y]));
-            });
         }
 
          // COMPANY HELPER FUNCTIONS
@@ -481,6 +464,20 @@
             return companyCount;
         }
 
+        function personLocationForCompany(companyName) {
+            element = d3.select("#" + companyName);
+            type = element.attr("class");
+            translate = xyTranslate(element.attr("transform"));
+
+            calcCircle = d3.select("#calcArc").node();
+            // console.log(calcCircle);
+            percent = complement(radiansOfCompany(companyName))/(2.0 * Math.PI);
+            point = calcCircle.getPointAtLength(calcCircle.getTotalLength() * percent/2.0)
+
+            translate[0] += point.x;
+            translate[1] += point.y;
+            return translateXY(translate);
+        }
         /*
          * TEST FUNCTIONS
          */
