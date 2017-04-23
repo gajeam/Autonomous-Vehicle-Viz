@@ -126,7 +126,7 @@
                 })
                 .each(function(d, i) {
                     beforeDelay = 50;
-                    btwDelay = 100
+                    btwDelay = 50
                     totalDelay += btwDelay + beforeDelay;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
@@ -148,78 +148,7 @@
                         acquireStartup(d.actor, d.obj1);
                     });
                 });
-
-
-
-                // .on("end", function(d) {
-
-                // })
-            // yearData = allData[year]
-            // actionFunctions = {}
-            // for (i in yearData) {                
-            //     a = yearData[i]
-            //     if (actionFunctions[a.action] == undefined) {
-            //         actionFunctions[a.action] = []
-            //     }
-            //     actionFunctions[a.action].push([funcForAction(a.action), a]);
-            // }
-
-            // // Run start functions
-
-            // betweenDelay = 200;
-            // clearCanvas(betweenDelay);
-            // if (actionFunctions.start != undefined) {
-            //     runActionsWithDelay(actionFunctions.start, betweenDelay);
-            //     betweenDelay += 1000;
-
-            // }
-            // if (actionFunctions.hire != undefined) {
-            //     runActionsWithDelay(actionFunctions.hire, betweenDelay, btwTime=1000);
-            //     betweenDelay += 1000;
-            // }
-            // if (actionFunctions.acquire != undefined) {
-            //     runActionsWithDelay(actionFunctions.acquire, betweenDelay, btwTime=500);
-            //     betweenDelay += 1000;
-            // }
-
-            // function runActionsWithDelay(actions, delay, btwTime) {
-            //     if (btwTime == undefined) btwTime = 20;
-            //     callAfterDelay(betweenDelay, function() {
-            //         for (s in actions) {
-            //             count = 0;
-            //             callAfterDelay(s * btwTime, function() {
-            //                 func = actions[count][0]
-            //                 a = actions[count][1]
-            //                 if (LOG_ACTIONS == true) console.log(a.actor + " " + a.action);
-            //                 func(a.actor, a.actorType, a.obj1)
-            //                 count++;
-            //             });
-            //         }
-            //     });
-            // }
         }
-
-         function funcForAction(action) {
-            if (action == "start") {
-                return animateCompanyStart;
-            } if (action == "hire") {
-                return animateHire;
-            } if (action == "acquire") {
-                return animateAcquire;
-            } else {
-                console.warn("Undefined function for action " + action);
-            }
-         }
-
-         function animateCompanyStart(actor, actorType, obj1) {
-            addCompany(indexForActorType(actorType), actor);
-         }
-         function animateHire(actor, actorType, obj1) {
-            addPersonToTypeCompany(actor, obj1);
-         }
-          function animateAcquire(actor, actorType, obj1) {
-            acquireStartup(actor, obj1);
-         }
 
          /*
           * CANVAS
@@ -286,12 +215,24 @@
                         .endAngle(2 * Math.PI);
 
             calcCircle = svg.append("g")
+                            .attr("id", "arcCont")
                             .attr("transform", centerTransform)
                             .append("path")
                             .attr("id", "calcArc")
                             .attr("d", calcArc)
-                            .attr("fill", "none")
+                            // .attr("fill", "none")
                             ;
+
+            testArc =   d3.arc()
+                        .innerRadius(companyRadius * radialMultiplier)
+                        .outerRadius(companyRadius * radialMultiplier + 1)
+                        .startAngle(0 * -Math.PI / 2.0)
+                        .endAngle(Math.PI /2.0);
+            d3.select("#arcCont")
+                .append("path")
+                .attr("d", testArc)
+                .attr("fill", "red")
+
         }
 
         function resetCanvas() {
