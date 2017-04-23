@@ -125,7 +125,7 @@
                     return d.action == "start"
                 })
                 .each(function(d) {
-                    totalDelay += 100;
+                    totalDelay += 150;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
                         addCompany(indexForActorType(d.actorType), d.actor);
@@ -136,7 +136,7 @@
             dataRun.data(allData[year])
                 .enter()
                 .call(function() {
-                    totalDelay += 500;
+                    totalDelay += 1500;
                 })
                 .filter(function(d) {
                     return d.action == "acquire"
@@ -164,7 +164,7 @@
                     totalDelay += 500.0;
                 })
                 .each(function (d, i) {
-                    btwDelay = 100.0;
+                    btwDelay = 50.0;
                     totalDelay += btwDelay;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
@@ -351,54 +351,34 @@
         /*
          *  PEOPLE METHODS
          */
-        function addPersonToTypeCompany(personName, companyName, index, total) {            
-            neutralPerson(personName, d3.select("g#" + id(companyName)), function(person, company) {
-                // company = d3.select("g#" + companyName);
-                companyTransform = personLocationForCompany(companyName, index, total)
-                color = company.select("circle").attr("fill");
+        function addPersonToTypeCompany(personName, companyName, index, total) {
+            company = d3.select("g#" + id(companyName));
+            companyTransform = personLocationForCompany(companyName, index, total)
+            color = company.select("circle").attr("fill");
 
-                duration = 1200;
-                delay = 0.0;
-
-                colorChangeRatio = .8;
-                p = d3.select(person)
-                p.select("circle")
-                    .transition()
-                    .duration(duration * colorChangeRatio)
-                    .attr("fill", color)
-                p.transition()
-                    .duration(duration)
-                    .ease(d3.easeCubic)
-                    .attr("transform", companyTransform);
-            });
-        }
-
-        function neutralPerson(name, company, completion) {
             person = svg.append("g")
             person.attr("class", "person")
-                .attr("id", id(name))
+                .attr("id", id(personName))
                 .attr("_companyId", company.attr("id"))
-                .attr("transform", translateXY([canvasWidth/2, canvasHeight/2]))
+                .attr("transform", companyTransform)
             person.append("circle")
-                .attr("fill", neutralColor)
+                .attr("fill", color)
                 .attr("r", 0)
                 .transition()
                 .ease(d3.easeElastic)
                 .duration(500)
                 .attr("r", personRadius)
-                .on("end", function() {
-                    if (completion != undefined) {
-                        completion(this.parentNode, company);
-                    }
-                });
-                person.append("text")
-                 .attr("fills-opacity", 1.0)
-                 .text(name)
-                 .attr("font-size", 12 + "px")
-                 .each(function() {
-                    orient = rotateOrientation(company.select("text").attr("_orientation"), 2);
-                    orientText(this.parentNode, orient, personRadius);
-                 })
+            person.append("text")
+             .style("opacity", 0.0)
+             .text(personName)
+             .attr("font-size", 12 + "px")
+             .each(function() {
+                orient = rotateOrientation(company.select("text").attr("_orientation"), 2);
+                orientText(this.parentNode, orient, personRadius);
+             })
+             .transition()
+             .duration(250)
+             .style("opacity", 1.0);
         }
 
         function personPoachedByCompany(personName, poacherName, index, total) {
@@ -443,7 +423,7 @@
             acquirer = d3.select("g#" + id(acquirerName));
             acquirerTransform = acquirer.attr("transform")
 
-            duration = 1500;
+            duration = 2000;
 
             // Move the startup
             svg.select("#" + id(startupName))
