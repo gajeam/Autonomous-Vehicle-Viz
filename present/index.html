@@ -39,7 +39,8 @@
         
         /* CONSTANTS */
 
-        LOG_ACTIONS = true;
+        LOG_ACTIONS = false;
+        RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
         canvasWidth = 750.0;
         canvasHeight = 700.0;
@@ -425,7 +426,39 @@
              .each(function() {
                 orientText(this.parentNode, orientationForIndex(indexType), company.radius)
              });
-         }
+
+
+             d3.selectAll("." + company.type)
+                .each(function() {               
+                    radialMultiplier = 2.0;
+                    arc = d3.arc()
+                            .innerRadius(company.radius * radialMultiplier)
+                            .outerRadius(company.radius * radialMultiplier + 1)
+                            .startAngle(0)
+                            .endAngle(2 * Math.PI);
+                    group = d3.select(this);
+                    group.selectAll(".marker")
+                        .each(function() {
+                            this.remove();
+                        });
+
+                    group.append("path")
+                        .attr("id", "radiusPath")
+                        .attr("d", arc)
+                        .attr("fill", "grey");
+                    p = group.select("path").node()
+                    cName = group.attr("id");
+                    percent = complement(radiansOfCompany(cName))/(2.0 * Math.PI);
+                    point = p.getPointAtLength(p.getTotalLength() * percent/2.0)
+                    group.append("rect")
+                        .attr("class", "marker")
+                        .attr("width", 5)
+                        .attr("height", 5)
+                        .attr("x", -5.0/2.0)
+                        .attr("y", -5.0/2.0)
+                        .attr("transform", translateXY([point.x, point.y]));
+            });
+        }
 
          // COMPANY HELPER FUNCTIONS
 
@@ -455,9 +488,9 @@
         function demonstrateCompanyAdds() {
             count = 0;
             setInterval(function() {
-                addCompany(count, "Gabells");
-                count = (count+1) % 3;
-            }, 2000);
+                addCompany(count%3, "Gabells" + count);
+                count++;
+            }, 1000);
         }
 
         function demonstratePeopleAdds() {
@@ -507,12 +540,19 @@
                     elementCount++;
                 });
 
-            smallArc = (2/3 * Math.PI)
-            radians = smallArc * indexForActorType(type)
-            radians += smallArc * (relIndex + 1)/(elementCount + 1)
-            // console.log(companyName + radians * (360.0/(2 * Math.PI)))
-            return radians;
 
+
+            smallArc = (2.0/3.0 * Math.PI)
+            radians = smallArc * parseFloat(indexForActorType(type))
+            radians += smallArc * (relIndex + 1)/(elementCount + 1)
+            return radians;
+        }
+
+        function complement(radians) {
+            // Hacky but it works.
+            if (radians <= Math.PI) c = Math.PI + radians;
+            else c = Math.abs(radians - Math.PI);
+            return c;
         }
 
         function orientText(element, orientation, radius) {
