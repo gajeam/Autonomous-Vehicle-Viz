@@ -29,6 +29,7 @@
         <div id="option">
             <input name="nextButton" 
                    type="button" 
+                   id="nextButton"
                    value="Next Year" 
                    onclick="updateData()" />
         </div>
@@ -37,6 +38,21 @@
 
         <script type="text/javascript">
         
+        // Shout out to StackOverflow
+        // http://stackoverflow.com/a/16788240/1031615
+        jQuery.fn.extend({
+            disable: function(state) {
+                return this.each(function() {
+                    var $this = $(this);
+                    if($this.is('input, button, textarea, select'))
+                      this.disabled = state;
+                    else
+                      $this.toggleClass('disabled', state);
+                });
+            }
+        });
+
+
         /* CONSTANTS */
 
         LOG_ACTIONS = false;
@@ -109,20 +125,23 @@
             runYear(currentYear);
         }
 
-        function runYear(year) {
-            updateYearText();
-            clearCanvas();
 
-            totalDelay = 1200;
+        function runYear(year) {
+            // Disable the button
+            $("#nextButton").disable(true);
+
+            updateYearText();
+            totalDelay = clearCanvas();
+            toAddDelay = 0.0;
 
             // Hack to not cut off the first item
             dataRun = d3.selectAll("something");
+
             // RUN NEW COMPANIES STARTING
-            
             dataRun.data(allData[year])
                 .enter()
                 .filter(function(d) {
-                    return d.action == "start"
+                    return d.action == "start" && (toAddDelay = 1000)
                 })
                 .each(function(d) {
                     totalDelay += 150;
@@ -132,14 +151,14 @@
                     });
                 })
 
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
+
             // RUN ACQUISITIONS
             dataRun.data(allData[year])
                 .enter()
-                .call(function() {
-                    totalDelay += 2000;
-                })
                 .filter(function(d) {
-                    return d.action == "acquire"
+                    return d.action == "acquire" && (toAddDelay = 2000)
                 })
                 .each(function(d, i) {
                     btwDelay = 50.0;
@@ -150,7 +169,9 @@
                     });
                 });
 
-
+            // RUN POACHES
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
 
             totalHires = {};
             iteratorHires = {}
@@ -158,10 +179,7 @@
             dataRun.data(allData[year])
                 .enter()
                 .filter(function(d) {
-                    return (d.action == "poach") && addToHires(d.obj1) && (pDelayAdd = 500.0);
-                })
-                .call(function(d) {
-                    totalDelay += 500.0;
+                    return (d.action == "poach") && addToHires(d.obj1) && (toAddDelay = 500.0);
                 })
                 .each(function (d, i) {
                     btwDelay = 50.0;
@@ -173,16 +191,15 @@
                     })
                 })
                 ;
-    
 
-                // RUN HIRES
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
+
+            // RUN HIRES
            dataRun.data(allData[year])
                 .enter()
-                .call(function(d) {
-                    totalDelay += 1500;
-                })
                 .filter(function(d) {
-                    return (d.action == "hire") && addToHires(d.obj1)
+                    return (d.action == "hire") && addToHires(d.obj1) && (toAddDelay = 1500)
                 })
                 .each(function(d, i, a) {
                     btwDelay = 250
@@ -192,7 +209,15 @@
                         addPersonToTypeCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
                         iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
                     });
-                });
+                })
+
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
+
+
+            callAfterDelay(totalDelay, function() {
+                $("#nextButton").disable(false);
+            });
 
             function addToHires(d) {
                 if (totalHires[d] == undefined) {
@@ -304,10 +329,15 @@
 
         function clearCanvas(duration) {
             // Remove people
+            delay = 0.0
+            duration = 750.0;
             d3.selectAll(".person")
                 .attr("class", "placed-person")
+                .each(function() {
+                    delay = duration + 500;
+                })
                 .transition()
-                .duration(750.0)
+                .duration(duration)
                 .ease(d3.easeBack)
                 .attr("transform", function() {
                     companyId  = d3.select(this).attr("_companyId");
@@ -316,14 +346,12 @@
                     return newTrans;
                 })
                 .style("opacity", 0.0);
-                // .each(function() {
 
-                //     //removeElement(this)
-                // });
             toRemoves = d3.selectAll(".to-remove")
                             .each(function() {
                                 removeElement(this)
                             });
+            return delay;
         }
 
         function removeElement(node, duration) {
