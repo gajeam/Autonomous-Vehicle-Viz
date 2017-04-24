@@ -125,14 +125,15 @@
             runYear(currentYear);
         }
 
-
         function runYear(year) {
             // Disable the button
             $("#nextButton").disable(true);
 
-            updateYearText();
             totalDelay = clearCanvas();
             toAddDelay = 0.0;
+
+            updateYearText(totalDelay);
+            totalDelay += 500.0; // Add some time for switching the year
 
             // Hack to not cut off the first item
             dataRun = d3.selectAll("something");
@@ -179,7 +180,7 @@
             dataRun.data(allData[year])
                 .enter()
                 .filter(function(d) {
-                    return (d.action == "poach") && addToHires(d.obj1) && (toAddDelay = 500.0);
+                    return (d.action == "poach") && addToHires(d.obj1) && (toAddDelay = 1800.0);
                 })
                 .each(function (d, i) {
                     btwDelay = 50.0;
@@ -242,7 +243,7 @@
             svg.append("rect")
                 .attr("width", "100%")
                 .attr("height", "100%")
-                .attr("fill", "#faebd7");
+                .attr("fill", "#FFFFFF");
 
             // Add the different arcs
 
@@ -371,9 +372,12 @@
 
         }
 
-        function updateYearText() {
-            d3.select("#yearText")
-                .text(currentYear);
+        function updateYearText(delay) {
+            if (delay == undefined) delay = 0.0
+                callAfterDelay(delay, function() {
+                    d3.select("#yearText")
+                        .text(currentYear);
+                });
         }
 
         /*
