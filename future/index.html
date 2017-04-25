@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Attempt to scatter plot</title>
+    
+        <!-- References -->
+        <!-- Scatter plot with tooltip: http://bl.ocks.org/weiglemc/6185069 -->
+        <!-- Table: http://bl.ocks.org/ndarville/7075823 -->
+
+        <!-- styling css -->
+        <link rel="stylesheet" href="style.css">
+
+        <!-- let browser know website is optimized for mobile -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <!-- external charting and styling library javascript -->
+        <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+        <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+
+        <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>
+        <script src="https://npmcdn.com/bootstrap@4.0.0-alpha.5/dist/js/bootstrap.min.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+        <script src="http://d3js.org/d3.v4.min.js"></script>
+        <!-- <script src="divgrid.js"></script> -->
+
+    </head>
+
+    <body>
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col">
+                <h2>
+                    AUTONOMOUS VEHICLES: THE FUTURE
+                </h2>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col">
+                <div id="grid">
+                </div>
+            </div>
+            <div class="col-8">
+                <div id="scatterplot">
+                </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+                <div id="empty">
+                </div>
+            </div>
+            <div class="col-8">
+                <div id="legendbox">
+                </div>
+            </div>
+          </div>
+
+        </div>
+
+
+        <script>
+        var margin = {top: 20, right: 20, bottom: 50, left: 50},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        /* 
+         * value accessor - returns the value to encode for a given data object.
+         * scale - maps value to a visual display encoding, such as a pixel position.
+         * map function - maps from data value to display value
+         * axis - sets up axis
+         */ 
+
+        // setup x 
+        var xValue = function(d) { return d.Year;}, // data -> value
+            xScale = d3.scaleLinear().range([0, width]), // value -> display
+            xMap = function(d) { return xScale(xValue(d));}, // data -> display
+            xAxis = d3.axisBottom().scale(xScale).ticks(16)
+                    .tickFormat(d3.format("d")).tickSizeOuter(0);
+
+        // setup y
+
+        var ticks = [0,1,2,3,4,5];
+        var tickLabels = ["N/A",1,2,3,4,5];
+
+        var yValue = function(d) { return d["Level"];}, // data -> value
+            yScale = d3.scaleLinear().range([height, 0]), // value -> display
+            yMap = function(d) { return yScale(yValue(d));}, // data -> display
+            yAxis = d3.axisLeft().scale(yScale).tickValues(ticks)
+                    .tickFormat(function(d,i){ return tickLabels[i] }).tickSizeOuter(0);
+
+
+        // setup fill color
+        var cValue = function(d) { return d.Manufacturer;},
+            color = d3.scaleOrdinal(d3.schemeCategory10);
+
+        // add the graph canvas to the body of the webpage
+        var svg = d3.select("#scatterplot").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+        // add the tooltip area to the webpage
+        var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        // load data
+        d3.csv("fakedata.csv", function(error, data) {
+
+          // change string (from CSV) into number format
+          data.forEach(function(d) {
+            d.Year = +d.Year;
+            d["Level"] = +d["Level"];
+          });
+
+          // don't want dots overlapping axis, so add in buffer to data domain
+          xScale.domain([d3.min(data, xValue)-0.2, d3.max(data, xValue)+0.2]);
+          yScale.domain([d3.min(data, yValue)-0.5, d3.max(data, yValue)+0.2]);
+
+          // x-axis
+
+          xAxisTranslateX = width/2.0;
+          xAxisTranslateY = margin.bottom;
+          svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis)
+            .append("text")
+              .attr("class", "label")
+              .attr("transform", "translate(" + xAxisTranslateX + "," + xAxisTranslateY + ")")
+              .style("text-anchor", "end")
+              .text("Year");
+
+          // y-axis
+
+          yAxisTranslateX = -margin.left;
+          yAxisTranslateY = height/2.0 - 25.0; // It looks gross in the middle so we moved it up a bit
+          svg.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+            .append("text")
+              .attr("class", "label")
+              .attr("transform", "translate(" + yAxisTranslateX + "," + yAxisTranslateY + ")rotate(-90)")
+              .attr("y", 6)
+              .attr("dy", ".71em")
+              .style("text-anchor", "end")
+              .text("Level");
+
+            // add rectangle
+            svg.append("rect")
+                .attr("id", "NANs")
+                .attr("x", 0)
+                .attr("y", height*(5/6))
+                .attr("width", width)
+                .attr("height", height/6)
+                .attr("fill", "red")
+                .attr("fill-opacity", .4);
+
+
+          // draw dots
+          svg.selectAll(".dot")
+              .data(data)
+            .enter().append("circle")
+              .attr("class", "dot")
+              .attr("r", 3.5)
+              .attr("cx", xMap)
+              .attr("cy", yMap)
+              .style("fill", function(d) { return color(cValue(d));}) 
+              .on("mouseover", function(d) {
+                  tooltip.transition()
+                       .duration(200)
+                       .style("opacity", .9);
+                  tooltip.html(d["Company"])
+                       .style("left", (d3.event.pageX + 5) + "px")
+                       .style("top", (d3.event.pageY - 28) + "px");
+                          // add box to the webpage
+                var box = d3.select("#legendbox").append("div")
+                    .attr("id", "infobox")
+                    .style("margin-left", margin.left + "px")
+                    .style("opacity", 100);
+
+                  box.append("h4").text(d["Company"]);
+                  ul = box.append("ul");
+                  var bullet_points = d["Comments"].split("; ");
+                  for (i in bullet_points) {
+                    point = bullet_points[i];
+                    ul.append("li")
+                        .text(point);
+                  }
+
+
+              })
+              .on("mouseout", function(d) {
+                  tooltip.transition()
+                       .duration(500)
+                       .style("opacity", 0);
+                  d3.select("#infobox").node().remove();
+              });
+
+            });
+
+
+          // TABLE
+          d3.text("levels.csv", function(data) {
+            var parsedCSV = d3.csvParseRows(data);
+
+            var container = d3.select("#grid").append("table")
+                .selectAll("tr")
+                .data(parsedCSV).enter()
+                .append("tr")
+                .selectAll("td")
+                .data(function(d) { return d; }).enter()
+                .append("td")
+                .text(function(d) { return d; });
+          });
+
+        </script>
+    </body>
+</html>

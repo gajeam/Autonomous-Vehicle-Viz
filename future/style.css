@@ -1,0 +1,53 @@
+/*Styling for scatter plot*/
+
+body {
+  font: 11px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.dot {
+  stroke: #000;
+}
+
+.tooltip {
+  position: absolute;
+  width: 200px;
+  height: 28px;
+  pointer-events: none;
+}
+
+
+#infobox {
+    margin-top: 20px;
+    background-color: powderblue;
+    padding: 20px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+/*#scatterplot {
+    z-index:0;
+}
+#rect {
+    background-color: orange;
+    position:absolute;
+    z-index:1;
+}
+*/
+#grid {
+    border-collapse: collapse;
+    border: 2px black solid;
+    font: 12px sans-serif;
+}
+
+.td {
+    border: 1px black solid;
+    padding: 5px;
+}
+
