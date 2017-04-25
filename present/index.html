@@ -65,38 +65,40 @@
         mainStrokeWidth = 5.0
 
         personRadius = 8;
-        startupRadius = 15;
-        companyRadius = 20;
-
-        techColor = "#32CD32";
-        carColor = "#DB7093";
-        startupColor = "#4682B4";
-        neutralColor = "#A0A0A0"
+        startupRadius = 18;
+        companyRadius = 24;
 
         personTextSize = 10.0;
         companyTextSize = 16.0;
 
         kIndexTech = 0;
-        kIndexCar = 1;
-        kIndexStartUp = 2;
+        kIndexStartUp = 1;
+        kIndexCar = 2;
 
         currentYear = 2008;
 
-        companyTypes = [{   'type': 'tech',
-                            'color' : techColor,
-                            'radius' : companyRadius},
-                        {   'type' :'car',
-                            'color' :carColor,
-                            'radius' : companyRadius},
-                        {   'type': 'startup',
-                            'color' : startupColor,
-                            'radius' : startupRadius}];
-
+        // green, pink, blue
+        baseColors = [ "#32CD32", "#DB7093", "#4682B4",]
         // light to dark order: 2, 4, 1, 3
+
         colors = [  ["#53D953", "#039403", "#7FE77F", "#09C409",], // greens
                     [ "#EB9CB4", "#9B264C", "#F5C7D6", "#BA456A",], // pinks
                     ["#6AA0CC", "#12538A", "#9CC3E4", "#2B6BA0",]] // blues
         colorIndex = [0, 0, 0];
+
+        companyTypes = [0, 0, 0]
+        companyTypes[kIndexTech] = {
+                            'type': 'tech',
+                            'color' : baseColors[kIndexTech],
+                            'radius' : companyRadius}
+        companyTypes[kIndexCar] = {
+                            'type' :'car',
+                            'color' :baseColors[kIndexCar],
+                            'radius' : companyRadius}
+        companyTypes[kIndexStartUp] ={
+                            'type': 'startup',
+                            'color' : baseColors[kIndexStartUp],
+                            'radius' : startupRadius};
 
         d3.csv("industry.csv", function(d) {
             allData = {};
@@ -164,7 +166,7 @@
                     return d.action == "acquire" && (toAddDelay = 2000)
                 })
                 .each(function(d, i) {
-                    btwDelay = 500.0;
+                    btwDelay = 2000.0;
                     totalDelay += btwDelay;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
@@ -289,10 +291,10 @@
                 .attr("y", yearFont + margin);
             runYear(currentYear);
 
-            radialMultiplier = 3.5;
+            radial = 70.0;
             calcArc = d3.arc()
-                        .innerRadius(companyRadius * radialMultiplier)
-                        .outerRadius(companyRadius * radialMultiplier + 1)
+                        .innerRadius(radial)
+                        .outerRadius(radial + 1)
                         .startAngle(0)
                         .endAngle(2 * Math.PI);
 
@@ -311,7 +313,7 @@
             colorIndex = [0, 0, 0]
             svg.selectAll('g')
                 .filter(function() {
-                    return ['person', 'tech', 'car', 'startup', 'to-remove', 'to-fade' 'placed-person'].indexOf(d3.select(this).attr("class")) != -1;
+                    return ['person', 'tech', 'car', 'startup', 'to-remove', 'to-fade', 'placed-person'].indexOf(d3.select(this).attr("class")) != -1;
                 })
                 .each(function() {
                     removeElement(this);
@@ -324,6 +326,8 @@
             duration = 750.0;
             d3.selectAll(".person")
                 .attr("class", "placed-person")
+
+            d3.selectAll(".placed-person")
                 .each(function() {
                     delay = duration + 500;
                 })
@@ -332,11 +336,14 @@
                 .ease(d3.easeBack)
                 .attr("transform", function() {
                     companyId  = d3.select(this).attr("_companyId");
-                    newTrans = d3.select("#" + companyId)
-                                    .attr("transform");
-                    return newTrans;
+                    return d3.select("#" + companyId).attr("transform");
                 })
-                .style("opacity", 0.0);
+                .style("opacity", 0.0)
+                .select("circle")
+                .attr("fill", function() {
+                    return d3.select("#" + companyId).select("circle").attr("fill");
+                });
+
 
             toRemoves = d3.selectAll(".to-remove")
                             .each(function() {
@@ -426,7 +433,12 @@
             // TODO deal with indices
             person = d3.select("#" + id(personName));
             // Move them to their original company
-            origCompanyId = person.attr("_companyId");
+            try {
+                origCompanyId = person.attr("_companyId");
+            } catch(err) {
+                console.warn("Cannot poach " + personName + " from " + poacherName);
+                return;
+            }
             origTransform = d3.select("#" + origCompanyId)
                                 .attr("transform");
             person.attr("transform", origTransform);
@@ -469,7 +481,7 @@
 
             acquirer = d3.select("g#" + id(acquirerName));
             acquirerTransform = acquirer.attr("transform")
-
+            acquirerColor = acquirer.select("circle").attr("fill");
             duration = 2000;
 
             // Move the startup
@@ -482,6 +494,56 @@
                 .duration(duration)
                 .attr("transform", acquirerTransform)
 
+            acqDelay = 250.0;
+            totalAcqDelay = 0.0;
+            peopleCount = 0;
+            peopleIterator = 0;
+
+            acquiredPeople = svg.selectAll(".placed-person")
+                                .filter(function() {
+                                    return (d3.select(this).attr("_companyId") == id(startupName)) && (peopleCount += 1);
+                                })
+
+            acquiredPeople.attr("_companyId", id(acquirerName))
+                .each(function() {
+                    peopleIterator++;
+                    // Fade the people in
+                    d3.select(this).style("opacity", 1.0);
+                    d3.select(this).select("circle")
+                        .style("opacity", 0.0)
+                        .transition()
+                        .duration(250.0)
+                        .style("opacity", 1.0);
+
+
+                    d3.select(this).select("text")
+                        .style("opacity", 0.0)
+                        .transition()
+                        .delay(750.0)
+                        .duration(250.0)
+                        .style("opacity", 1.0);
+
+                    // Move people with the company
+                    d3.select(this)
+                        .transition()
+                        .duration(duration)
+
+                        .delay(function() {
+                            totalAcqDelay += acqDelay;
+                            return totalAcqDelay; // Make sure this runs after the fade
+                        })
+                        .attr("transform", function() {
+                            return personLocationForCompany(acquirerName, peopleIterator - 1, peopleCount);
+                        })
+                        .on("end", function() {
+                            // d3.select(this).select("circle")
+                            // .transition()
+                            // .duration(500)
+                            // .attr("fill", acquirerColor);
+                            drawLineFromPersonToCompany(d3.select(this).attr("id"), acquirerName);
+
+                        })
+                });
 
             // Shift all the other startups
             shiftDelay = 500;
@@ -552,20 +614,22 @@
             companyText = company.selectAll("text").last();
             companyTextX = +companyText.attr("x");
             companyTextY = +companyText.attr("y");
-            companyTextY +=  companyTextSize + 7.0;
+            companyTextY += companyTextSize + 7.0;
 
-            console.log(companyTextY)
             acquired.selectAll("text")
                     .transition()
                     .delay(delay - 250)
                     .duration(250)
                     .style("opacity", 0.0);
 
-            company.append("text")
+            company.insert("text")
                     .attr("class", "to-fade")
                     .text(acquiredName)
                     .attr("x", companyTextX)
                     .attr("y", companyTextY)
+                    .attr("text-anchor", function() {
+                        return companyText.attr("text-anchor");
+                    })
                     .attr("font-style", "italic")
                     .attr("fill", acquired.select("circle").attr("fill"))
                     .style("opacity", 0.0)
@@ -682,7 +746,7 @@
                   .y(function(d) { return d.y;});
 
 
-            svg.append("g")
+            svg.insert("g", "#" + id(personName))
                 .attr("class", "to-remove")
                 .append("path")
                 .attr("d", lineFunction(lineData))
@@ -690,7 +754,7 @@
                 .style("opacity", 0.0)
                 .transition()
                 .duration(250)
-                .style("opacity", 0.2);
+                .style("opacity", 0.3);
         }
 
         function radiansOfCompany(companyName) {
