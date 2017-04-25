@@ -73,7 +73,8 @@
         startupColor = "#4682B4";
         neutralColor = "#A0A0A0"
 
-
+        personTextSize = 10.0;
+        companyTextSize = 16.0;
 
         kIndexTech = 0;
         kIndexCar = 1;
@@ -115,7 +116,7 @@
          */
         function updateData() {
             currentYear++;
-            maxYear = 2009;
+            maxYear = 2011;
 
             if (currentYear > maxYear) {
                 resetCanvas();
@@ -163,7 +164,7 @@
                     return d.action == "acquire" && (toAddDelay = 2000)
                 })
                 .each(function(d, i) {
-                    btwDelay = 50.0;
+                    btwDelay = 500.0;
                     totalDelay += btwDelay;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
@@ -310,7 +311,7 @@
             colorIndex = [0, 0, 0]
             svg.selectAll('g')
                 .filter(function() {
-                    return ['person', 'tech', 'car', 'startup', 'to-remove', 'placed-person'].indexOf(d3.select(this).attr("class")) != -1;
+                    return ['person', 'tech', 'car', 'startup', 'to-remove', 'to-fade' 'placed-person'].indexOf(d3.select(this).attr("class")) != -1;
                 })
                 .each(function() {
                     removeElement(this);
@@ -341,6 +342,13 @@
                             .each(function() {
                                 removeElement(this)
                             });
+            toFades = d3.selectAll(".to-fade")
+                        .transition()
+                        .duration(250)
+                        .style("opacity", 0.0)
+                        .on("end", function() {
+                            removeElement(this)
+                        });
             return delay;
         }
 
@@ -348,7 +356,7 @@
             var isCircle = false;
             if (duration == undefined) duration = 250;
             element = d3.select(node)
-            element.select("text")
+            element.selectAll("text")
                 .transition()
                 .duration(duration)
                 .attr("fill-opacity", 0);
@@ -399,7 +407,7 @@
             person.append("text")
              .style("opacity", 0.0)
              .text(personName)
-             .attr("font-size", 10 + "px")
+             .attr("font-size", personTextSize + "px")
              .each(function() {
                 orient = rotateOrientation(company.select("text").attr("_orientation"), 2);
                 orientText(this.parentNode, orient, personRadius);
@@ -467,9 +475,13 @@
             // Move the startup
             svg.select("#" + id(startupName))
                 .attr("class", "to-remove")
+                .each(function() {
+                    addAcquiredCompany(acquirerName, startupName, duration - 500);
+                })
                 .transition()
                 .duration(duration)
-                .attr("transform", acquirerTransform);
+                .attr("transform", acquirerTransform)
+
 
             // Shift all the other startups
             shiftDelay = 500;
@@ -526,10 +538,41 @@
 
             g.append("text")
              .attr("fill-opacity", 1.0)
+              .attr("font-size", companyTextSize + "px")
              .text(name)
              .each(function() {
                 orientText(this.parentNode, orientationForIndex(indexType), company.radius)
              });
+        }
+
+        function addAcquiredCompany(companyName, acquiredName, delay) {
+            company = d3.select("#" + id(companyName));
+            acquired = d3.select("#" + id(acquiredName));
+
+            companyText = company.selectAll("text").last();
+            companyTextX = +companyText.attr("x");
+            companyTextY = +companyText.attr("y");
+            companyTextY +=  companyTextSize + 7.0;
+
+            console.log(companyTextY)
+            acquired.selectAll("text")
+                    .transition()
+                    .delay(delay - 250)
+                    .duration(250)
+                    .style("opacity", 0.0);
+
+            company.append("text")
+                    .attr("class", "to-fade")
+                    .text(acquiredName)
+                    .attr("x", companyTextX)
+                    .attr("y", companyTextY)
+                    .attr("font-style", "italic")
+                    .attr("fill", acquired.select("circle").attr("fill"))
+                    .style("opacity", 0.0)
+                    .transition()
+                    .delay(delay)
+                    .duration(250)
+                    .style("opacity", 1.0);
         }
 
          // COMPANY HELPER FUNCTIONS
@@ -756,6 +799,41 @@
           return name.replace(/\W/g, '')
         }
 
+        // Get the first or last child
+        // Shout out to StackOverflow
+        // http://stackoverflow.com/a/25413534/1031615
+        d3.selection.prototype.first = function() {
+            return d3.select(this.nodes()[0])
+        };
+        d3.selection.prototype.last = function() {
+            return d3.select(this.nodes()[this.nodes().length-1])
+        };
+
         </script>
     </body>
 </html>  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
