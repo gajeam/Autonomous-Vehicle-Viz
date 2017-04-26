@@ -58,7 +58,6 @@
                         <button type="button"
                                 class="btn btn-warning "
                                 id="nextButton"
-
                                 onclick="updateData()">Next Year</button>
 
                     </div>
@@ -72,13 +71,6 @@
                     </div>
                     <div class = "row present-info" id="company-info-cont">
                         <div class= "info-text-box">
-                            <h3>Uber</h3>
-                            <ul>
-                                <li>Gabe Nicholas</li>
-                                <li>Lucia D'Onofrio</li>
-                                <li>Nisha Pathak</li>
-                                <li>Marti Hearst</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -671,11 +663,39 @@
                 orientText(this.parentNode, orientationForIndex(indexType), company.radius)
              });
 
-             g.on("mouseover", function(d) {
+             g.select("circle")
+                .on("mouseover", function(d) {
+                    var infoCont = d3.select("#company-info-cont")
+                    infoCont.style("visibility", "visible");
+
+                    infoCont.append("h3").html(name);
+
+                    infoCont.append("ul")
+
+
+                    d3.selectAll("g")
+                        .filter(function() {
+                            return d3.select(this).attr("_companyId") == id(name)
+                        })
+                        .each(function() {
+                            infoCont.select("ul")
+                                    .append("li")
+                                    .html(d3.select(this).select("text").text())
+                        })
+
+            // <h3>Uber</h3>
+            // <ul>
+            //     <li>Gabe Nicholas</li>
+            //     <li>Lucia D'Onofrio</li>
+            //     <li>Nisha Pathak</li>
+            //     <li>Marti Hearst</li>
+            // </ul>
                 console.log(name);
              })
              .on("mouseout", function(d) {
-                console.log("I'm out!")
+                d3.select("#company-info-cont")
+                    .style("visibility", "hidden")
+                    .html("");
              });
               //              .on("mouseover", function(d) {
               //     tooltip.transition()
