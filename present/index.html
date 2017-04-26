@@ -250,6 +250,25 @@
                     });
                 });
 
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
+
+            // RUN LAWSUITS
+            dataRun.data(allData[year])
+                .enter()
+                .filter(function(d) {
+                    return d.action == "sues" && (toAddDelay = 1000)
+                })
+                .each(function(d, i) {
+                    btwDelay = 1000.0;
+                    totalDelay += btwDelay;
+                    delay = totalDelay;
+                    callAfterDelay(delay, function() {
+                        companySuesCompany(d.actor, d.obj1);
+                    });
+                });
+
+
             // RUN POACHES
             totalDelay += toAddDelay;
             toAddDelay = 0.0;
@@ -295,7 +314,6 @@
             totalDelay += toAddDelay;
             toAddDelay = 0.0;
 
-
             callAfterDelay(totalDelay, function() {
                 $("#nextButton").disable(false);
             });
@@ -329,14 +347,12 @@
                     .append("svg")
                     .attr("width", canvasWidth)
                     .attr("height", canvasHeight)
-
-
             
             // Add a rectangle so we can always see our canvas size
             svg.append("rect")
                 .attr("width", "100%")
                 .attr("height", "100%")
-                .attr("fill", "#FFFFFF");
+                .attr("fill", "#F0F0F0");
 
             // Add the different arcs
 
@@ -381,20 +397,20 @@
             runYear(currentYear);
 
             radial = 70.0;
-            calcArc = d3.arc()
+            personCalcArc = d3.arc()
                         .innerRadius(radial)
                         .outerRadius(radial + 1)
                         .startAngle(0)
                         .endAngle(2 * Math.PI);
 
-            calcCircle = svg.append("g")
-                            .attr("id", "arcCont")
-                            .attr("transform", centerTransform)
-                            .append("path")
-                            .attr("id", "calcArc")
-                            .attr("d", calcArc)
-                            .attr("fill", "none")
-                            ;
+            svg.append("g")
+                .attr("id", "arcCont")
+                .attr("transform", centerTransform)
+                .append("path")
+                .attr("id", "personCalcArc")
+                .attr("d", personCalcArc)
+                .attr("fill", "none")
+                ;
 
         }
 
@@ -524,8 +540,6 @@
               drawLineFromPersonToCompany(personName, companyName)
 
         }
-
-
 
         function personPoachedByCompany(personName, poacherName, index, total) {
             // TODO deal with indices
@@ -765,11 +779,11 @@
                             .style("opacity", 1.0);
                     });
 
-            toChangePeople = svg.selectAll(".placed-person")
-                                .filter(function() {
-                                    return (d3.select(this).attr("_companyId") == id(fromName)) && (peopleCount += 1);
-                                })
-                                .attr("_companyId", id(toName));
+            svg.selectAll(".placed-person")
+                .filter(function() {
+                    return (d3.select(this).attr("_companyId") == id(fromName));
+                })
+                .attr("_companyId", id(toName));
         }
 
         function addAcquiredCompany(companyName, acquiredName, delay) {
@@ -804,6 +818,47 @@
                     .style("opacity", 1.0);
         }
 
+        function companySuesCompany(plaintiffName, defendantName) {
+            plaintiffCenter = accessPointForCompany(plaintiffName);
+            defendantCenter = accessPointForCompany(defendantName);
+
+            var startLineData = [plaintiffCenter,plaintiffCenter];
+            var endLineData = [plaintiffCenter, defendantCenter];
+            var lineFunction = d3.line()
+                  .x(function(d) { return d.x;})
+                  .y(function(d) { return d.y;});
+
+
+            var arrowColor = "red"
+            // Shout out to this JSFiddle
+            // https://jsfiddle.net/owen_rodda/55zk55ut/16/
+            svg.append("defs").append("marker")
+                .attr("id", "arrow-sue")
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 8)
+                .attr("fill", arrowColor)
+                .attr("refY", 0)
+                .attr("markerWidth", 8)
+                .attr("markerHeight", 8)
+                .attr("orient", "auto")
+              .append("svg:path")
+                .attr("d", "M0,-5L10,0L0,5");
+
+
+            svg.append("g")
+                .attr("class", "to-remove")
+                .append("path")
+                .attr("d", lineFunction(startLineData))
+                .attr("stroke", arrowColor)
+                .attr("stroke-width", 3)
+                .attr("stroke-dasharray", 8)
+                .attr("marker-end", "url(#arrow-sue)")
+                .transition()
+                .duration(1000)
+                  .attr("d", lineFunction(endLineData))
+
+        }
+
          // COMPANY HELPER FUNCTIONS
 
          function transForEdgeIndex(companyPath, index, total) {
@@ -825,13 +880,51 @@
             return companyCount;
         }
 
+
+        function accessPointForCompany(companyName, indexType) {
+            element = d3.select("#" + id(companyName));
+            translate = xyTranslate(element.attr("transform"));
+            return {"x": translate[0], "y": translate[1]}
+
+            // companyRadius = companyTypes[indexForActorType(element.attr("class"))].radius;
+            // console.log(companyRadius);
+
+            // companyCalcArc = d3.arc()
+            //                 .innerRadius(companyRadius)
+            //                 .outerRadius(companyRadius + 1)
+            //                 .startAngle(0)
+            //                 .endAngle(2 * Math.PI);
+
+
+            // tempCircle = svg.append("path")
+            //     .attr("class", "to-remove")
+            //     .attr("d", companyCalcArc)
+            //     .attr("fill", "none");
+
+
+
+
+            // calcCircle = tempCircle.node();
+            // radians = complement(radiansOfCompany(companyName));
+            // // Hack to get around negative percents
+            // if (radians < 0.0) {
+            //     radians += 2.0 * Math.PI
+            // }
+
+            // percent = radians /(2.0 * Math.PI);
+            // point = calcCircle.getPointAtLength(calcCircle.getTotalLength() * percent/2.0)
+
+            // point.x += translate[0]
+            // point.y += translate[1]
+            // tempCircle.remove();
+            // return point;
+        }
+
         function personLocationForCompany(companyName, index, total) {
             element = d3.select("#" + id(companyName));
-            type = element.attr("class");
-
             translate = xyTranslate(element.attr("transform"));
 
-            calcCircle = d3.select("#calcArc").node();
+            calcCircle = d3.select("#personCalcArc").node();
             radialDiff = Math.PI * .9;
             radians = complement(radiansOfCompany(companyName));
             radians += radialDiff/2.0 - (radialDiff * (index + 1)/(total + 1));
