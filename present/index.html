@@ -19,18 +19,21 @@
     </head>
 
     <style>
+        p, li {
+            font-size: 14px;
+        }
         .present-info {
-            height:15vw;
-            margin-right:20px;
+            margin-left:20px;
+            margin-top:20px;
             padding:20px;
         }
         #year-info-cont {
-          background-color: rgba(255, 0, 255, .3);
-          margin-bottom:20px;
-          /*height:315px;*/
+          height:325px;
+          background-color: rgba(70, 130, 180, .3);
         }
         #company-info-cont {
-            background-color: rgba(0, 255, 0, .3);
+          height:400px;
+            background-color: rgba(50, 205, 50, .3);
         }
 
         .svg-container {
@@ -42,39 +45,31 @@
 
     <body>
         <div class="container-fluid">
-          <div class="row">
-            <div class="col">
-                <h1>
-                    AUTONOMOUS VEHICLES: THE PRESENT
-                </h1>
-            </div>
-        </div>
             <div class="row">
-                <div class="col-6 svg-container">
-                    <div id="svgCanvas"></div>
-                </div>
-                <div class="col-1">
-                    <div id="option">
-                        <button type="button"
-                                class="btn btn-warning "
-                                id="nextButton"
-                                onclick="updateData()">Next Year</button>
-
-                    </div>
-                </div>
                 <div class = "col-5">
                     <div class = "row present-info" id="year-info-cont">
                         <div class= "info-text-box">
-                            <h2>Overview</h2>
-                            <p>I've got soul but I'm not a soldier</p>
+                            <h1 id="year-description-title"></h1>
+                            <p id="year-description"></p>
+                            <button type="button"
+                                class="btn btn-primary "
+                                id="nextButton"
+                                onclick="updateData()">Next Year
+                            </button>
                         </div>
                     </div>
-                    <div class = "row present-info" id="company-info-cont">
+                    <div class = "row present-info" id="company-info-cont" style="visibility:hidden;">
                         <div class= "info-text-box">
                         </div>
                     </div>
+
+
+                </div>
+                <div class="col-7 svg-container">
+                    <div id="svgCanvas"></div>
                 </div>
             </div>
+
 
         </div>
 
@@ -102,10 +97,13 @@
         LOG_ACTIONS = false;
         RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
+        maxYear = 2011;
+        startYear = 2007;
+
         canvasWidth = 700.0;
         canvasHeight = 650.0;
 
-        mainRadius = 270.0;
+        mainRadius = 250.0;
         mainStrokeWidth = 5.0
 
         personRadius = 8;
@@ -144,6 +142,8 @@
                             'color' : baseColors[kIndexStartUp],
                             'radius' : startupRadius};
 
+
+
         d3.csv("industry.csv", function(d) {
             allData = {};
             for (row in d) {
@@ -156,17 +156,30 @@
             setupCanvas();
         });
 
+        d3.tsv("companyInfo.tsv", function(d) {
+            companyDescriptions = {}
+            for (i in d) {
+                companyDescriptions[d[i].company] = d[i]
+            }
+        })
+
+        d3.tsv("yearInfo.tsv", function(d) {
+            yearDescriptions = {}
+            for (i in d) {
+                yearDescriptions[d[i].year] = d[i].description
+            }
+        })
+
 
         /*
          *  ANIMATION FUNCTIONS
          */
         function updateData() {
             currentYear++;
-            maxYear = 2011;
 
             if (currentYear > maxYear) {
                 resetCanvas();
-                currentYear = 2007;
+                currentYear = startYear;
                 updateYearText();
                 return;
             }
@@ -202,6 +215,25 @@
 
             totalDelay += toAddDelay;
             toAddDelay = 0.0;
+
+
+            // RUN NAME CHANGE
+            dataRun.data(allData[year])
+                .enter()
+                .filter(function(d) {
+                    return d.action == "rename" && (toAddDelay = 800)
+                })
+                .each(function(d) {
+                    totalDelay += 150;
+                    delay = totalDelay;
+                    callAfterDelay(delay, function() {
+                        changeCompanyName(d.actor, d.obj1);
+                    });
+                })
+
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
+
 
             // RUN ACQUISITIONS
             dataRun.data(allData[year])
@@ -443,8 +475,17 @@
         function updateYearText(delay) {
             if (delay == undefined) delay = 0.0
                 callAfterDelay(delay, function() {
-                    d3.select("#yearText")
-                        .text(currentYear);
+                    // d3.select("#yearText")
+                    //     .text(currentYear);
+                    d3.select("#year-description")
+                        .html(yearDescriptions[currentYear])
+                    d3.select("#year-description-title")
+                        .html(function() {
+                            if (currentYear == startYear) {
+                                return "Start";
+                            }
+                            return currentYear
+                        })
                 });
         }
 
@@ -665,68 +706,70 @@
 
              g.select("circle")
                 .on("mouseover", function(d) {
+                    companyName = d3.select(this.parentNode).select("text").text(); // Do this because the name might change
+
+                    var company = companyDescriptions[companyName];
                     var infoCont = d3.select("#company-info-cont")
                     infoCont.style("visibility", "visible");
 
-                    infoCont.append("h3").html(name);
+                    infoCont.append("h3").html(companyName);
+                    infoCont.append("p").html(company.description)
 
-                    infoCont.append("ul")
 
-
+                    hasEmployees = false;
                     d3.selectAll("g")
                         .filter(function() {
-                            return d3.select(this).attr("_companyId") == id(name)
+                            return d3.select(this).attr("_companyId") == id(companyName) && (hasEmployees = true);
+                        })
+                        .call(function() {
+                            if (hasEmployees == true) {
+                                infoCont.append("h5").html("Employees as of " + currentYear)
+                                infoCont.append("br") // Ugh this still doesn't work
+                                infoCont.append("ul");
+
+                            }
                         })
                         .each(function() {
                             infoCont.select("ul")
                                     .append("li")
                                     .html(d3.select(this).select("text").text())
                         })
-
-            // <h3>Uber</h3>
-            // <ul>
-            //     <li>Gabe Nicholas</li>
-            //     <li>Lucia D'Onofrio</li>
-            //     <li>Nisha Pathak</li>
-            //     <li>Marti Hearst</li>
-            // </ul>
-                console.log(name);
+                        .call(function() {
+                            infoCont.append("br")
+                            infoCont.append("p").html("<i>Source: " + company.source)
+                        })
              })
              .on("mouseout", function(d) {
                 d3.select("#company-info-cont")
                     .style("visibility", "hidden")
                     .html("");
              });
-              //              .on("mouseover", function(d) {
-              //     tooltip.transition()
-              //          .duration(200)
-              //          .style("opacity", .9);
-              //     tooltip.html(d["Company"])
-              //          .style("left", (d3.event.pageX + 5) + "px")
-              //          .style("top", (d3.event.pageY - 28) + "px");
-              //             // add box to the webpage
-              //   var box = d3.select("#legendbox").append("div")
-              //       .attr("id", "infobox")
-              //       .style("margin-left", margin.left + "px")
-              //       .style("opacity", 100);
+        }
 
-              //     box.append("h4").text(d["Company"]);
-              //     ul = box.append("ul");
-              //     var bullet_points = d["Comments"].split("; ");
-              //     for (i in bullet_points) {
-              //       point = bullet_points[i];
-              //       ul.append("li")
-              //           .text(point);
-              //     }
+        function changeCompanyName(fromName, toName) {
+            company = d3.select("#" + id(fromName));
+            fadeDuration = 500;
+            fadeInDelay = 250;
+            // Fade out the text, change the name, fade it in with the new name
+            company.attr("id", id(toName));
+            company.select("text")
+                    .transition()
+                    .duration(fadeDuration)
+                    .style("opacity", 0.0)
+                    .on("end", function() {
+                        d3.select(this)
+                            .text(toName)
+                            .transition()
+                            .delay(fadeInDelay)
+                            .duration(fadeDuration)
+                            .style("opacity", 1.0);
+                    });
 
-
-              // })
-              // .on("mouseout", function(d) {
-              //     tooltip.transition()
-              //          .duration(500)
-              //          .style("opacity", 0);
-              //     d3.select("#infobox").node().remove();
-              // });
+            toChangePeople = svg.selectAll(".placed-person")
+                                .filter(function() {
+                                    return (d3.select(this).attr("_companyId") == id(fromName)) && (peopleCount += 1);
+                                })
+                                .attr("_companyId", id(toName));
         }
 
         function addAcquiredCompany(companyName, acquiredName, delay) {
