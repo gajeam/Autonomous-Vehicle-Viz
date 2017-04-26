@@ -33,6 +33,11 @@
             background-color: rgba(0, 255, 0, .3);
         }
 
+        .svg-container {
+            width:700px;
+            z-index:1;
+        }
+
     </style>
 
     <body>
@@ -45,15 +50,18 @@
             </div>
         </div>
             <div class="row">
-                <div class="col-6">
+                <div class="col-6 svg-container">
                     <div id="svgCanvas"></div>
                 </div>
                 <div class="col-1">
                     <div id="option">
                         <button type="button"
-                                class="btn btn-warning"
+                                class="btn btn-warning "
+                                id="nextButton"
+
                                 onclick="updateData()">Next Year</button>
-                  </div>
+
+                    </div>
                 </div>
                 <div class = "col-5">
                     <div class = "row present-info" id="year-info-cont">
@@ -102,7 +110,7 @@
         LOG_ACTIONS = false;
         RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
-        canvasWidth = 800.0;
+        canvasWidth = 700.0;
         canvasHeight = 650.0;
 
         mainRadius = 270.0;
