@@ -97,7 +97,7 @@
         LOG_ACTIONS = false;
         RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
-        maxYear = 2011;
+        maxYear = 2013;
         startYear = 2007;
 
         canvasWidth = 700.0;
@@ -145,11 +145,20 @@
 
 
         d3.csv("industry.csv", function(d) {
+            people = []
             allData = {};
             for (row in d) {
                 item = d[row];
                 if (allData[item.year] == undefined) {
                     allData[item.year] = []
+                }
+                // Add info about poaching
+                if (item.action == "hire") {
+                    if (people.indexOf(item.actor) != -1) {
+                        item.action = "poach";
+                    } else {
+                        people.push(item.actor)
+                    }
                 }
                 allData[item.year].push(item)
             }
@@ -446,7 +455,7 @@
                 .style("opacity", 0.0)
                 .select("circle")
                 .attr("fill", function() {
-                    return d3.select("#" + companyId).select("circle").attr("fill");
+                    return d3.select("#" + d3.select(this.parentNode).attr("_companyId")).select("circle").attr("fill");
                 });
 
 
@@ -510,7 +519,13 @@
          */
         function addPersonToTypeCompany(personName, companyName, index, total) {
             company = d3.select("g#" + id(companyName));
-            companyTransform = personLocationForCompany(companyName, index, total)
+            try {
+                companyTransform = personLocationForCompany(companyName, index, total)
+            }
+            catch (err) {
+                console.warn("Cannot find company " + companyName + " for hiring " + personName);
+                return;
+            }
             color = company.select("circle").attr("fill");
 
             person = svg.append("g")
@@ -577,12 +592,12 @@
                 .on("end", function() {
                     drawLineFromPersonToCompany(personName, poacherName);
                 })
-            person.select("circle")
-                    .transition()
-                    .delay(600) // Wait a bit to change the color
-                    .duration(1500)
-                    .attr("fill", poacherColor)
-                ;
+            // person.select("circle")
+            //         .transition()
+            //         .delay(600) // Wait a bit to change the color
+            //         .duration(1500)
+            //         .attr("fill", poacherColor)
+            //     ;
         }
 
         /*

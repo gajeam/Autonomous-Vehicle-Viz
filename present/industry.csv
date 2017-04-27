@@ -3,7 +3,6 @@ year,actor,actorType,action,obj1,obj2,note
 2008,deCarta,startup,start,,,
 2008,AutoNavi,startup,start,,,
 2009,Google,tech,start,,,
-2009,Uber,tech,start,,,
 2009,Tesla,car,start,,,
 2009,Sebastian Thrun,person,hire,Google,,Internal move
 2009,Anthony Levandowski,person,hire,Google,,Internal move
@@ -11,10 +10,21 @@ year,actor,actorType,action,obj1,obj2,note
 2009,Chris Urmson,person,hire,Google,,
 2009,Dag Reckhorn,person,hire,Tesla,,
 2009,Peter Rawlinson,person,hire,Tesla,,
+2009,John Krafcik,person,hire,Hyundai,,
 2009,Tom Wessner,person,hire,Tesla,,
-2009,Uber,tech,acquire,deCarta,,
 2010,Don Burnette,person,hire,Google,,
 2010,Nick Sampson,person,hire,Tesla,,
 2010,Sylpheo,startup,start,,,
 2011,Soren Juelsgaard,person,hire,Google,,
 2011,Bryan Salesky,person,hire,Google,,
+2012,Sebastian Thrun,person,found,Udacity,,
+2013,Cruise Automation,startup,start,,,
+2012,HERE,startup,start,,,
+2013,nuTonomy,startup,start,,,
+2013,Saips,startup,start,,,
+2013,Andrew Gray,person,hire,Tesla,,
+2013,Kyle Vogt,person,hire,Cruise Automation,,Founder
+2013,Daniel Kan,person,hire,Cruise Automation,,Founder
+2013,Peter Rawlinson,person,hire,Lucid Motors,,
+2013,Claire Delaunay,person,hire,Google,,
+2013,Lucid Motors,startup,start,,,
