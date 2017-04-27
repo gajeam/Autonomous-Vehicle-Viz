@@ -97,7 +97,7 @@
         LOG_ACTIONS = false;
         RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
-        maxYear = 2013;
+        maxYear = 2015;
         startYear = 2007;
 
         canvasWidth = 700.0;
@@ -144,13 +144,17 @@
 
 
 
-        d3.csv("industry.csv", function(d) {
+        d3.tsv("industry.tsv", function(d) {
             people = []
             allData = {};
             for (row in d) {
                 item = d[row];
                 if (allData[item.year] == undefined) {
                     allData[item.year] = []
+                }
+                // Separate founding from regular starting
+                if (item.action == "start" && item.obj1.length != 0) {
+                    item.action = "found";
                 }
                 // Add info about poaching
                 if (item.action == "hire") {
@@ -243,7 +247,6 @@
             totalDelay += toAddDelay;
             toAddDelay = 0.0;
 
-
             // RUN ACQUISITIONS
             dataRun.data(allData[year])
                 .enter()
@@ -256,6 +259,26 @@
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
                         acquireStartup(d.actor, d.obj1);
+                    });
+                });
+
+            // RUN FOUNDINGS
+
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
+
+            // RUN ACQUISITIONS
+            dataRun.data(allData[year])
+                .enter()
+                .filter(function(d) {
+                    return d.action == "found" && (toAddDelay = 1000)
+                })
+                .each(function(d, i) {
+                    btwDelay = 1000.0;
+                    totalDelay += btwDelay;
+                    delay = totalDelay;
+                    callAfterDelay(delay, function() {
+                        foundStartup(d.actor, d.obj1.split(', '));
                     });
                 });
 
@@ -315,7 +338,7 @@
                     totalDelay += btwDelay;
                     delay = totalDelay;
                     callAfterDelay(delay, function() {
-                        addPersonToTypeCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
+                        addPersonToCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
                         iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
                     });
                 })
@@ -337,16 +360,6 @@
             }
         }
 
-            // d3.select(window)
-            //     .on("resize", function() {
-
-            //         aspectRatio = canvasWidth/canvasHeight;
-            //         scale = (this.innerWidth/2.0)/canvasWidth;
-            //         scaleTrans = "scale(" + scale + ")";
-            //         translateTrans = "translate(" + (scale - 1.0) * canvasWidth/2.0 + ',0)';
-
-            //         svg.attr("transform", scaleTrans + translateTrans);
-            //     });
          /*
           * CANVAS
           */
@@ -517,7 +530,7 @@
         /*
          *  PEOPLE METHODS
          */
-        function addPersonToTypeCompany(personName, companyName, index, total) {
+        function addPersonToCompany(personName, companyName, index, total) {
             company = d3.select("g#" + id(companyName));
             try {
                 companyTransform = personLocationForCompany(companyName, index, total)
@@ -553,12 +566,12 @@
              .style("opacity", 1.0);
 
               drawLineFromPersonToCompany(personName, companyName)
-
         }
 
         function personPoachedByCompany(personName, poacherName, index, total) {
             // TODO deal with indices
             person = d3.select("#" + id(personName));
+
             // Move them to their original company
             try {
                 origCompanyId = person.attr("_companyId");
@@ -569,40 +582,104 @@
             origTransform = d3.select("#" + origCompanyId)
                                 .attr("transform");
             person.attr("transform", origTransform);
+            movePersonToCompany(personName, poacherName, index, total,
+                function (){
+                  drawLineFromPersonToCompany(personName, poacherName);
+              });
+        }
 
-            poacher = d3.select("#" + id(poacherName))
-            poacherColor = poacher.select("circle")
+        function movePersonToCompany(personName, companyName, index, total, comp, changeColor) {
+            if (changeColor == undefined) {
+                changeColor = false;
+            }
+
+            person = d3.select("#" + id(personName));
+            company = d3.select("#" + id(companyName))
+            companyColor = company.select("circle")
                                 .attr("fill");
 
-
-            poacherTransform = personLocationForCompany(poacherName, index, total)
-
+            companyTransform = personLocationForCompany(companyName, index, total)
             person.select("text")
                      .each(function() {
-                        orient = rotateOrientation(poacher.select("text").attr("_orientation"), 2);
+                        orient = rotateOrientation(company.select("text").attr("_orientation"), 2);
                         orientText(this.parentNode, orient, personRadius);
                  });
 
             person.attr("class", "person")
-                .attr("_companyId", id(poacherName))
+                .attr("_companyId", id(companyName))
                 .style("opacity", 1.0) // Show the person again.
                 .transition()
                 .duration(1800)
-                .attr("transform", poacherTransform)
-                .on("end", function() {
-                    drawLineFromPersonToCompany(personName, poacherName);
-                })
-            // person.select("circle")
-            //         .transition()
-            //         .delay(600) // Wait a bit to change the color
-            //         .duration(1500)
-            //         .attr("fill", poacherColor)
-            //     ;
-        }
+                .attr("transform", companyTransform)
+                .on("end", comp)
+            if (changeColor == true) {
+                person.select("circle")
+                        .transition()
+                        .delay(600) // Wait a bit to change the color
+                        .duration(1500)
+                        .attr("fill", companyColor)
+                    ;
+            }
 
+        }
         /*
          *  STARTUP METHODS
          */
+         function foundStartup(startupName, founderNames) {
+            // Check to see if the founders are on the board
+            // NOTE: they either all will be or all won't be.
+            founders = []
+            for (f in founderNames) {
+                founder = d3.select("#" + id(founderNames[f]));
+                if (founder.empty() == false) {
+                    founders.push(founder);
+                }
+            }
+
+            startup = addCompany(kIndexStartUp, startupName, 1250)
+                        .style("opacity", 1.0);
+
+            if (founders.length != 0) {
+                showFounding();
+            } else {
+                for (i in founderNames) {
+                    var fName = founderNames[i]
+                    console.log(fName)
+                    callAfterDelay(1000, function() {
+                        addPersonToCompany(fName, startupName, +i, +founderNames.length);
+                        startup.transition()
+                            .duration(750)
+                            .style("opacity",1.0);
+                        });
+                }
+                return;
+            }
+
+            function showFounding() {
+                for (f in founderNames) {
+                    var called = false;
+                    var fName = founderNames[f]
+                    movePersonToCompany(fName, startupName, +f, +founderNames.length,
+                        function() {
+                            // if (called == true) return;
+                            // called = true;
+                            var duration = 0.0;
+                            d3.selectAll(".person")
+                                .filter(function() {
+                                    return founderNames.indexOf(d3.select(this).select("text").text()) != -1;
+                                })
+                                .each(function() {
+                                    duration = animateLineFromPersonToCompany(d3.select(this).attr("id"), startupName);
+                                })
+                            startup.transition()
+                                    .duration(duration)
+                                    .style("opacity",1.0);
+                        });
+                }
+            }
+         }
+
+
          function acquireStartup(acquirerName, startupName) {
             startup = companyTypes[kIndexStartUp];
 
@@ -696,7 +773,11 @@
          *  COMPANY METHODS
          */
 
-         function addCompany(indexType, name) {
+         function addCompany(indexType, name, time) {
+
+            if (time == undefined) {
+                time = 750.0;
+            }
             company = companyTypes[indexType];
             companyCount = countCompanyType(company.type);
             companyIter = 0;
@@ -709,6 +790,7 @@
                     d3.select(this)
                         .attr("_relIndex", companyIter)
                         .transition()
+                        .duration(time)
                         .attr("transform", transForEdgeIndex(company.path, companyIter + 1, companyCount + 2));
                     companyIter++;
                 });
@@ -773,6 +855,8 @@
                     .style("visibility", "hidden")
                     .html("");
              });
+
+            return g;
         }
 
         function changeCompanyName(fromName, toName) {
@@ -902,8 +986,6 @@
             return {"x": translate[0], "y": translate[1]}
 
             // companyRadius = companyTypes[indexForActorType(element.attr("class"))].radius;
-            // console.log(companyRadius);
-
             // companyCalcArc = d3.arc()
             //                 .innerRadius(companyRadius)
             //                 .outerRadius(companyRadius + 1)
@@ -956,53 +1038,31 @@
             translate[1] += point.y + yOffset;
             return translateXY(translate);
         }
-        /*
-         * TEST FUNCTIONS
-         */
-
-        function demonstrateCompanyAdds() {
-            count = 0;
-            setInterval(function() {
-                addCompany(count%3, "Gabells" + count);
-                count++;
-            }, 1000);
-        }
-
-        function demonstratePeopleAdds() {
-            count = 0;
-            setInterval(function() {
-                addPersonToTypeCompany("Lucia" + c, "Gabbels1");
-                count = (count+1) % 3;
-            }, 2000);
-        }
-
-        function testAnimations() {
-            // Populate some companies
-            for (i = 0; i < 10; i++) {
-                c = 0;
-                callAfterDelay(i * 100, function(){
-                    addCompany(c%3, "Gabbels" + c);
-                    c++;
-                })
-            }
-            callAfterDelay(1600, function() {
-                acquireStartup("Gabbels0", "Gabbels5")
-                // addPersonToTypeCompany("Lucia", "Gabbels1");
-            });
-
-            callAfterDelay(4500, function() {
-                addCompany(kIndexStartUp, "Snabbels")
-            });
-        }
-
-        // testAnimations();
-        // demonstratePeopleAdds()
-        // demonstrateCompanyAdds();
-
 
         /*
         * HELPER METHODS
         */
+
+        function animateLineFromPersonToCompany(personName, companyName) {
+            person = d3.select("#" + id(personName));
+            personCenter = pointTranslate(person.attr("transform"))
+
+            company = d3.select("#" + id(companyName));
+            companyCenter = pointTranslate(company.attr("transform"));
+            var startLineData = [personCenter,personCenter];
+            var endLineData = [personCenter, companyCenter];
+            var lineFunction = d3.line()
+                  .x(function(d) { return d.x;})
+                  .y(function(d) { return d.y;});
+
+            var duration = 750;
+            personLine(personName)
+                .attr("d", lineFunction(startLineData))
+                .transition()
+                .duration(duration)
+                .attr("d", lineFunction(endLineData));
+            return duration;
+        }
 
         function drawLineFromPersonToCompany(personName, companyName) {
             person = d3.select("#" + id(personName));
@@ -1019,15 +1079,22 @@
                   .y(function(d) { return d.y;});
 
 
-            svg.insert("g", "#" + id(personName))
-                .attr("class", "to-remove")
-                .append("path")
+            personLine(personName)
                 .attr("d", lineFunction(lineData))
-                .attr("stroke", company.select("circle").attr("fill"))
                 .style("opacity", 0.0)
                 .transition()
                 .duration(250)
                 .style("opacity", 0.3);
+        }
+
+        function personLine(personName) {
+            return svg.insert("g", "#" + id(personName))
+                .attr("class", "to-remove")
+                .append("path")
+                .attr("stroke", company.select("circle").attr("fill"))
+                .attr("stroke-width", 3.0)
+                .style("opacity", 0.3);
+
         }
 
         function radiansOfCompany(companyName) {
@@ -1118,6 +1185,13 @@
             translate[i] = +translate[i];
           }
           return translate;
+        }
+
+        function pointTranslate(translate) {
+          translate = translate.replace('translate(', '')
+          translate = translate.replace(')', '');
+          translate = translate.split(',');
+          return {"x" : +translate[0], "y" : +translate[1]};
         }
 
         function indexForActorType(cType) {
