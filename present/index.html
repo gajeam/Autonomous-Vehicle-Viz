@@ -244,7 +244,7 @@
             dataRun.data(allData[year])
                 .enter()
                 .filter(function(d) {
-                    return (d.action == "start") && (d.actorType != "startup")
+                    return (d.action == "start")
                     && (toAddDelay = 1000)
                 })
                 .each(function(d) {
@@ -253,6 +253,9 @@
                         addCompany(indexForActorType(d.actorType), d.actor);
                     });
                 })
+
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
 
             // RUN ACQUISITIONS
             dataRun.data(allData[year])
@@ -270,32 +273,25 @@
                 });
 
 
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
+
             // RUN NEW STARTUPS
             dataRun.data(allData[year])
                 .enter()
                 .filter(function(d) {
-                    return (d.action == "start" || d.action == "found") && d.actorType == "startup"
-                    && (toAddDelay = 1000)
+                    return (d.action == "found") && (toAddDelay = 1000)
                 })
                 .each(function(d) {
                     // Cannot have a delay here b/c it messes up calculations
                     // totalDelay += 150;
                     delay = totalDelay;
-                    if (d.action == "start") {
-                        callAfterDelay(delay, function() {
-                            addCompany(indexForActorType(d.actorType), d.actor);
-                        });
-                    }
-                    else if (d.action == "found") {
-                        callAfterDelay(delay, function() {
-                            foundStartup(d.actor, d.obj1.split(', '));
-                        });
-                    }
-                })
+                    callAfterDelay(delay, function() {
+                        foundStartup(d.actor, d.obj1.split(', '));
+                    });
+                });
 
 
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
 
             totalDelay += toAddDelay;
             toAddDelay = 0.0;
