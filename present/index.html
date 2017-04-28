@@ -141,7 +141,8 @@
                             'type': 'startup',
                             'color' : baseColors[kIndexStartUp],
                             'radius' : startupRadius};
-
+    
+        actionOrder = ["start", "acquire", "found", "rename", "sues", "poach", "hire"];
 
 
         industryData = d3.tsv("industry.tsv", function(d) {
@@ -169,7 +170,7 @@
             for (y in Object.keys(allData)) {
                 year = Object.keys(allData)[y]
                 allData[year] = allData[year].sort(function(a, b) {
-                     return parseInt(b.action[0]) - parseInt(a.action[0])
+                    return actionOrder.indexOf(a.action) - actionOrder.indexOf(b.action);
                  });
             }
 
@@ -206,18 +207,52 @@
             runYear(currentYear);
         }
 
+        totalHires = {};
+        iteratorHires = {};
+
         function runYear(year) {
             // Disable the button
             $("#nextButton").disable(true);
 
             var totalDelay = clearCanvas();
-            toAddDelay = 0.0;
 
             updateYearText(totalDelay);
             totalDelay += 500.0; // Add some time for switching the year
 
             // Hack to not cut off the first item
             dataRun = d3.selectAll("something");
+
+            delayInfo = {   "start": [1500, 150], // before, btw
+                            "acquire": [2000, 2000],
+                            "found": [2000, 10],
+                            "rename": [800, 150],
+                            "sues": [1000, 1000],
+                            "poach": [1800, 50],
+                            "hire": [1500, 250]
+                        }
+
+
+
+            currentAction = ""
+            dataRun.data(allData[year])
+                    .enter()
+                    .filter(function(d) {
+                        if (d.action == "poach" || d.action == "hire") {
+                            addToHires(d.obj1)
+                        }
+                        return true;
+                    })
+                    .each(function(d) {
+                        if (d.action != currentAction) {
+                            totalDelay += delayInfo[d.action][0]; // add before delay
+                            currentAction = d.action;
+                        }
+                        totalDelay += delayInfo[d.action][1] // add btw delay
+                        callAfterDelay(totalDelay, function() {
+                            animateAction(d)
+                        })
+                    })
+
 
 
             // // RUN FOUNDINGS
@@ -241,143 +276,176 @@
 
             // RUN NEW BIG COMPANIES STARTING
             // (Including foundings)
-            dataRun.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return (d.action == "start")
-                    && (toAddDelay = 1000)
-                })
-                .each(function(d) {
-                    totalDelay += 150;
-                    callAfterDelay(delay, function() {
-                        addCompany(indexForActorType(d.actorType), d.actor);
-                    });
-                })
-
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
-
-            // RUN ACQUISITIONS
-            dataRun.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return d.action == "acquire" && (toAddDelay = 2000)
-                })
-                .each(function(d, i) {
-                    btwDelay = 2000.0;
-                    totalDelay += btwDelay;
-                    delay = totalDelay;
-                    callAfterDelay(delay, function() {
-                        acquireStartup(d.actor, d.obj1);
-                    });
-                });
 
 
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
+            //             if (action == "start") {
+            //     addCompany(indexForActorType(d.actorType), d.actor);
+            // } else if (action == "acquire") {
+            //     acquireStartup(d.actor, d.obj1);
+            // } else if (action == "found") {
+            //     foundStartup(d.actor, d.obj1.split(', '));
+            // } else if (action == "rename") {
+            //     changeCompanyName(d.actor, d.obj1);
+            // } else if (action == "sues") {
+            //     companySuesCompany(d.actor, d.obj1);
+            // } else if (action == "poach") {
+            //     personPoachedByCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
+            //     iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
 
-            // RUN NEW STARTUPS
-            dataRun.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return (d.action == "found") && (toAddDelay = 1000)
-                })
-                .each(function(d) {
-                    // Cannot have a delay here b/c it messes up calculations
-                    // totalDelay += 150;
-                    delay = totalDelay;
-                    callAfterDelay(delay, function() {
-                        foundStartup(d.actor, d.obj1.split(', '));
-                    });
-                });
+            // } else if (action == "hire") {
 
+           //  dataRun.data(allData[year])
+           //      .enter()
+           //      .filter(function(d) {
+           //          return (d.action == "start")
+           //          && (toAddDelay = 1000)
+           //      })
+           //      .each(function(d) {
+           //          totalDelay += 150;
+           //          callAfterDelay(delay, function() {
+           //                                      animateAction(d);
 
+           //              // addCompany(indexForActorType(d.actorType), d.actor);
+           //          });
+           //      })
 
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
+           //  totalDelay += toAddDelay;
+           //  toAddDelay = 0.0;
 
+           //  // RUN ACQUISITIONS
+           //  dataRun.data(allData[year])
+           //      .enter()
+           //      .filter(function(d) {
+           //          return d.action == "acquire" && (toAddDelay = 2000)
+           //      })
+           //      .each(function(d, i) {
+           //          btwDelay = 2000.0;
+           //          totalDelay += btwDelay;
+           //          delay = totalDelay;
+           //          callAfterDelay(delay, function() {
+           //              animateAction(d);
 
-            // RUN NAME CHANGE
-            dataRun.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return d.action == "rename" && (toAddDelay = 800)
-                })
-                .each(function(d) {
-                    totalDelay += 150;
-                    delay = totalDelay;
-                    callAfterDelay(delay, function() {
-                        changeCompanyName(d.actor, d.obj1);
-                    });
-                })
-
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
-
-
-            // RUN LAWSUITS
-            dataRun.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return d.action == "sues" && (toAddDelay = 1000)
-                })
-                .each(function(d, i) {
-                    btwDelay = 1000.0;
-                    totalDelay += btwDelay;
-                    delay = totalDelay;
-                    callAfterDelay(delay, function() {
-                        companySuesCompany(d.actor, d.obj1);
-                    });
-                });
+           //              // acquireStartup(d.actor, d.obj1);
+           //          });
+           //      });
 
 
-            // RUN POACHES
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
+           //  totalDelay += toAddDelay;
+           //  toAddDelay = 0.0;
 
-            totalHires = {};
-            iteratorHires = {}
+           //  // RUN NEW STARTUPS
+           //  dataRun.data(allData[year])
+           //      .enter()
+           //      .filter(function(d) {
+           //          return (d.action == "found") && (toAddDelay = 1000)
+           //      })
+           //      .each(function(d) {
+           //          // Cannot have a delay here b/c it messes up calculations
+           //          // totalDelay += 150;
+           //          delay = totalDelay;
+           //          callAfterDelay(delay, function() {
+           //              animateAction(d);
 
-            dataRun.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return (d.action == "poach") && addToHires(d.obj1) && (toAddDelay = 1800.0);
-                })
-                .each(function (d, i) {
-                    btwDelay = 50.0;
-                    totalDelay += btwDelay;
-                    delay = totalDelay;
-                    callAfterDelay(delay, function() {
-                        personPoachedByCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
-                        iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
-                    })
-                })
-                ;
+           //              // foundStartup(d.actor, d.obj1.split(', '));
+           //          });
+           //      });
 
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
 
-            // RUN HIRES
-           dataRun.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return (d.action == "hire") && addToHires(d.obj1) && (toAddDelay = 1500)
-                })
-                .each(function(d, i, a) {
-                    btwDelay = 250
-                    totalDelay += btwDelay;
-                    delay = totalDelay;
-                    callAfterDelay(delay, function() {
-                        addPersonToCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
-                        iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
-                    });
-                })
 
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
+           //  totalDelay += toAddDelay;
+           //  toAddDelay = 0.0;
+
+
+           //  // RUN NAME CHANGE
+           //  dataRun.data(allData[year])
+           //      .enter()
+           //      .filter(function(d) {
+           //          return d.action == "rename" && (toAddDelay = 800)
+           //      })
+           //      .each(function(d) {
+           //          totalDelay += 150;
+           //          delay = totalDelay;
+           //          callAfterDelay(delay, function() {
+           //              animateAction(d);
+
+           //              // changeCompanyName(d.actor, d.obj1);
+           //          });
+           //      })
+
+           //  totalDelay += toAddDelay;
+           //  toAddDelay = 0.0;
+
+
+           //  // RUN LAWSUITS
+           //  dataRun.data(allData[year])
+           //      .enter()
+           //      .filter(function(d) {
+           //          return d.action == "sues" && (toAddDelay = 1000)
+           //      })
+           //      .each(function(d, i) {
+           //          btwDelay = 1000.0;
+           //          totalDelay += btwDelay;
+           //          delay = totalDelay;
+           //          callAfterDelay(delay, function() {
+           //              animateAction(d);
+
+           //              // companySuesCompany(d.actor, d.obj1);
+           //          });
+           //      });
+
+
+           //  // RUN POACHES
+           //  totalDelay += toAddDelay;
+           //  toAddDelay = 0.0;
+
+           //  totalHires = {};
+           //  iteratorHires = {}
+
+           //  dataRun.data(allData[year])
+           //      .enter()
+           //      .filter(function(d) {
+           //          return (d.action == "poach") && addToHires(d.obj1) && (toAddDelay = 1800.0);
+           //      })
+           //      .each(function (d, i) {
+           //          btwDelay = 50.0;
+           //          totalDelay += btwDelay;
+           //          delay = totalDelay;
+           //          callAfterDelay(delay, function() {
+           //              animateAction(d);
+           //              // personPoachedByCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
+           //              // iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
+           //          })
+           //      })
+           //      ;
+
+           //  totalDelay += toAddDelay;
+           //  toAddDelay = 0.0;
+
+           //  // RUN HIRES
+           // dataRun.data(allData[year])
+           //      .enter()
+           //      .filter(function(d) {
+           //          return (d.action == "hire") && addToHires(d.obj1) && (toAddDelay = 1500)
+           //      })
+           //      .each(function(d, i, a) {
+           //          btwDelay = 250
+           //          totalDelay += btwDelay;
+           //          delay = totalDelay;
+           //          callAfterDelay(delay, function() {
+           //              animateAction(d);
+
+           //              // addPersonToCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
+           //              // iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
+           //          });
+           //      })
+
+           //  totalDelay += toAddDelay;
+           //  toAddDelay = 0.0;
 
             callAfterDelay(totalDelay, function() {
                 $("#nextButton").disable(false);
+                totalHires = {};
+                iteratorHires = {};
             });
 
             function addToHires(d) {
@@ -386,9 +454,38 @@
                 }
                 totalHires[d] = totalHires[d] + 1;
                 iteratorHires[d] = 0;
+                totalDelay = 0
                 return true;
             }
         }
+    
+        function animateAction(d, action) {
+            action = d.action;
+
+            console.log(d.actor + " " + d.action + " " + d.obj1)
+
+            if (action == "start") {
+                addCompany(indexForActorType(d.actorType), d.actor);
+            } else if (action == "acquire") {
+                acquireStartup(d.actor, d.obj1);
+            } else if (action == "found") {
+                foundStartup(d.actor, d.obj1.split(', '));
+            } else if (action == "rename") {
+                changeCompanyName(d.actor, d.obj1);
+            } else if (action == "sues") {
+                companySuesCompany(d.actor, d.obj1);
+            } else if (action == "poach") {
+                personPoachedByCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
+                iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
+
+            } else if (action == "hire") {
+                addPersonToCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
+                iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
+            } else {
+                console.warm("No animation for action " + action);
+            }
+        }
+
 
          /*
           * CANVAS
@@ -676,7 +773,6 @@
                     f = 0;
 
                     callAfterDelay(1000, function() {
-                        console.log(startup)
                         var fName = founderNames[f]
                         addPersonToCompany(fName, startupName, f, +founderNames.length);
                         f++;
