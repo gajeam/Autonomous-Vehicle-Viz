@@ -15,22 +15,22 @@ year	actor	actorType	action	obj1	obj2	note
 2010	Sylpheo	startup	start			
 2011	Soren Juelsgaard	person	hire	Google		
 2011	Bryan Salesky	person	hire	Google		
-2012	Udacity	startup	start	Sebastian Thrun		
 2012	HERE	startup	start			
-2013	Cruise Automation	startup	start	Kyle Vogt, Daniel Kan		
-2013	Saips	startup	start			
+2012	Udacity	startup	start	Sebastian Thrun		
 2013	Andrew Gray	person	hire	Tesla		
 2013	Claire Delaunay	person	hire	Google		
+2013	Cruise Automation	startup	start	Kyle Vogt, Daniel Kan		
+2013	Saips	startup	start			
 2013	Lucid Motors	startup	start	Peter Rawlinson		
 2014	Alibaba	tech	start			
 2014	Alibaba	tech	acquire	AutoNavi		
 2014	Jur van den Berg	person	hire	Google		
 2014	Sterling Anderson	person	hire	Tesla		
 2014	Dag Reckhorn	person	hire	Faraday Futures		
-2014	Faraday Futures	startup	start	Nick Sampson, Tom Wessner		
 2015	Apple	tech	start			
 2015	Uber	tech	start			
 2015	GM	car	start			
+2014	Faraday Futures	startup	start	Nick Sampson, Tom Wessner		
 2015	Audi, BMW, and Daimler	car	start			
 2015	Audi BMW and Daimler	car	acquire	HERE		
 2015	Peter Rander	person	hire	Uber		

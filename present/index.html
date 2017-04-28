@@ -144,7 +144,7 @@
 
 
 
-        d3.tsv("industry.tsv", function(d) {
+        industryData = d3.tsv("industry.tsv", function(d) {
             people = []
             allData = {};
             for (row in d) {
@@ -166,8 +166,15 @@
                 }
                 allData[item.year].push(item)
             }
+            for (y in Object.keys(allData)) {
+                year = Object.keys(allData)[y]
+                allData[year] = allData[year].sort(function(a, b) {
+                     return parseInt(b.action[0]) - parseInt(a.action[0])
+                 });
+            }
+
             setupCanvas();
-        });
+        })
 
         d3.tsv("companyInfo.tsv", function(d) {
             companyDescriptions = {}
@@ -203,7 +210,7 @@
             // Disable the button
             $("#nextButton").disable(true);
 
-            totalDelay = clearCanvas();
+            var totalDelay = clearCanvas();
             toAddDelay = 0.0;
 
             updateYearText(totalDelay);
@@ -212,19 +219,83 @@
             // Hack to not cut off the first item
             dataRun = d3.selectAll("something");
 
-            // RUN NEW COMPANIES STARTING
+
+            // // RUN FOUNDINGS
+
+            // totalDelay += toAddDelay;
+            // toAddDelay = 0.0;
+
+            // dataRun.data(allData[year])
+            //     .enter()
+            //     .filter(function(d) {
+            //         return d.action == "found" && (toAddDelay = 1000)
+            //     })
+            //     .each(function(d, i) {
+            //         btwDelay = 1000.0;
+            //         totalDelay += btwDelay;
+            //         delay = totalDelay;
+            //         callAfterDelay(delay, function() {
+            //             foundStartup(d.actor, d.obj1.split(', '));
+            //         });
+            //     });
+
+            // RUN NEW BIG COMPANIES STARTING
+            // (Including foundings)
             dataRun.data(allData[year])
                 .enter()
                 .filter(function(d) {
-                    return d.action == "start" && (toAddDelay = 1000)
+                    return (d.action == "start") && (d.actorType != "startup")
+                    && (toAddDelay = 1000)
                 })
                 .each(function(d) {
                     totalDelay += 150;
-                    delay = totalDelay;
                     callAfterDelay(delay, function() {
                         addCompany(indexForActorType(d.actorType), d.actor);
                     });
                 })
+
+            // RUN ACQUISITIONS
+            dataRun.data(allData[year])
+                .enter()
+                .filter(function(d) {
+                    return d.action == "acquire" && (toAddDelay = 2000)
+                })
+                .each(function(d, i) {
+                    btwDelay = 2000.0;
+                    totalDelay += btwDelay;
+                    delay = totalDelay;
+                    callAfterDelay(delay, function() {
+                        acquireStartup(d.actor, d.obj1);
+                    });
+                });
+
+
+            // RUN NEW STARTUPS
+            dataRun.data(allData[year])
+                .enter()
+                .filter(function(d) {
+                    return (d.action == "start" || d.action == "found") && d.actorType == "startup"
+                    && (toAddDelay = 1000)
+                })
+                .each(function(d) {
+                    // Cannot have a delay here b/c it messes up calculations
+                    // totalDelay += 150;
+                    delay = totalDelay;
+                    if (d.action == "start") {
+                        callAfterDelay(delay, function() {
+                            addCompany(indexForActorType(d.actorType), d.actor);
+                        });
+                    }
+                    else if (d.action == "found") {
+                        callAfterDelay(delay, function() {
+                            foundStartup(d.actor, d.obj1.split(', '));
+                        });
+                    }
+                })
+
+
+            totalDelay += toAddDelay;
+            toAddDelay = 0.0;
 
             totalDelay += toAddDelay;
             toAddDelay = 0.0;
@@ -247,43 +318,6 @@
             totalDelay += toAddDelay;
             toAddDelay = 0.0;
 
-            // RUN ACQUISITIONS
-            dataRun.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return d.action == "acquire" && (toAddDelay = 2000)
-                })
-                .each(function(d, i) {
-                    btwDelay = 2000.0;
-                    totalDelay += btwDelay;
-                    delay = totalDelay;
-                    callAfterDelay(delay, function() {
-                        acquireStartup(d.actor, d.obj1);
-                    });
-                });
-
-            // RUN FOUNDINGS
-
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
-
-            // RUN ACQUISITIONS
-            dataRun.data(allData[year])
-                .enter()
-                .filter(function(d) {
-                    return d.action == "found" && (toAddDelay = 1000)
-                })
-                .each(function(d, i) {
-                    btwDelay = 1000.0;
-                    totalDelay += btwDelay;
-                    delay = totalDelay;
-                    callAfterDelay(delay, function() {
-                        foundStartup(d.actor, d.obj1.split(', '));
-                    });
-                });
-
-            totalDelay += toAddDelay;
-            toAddDelay = 0.0;
 
             // RUN LAWSUITS
             dataRun.data(allData[year])
@@ -636,7 +670,7 @@
                 }
             }
 
-            startup = addCompany(kIndexStartUp, startupName, 1250)
+            var startup = addCompany(kIndexStartUp, startupName, 1250)
                         .style("opacity", 0.0);
 
             if (founders.length != 0) {
@@ -644,14 +678,15 @@
             } else {
                 for (i in founderNames) {
                     f = 0;
+
                     callAfterDelay(1000, function() {
+                        console.log(startup)
                         var fName = founderNames[f]
-                        console.log(fName)
                         addPersonToCompany(fName, startupName, f, +founderNames.length);
+                        f++;
                         startup.transition()
                             .duration(750)
                             .style("opacity",1.0);
-                        f++;
                         });
                 }
                 return;
