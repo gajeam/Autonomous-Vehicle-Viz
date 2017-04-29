@@ -97,9 +97,9 @@
         LOG_ACTIONS = false;
         RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
-        maxYear = 2010;
         startYear = 2009;
-        currentYear = 9999;
+        maxYear = 2015;
+        currentYear = maxYear + 1;
 
         canvasWidth = 700.0;
         canvasHeight = 650.0;
@@ -118,6 +118,7 @@
         kIndexStartUp = 1;
         kIndexCar = 2;
 
+        backgroundColor = "#F0F0F0"
         // green, pink, blue
         baseColors = [ "#32CD32", "#DB7093", "#4682B4",]
         // light to dark order: 2, 4, 1, 3
@@ -177,8 +178,6 @@
             }
 
             setupCanvas();
-            // Start at the start year
-            currentYear = 9999;
             updateData();
         })
 
@@ -228,8 +227,8 @@
             dataRun = d3.selectAll("something");
 
             delayInfo = {   "start": [1500, 150], // before, btw
-                            "acquire": [2000, 2000],
-                            "found": [2000, 10],
+                            "acquire": [1000, 2000],
+                            "found": [1000, 10],
                             "rename": [800, 150],
                             "sues": [1000, 1000],
                             "poach": [1800, 50],
@@ -275,8 +274,10 @@
     
         function animateAction(d, action) {
             action = d.action;
-
-            console.log(d.actor + " " + d.action + " " + d.obj1)
+            logAnimations = false;
+            if (logAnimations) {
+                console.log(d.actor + " " + d.action + " " + d.obj1)
+            }
 
             if (action == "start") {
                 addCompany(indexForActorType(d.actorType), d.actor);
@@ -314,7 +315,7 @@
             svg.append("rect")
                 .attr("width", "100%")
                 .attr("height", "100%")
-                .attr("fill", "#F0F0F0");
+                .attr("fill", backgroundColor);
 
             // Add the different arcs
 
@@ -398,7 +399,6 @@
             point = calcArc.node().getPointAtLength(calcArc.node().getTotalLength() * .5 * percent)
             console.log(point)
         }
-
 
         function resetCanvas() {
             colorIndex = [0, 0, 0]
@@ -500,29 +500,51 @@
         /*
          *  PEOPLE METHODS
          */
+
         function addPersonToCompany(personName, companyName, index, total) {
-            company = d3.select("g#" + id(companyName));
+            var company = d3.select("g#" + id(companyName));
             try {
-                companyTransform = personLocationForCompany(companyName, index, total)
+                var startTransform = randomOffsetStart(company)
+                var endTransform = personLocationForCompany(companyName, index, total)
             }
             catch (err) {
                 console.warn("Cannot find company " + companyName + " for hiring " + personName);
                 return;
             }
-            color = company.select("circle").attr("fill");
 
-            person = svg.append("g")
+            var startColor = "#A0A0A0" // Start with a neutral color
+            var endColor = company.select("circle").attr("fill");
+
+            var moveTime = 1400
+            var person = svg.append("g")
             person.attr("class", "person")
                 .attr("id", id(personName))
                 .attr("_companyId", company.attr("id"))
-                .attr("transform", companyTransform)
+                .attr("transform", startTransform)
+                .transition()
+                .duration(moveTime)
+                .attr("transform", endTransform)
+                .on("end", function() {
+                    var pName = d3.select(this).attr("id")
+                    var cName = d3.select(this).attr("_companyId")
+                    drawLineFromPersonToCompany(pName, cName)
+                })
+
+            var popTime = 500
             person.append("circle")
-                .attr("fill", color)
+                .attr("fill", startColor)
                 .attr("r", 0)
                 .transition()
                 .ease(d3.easeElastic)
                 .duration(500)
                 .attr("r", personRadius)
+                .on("end", function() {
+                    d3.select(this)
+                    .transition()
+                    .duration(moveTime - popTime)
+                    .attr("fill", endColor);
+                });
+
             person.append("text")
              .style("opacity", 0.0)
              .text(personName)
@@ -532,11 +554,47 @@
                 orientText(this.parentNode, orient, personRadius);
              })
              .transition()
+             .delay(250)
              .duration(250)
              .style("opacity", 1.0);
 
-              drawLineFromPersonToCompany(personName, companyName)
+
+            function randomOffsetStart(company) {
+                var companyIndex = indexForActorType(company.attr("class"))
+                var percentLoc = 1.0/6.0 + (companyIndex * 1.0/3.0)
+
+                var xRange = 10.0;
+                var yRange = -10.0;
+                var granularity = 5;
+
+                o = orientationForIndex(companyIndex);
+                if (o == "left") { 
+                    xRange *= -1
+                } else if (o == "top") {
+                    yRange *= -1
+                }
+
+                xScale = d3.scaleLinear()
+                            .domain([0, granularity - 1])
+                            .range([Math.min(0, xRange), Math.max(0, xRange)])
+                yScale = d3.scaleLinear()
+                            .domain([0, granularity - 1])
+                            .range([Math.min(0.0, yRange), Math.max(0.0, yRange)])
+
+                x = Math.floor(Math.random() * granularity)
+                y = Math.floor(Math.random() * granularity)
+
+                var circRadius = 20
+
+                point = positionForPlaceOnCircle(circRadius, percentLoc)
+                point.x += xScale(x)
+                point.y += yScale(y)
+                return translatePoint(point);
+            }
         }
+
+
+
 
         function personPoachedByCompany(personName, poacherName, index, total) {
             // TODO deal with indices
@@ -1050,7 +1108,7 @@
                 .attr("d", lineFunction(lineData))
                 .style("opacity", 0.0)
                 .transition()
-                .duration(250)
+                .duration(500)
                 .style("opacity", 1.0);
         }
 
@@ -1059,7 +1117,7 @@
                 .attr("class", "to-remove")
                 .append("path")
                 .attr("stroke", company.select("circle").attr("fill"))
-                .attr("stroke-width", 2.0)
+                .attr("stroke-width", 1.0)
                 .style("opacity", 1.0);
 
         }
