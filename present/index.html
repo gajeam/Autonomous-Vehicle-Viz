@@ -97,7 +97,7 @@
         LOG_ACTIONS = false;
         RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
-        maxYear = 2015;
+        maxYear = 2010;
         startYear = 2009;
         currentYear = 9999;
 
@@ -131,15 +131,18 @@
         companyTypes[kIndexTech] = {
                             'type': 'tech',
                             'color' : baseColors[kIndexTech],
-                            'radius' : companyRadius}
+                            'radius' : companyRadius,
+                            'name' : "Tech Companies"}
         companyTypes[kIndexCar] = {
                             'type' :'car',
                             'color' :baseColors[kIndexCar],
-                            'radius' : companyRadius}
+                            'radius' : companyRadius,
+                            'name' : 'Car Companies'}
         companyTypes[kIndexStartUp] ={
                             'type': 'startup',
                             'color' : baseColors[kIndexStartUp],
-                            'radius' : startupRadius};
+                            'radius' : startupRadius,
+                            'name' : "Startups"};
     
         actionOrder = ["start", "acquire", "found", "rename", "sues", "poach", "hire"];
 
@@ -203,6 +206,7 @@
                 resetCanvas();
                 currentYear = startYear - 1;
                 updateYearText();
+                showTypeLabels(true)
                 return;
             }
             runYear(currentYear);
@@ -214,7 +218,7 @@
         function runYear(year) {
             // Disable the button
             $("#nextButton").disable(true);
-
+            showTypeLabels(false)
             var totalDelay = clearCanvas();
 
             updateYearText(totalDelay);
@@ -354,17 +358,32 @@
                 .attr("y", yearFont + margin);
 
 
-            function setUpInitialText() {
-                for (i = 0.0; i < companyTypes.length; i++) {
-                    point = positionForPlaceOnCircle(90, (1.0/6.0 + i * 1.0/3.0))
-                    svg.append("circle")
-                        .attr("r", 10)
-                        .attr("fill", "red")
-                        .attr("transform", translatePoint(point)); 
+            function setUpTypeLabels() {
+                orientations = ["right", "bottom", "left"];
+                for (i = 0.0; i < orientations.length; i++) {
+                    companyType = companyTypes[i]
+                    orient = orientations[i]
+
+                    percentLoc = 1.0/6.0 + (i * 1.0/3.0)
+                    radius = 30
+                    center = {"x" : canvasWidth * .5, "y" : canvasHeight * .45}
+                    margin = (orient == "bottom") ? 120 : 0; // HACK to shift startups further down
+                    point = positionForPlaceOnCircle(radius, percentLoc, center)
+                    svg.append("g")
+                        .attr("transform", translatePoint(point))
+                        .append("text")
+                        .attr("class", "type-labels")
+                        .attr("fill", companyType.color)
+                        .attr("font-size", 24)
+                        .attr("font-weight", 600)
+                        .text(companyType.name)
+                        .each(function() {
+                            orientText(this.parentNode, orient, margin);
+                        })
                 }
             }
 
-            setUpInitialText();
+            setUpTypeLabels();
         }
 
         function positionForPlaceOnCircle(r, percent,  center) {            
@@ -454,8 +473,15 @@
             }
         }
 
-        // function showInitialText() {
-        // }
+        function showTypeLabels(show) {
+            opacity = (show == true) ? 1.0 : 0.0;
+            delay = (show == true) ? 1000.0 : 0.0;
+            d3.selectAll(".type-labels")
+                .transition()
+                .delay(delay)
+                .duration(250)
+                .attr("opacity", opacity)
+        }
 
         function updateYearText(delay) {
             if (delay == undefined) delay = 0.0;
