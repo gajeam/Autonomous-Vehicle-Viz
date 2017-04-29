@@ -98,7 +98,8 @@
         RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
         maxYear = 2015;
-        startYear = 2007;
+        startYear = 2009;
+        currentYear = 9999;
 
         canvasWidth = 700.0;
         canvasHeight = 650.0;
@@ -116,8 +117,6 @@
         kIndexTech = 0;
         kIndexStartUp = 1;
         kIndexCar = 2;
-
-        currentYear = 2008;
 
         // green, pink, blue
         baseColors = [ "#32CD32", "#DB7093", "#4682B4",]
@@ -175,6 +174,9 @@
             }
 
             setupCanvas();
+            // Start at the start year
+            currentYear = 9999;
+            updateData();
         })
 
         d3.tsv("companyInfo.tsv", function(d) {
@@ -197,10 +199,9 @@
          */
         function updateData() {
             currentYear++;
-
             if (currentYear > maxYear) {
                 resetCanvas();
-                currentYear = startYear;
+                currentYear = startYear - 1;
                 updateYearText();
                 return;
             }
@@ -217,7 +218,7 @@
             var totalDelay = clearCanvas();
 
             updateYearText(totalDelay);
-            totalDelay += 500.0; // Add some time for switching the year
+            totalDelay = 500.0; // Add some time for switching the year
 
             // Hack to not cut off the first item
             dataRun = d3.selectAll("something");
@@ -230,8 +231,6 @@
                             "poach": [1800, 50],
                             "hire": [1500, 250]
                         }
-
-
 
             currentAction = ""
             dataRun.data(allData[year])
@@ -252,195 +251,6 @@
                             animateAction(d)
                         })
                     })
-
-
-
-            // // RUN FOUNDINGS
-
-            // totalDelay += toAddDelay;
-            // toAddDelay = 0.0;
-
-            // dataRun.data(allData[year])
-            //     .enter()
-            //     .filter(function(d) {
-            //         return d.action == "found" && (toAddDelay = 1000)
-            //     })
-            //     .each(function(d, i) {
-            //         btwDelay = 1000.0;
-            //         totalDelay += btwDelay;
-            //         delay = totalDelay;
-            //         callAfterDelay(delay, function() {
-            //             foundStartup(d.actor, d.obj1.split(', '));
-            //         });
-            //     });
-
-            // RUN NEW BIG COMPANIES STARTING
-            // (Including foundings)
-
-
-            //             if (action == "start") {
-            //     addCompany(indexForActorType(d.actorType), d.actor);
-            // } else if (action == "acquire") {
-            //     acquireStartup(d.actor, d.obj1);
-            // } else if (action == "found") {
-            //     foundStartup(d.actor, d.obj1.split(', '));
-            // } else if (action == "rename") {
-            //     changeCompanyName(d.actor, d.obj1);
-            // } else if (action == "sues") {
-            //     companySuesCompany(d.actor, d.obj1);
-            // } else if (action == "poach") {
-            //     personPoachedByCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
-            //     iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
-
-            // } else if (action == "hire") {
-
-           //  dataRun.data(allData[year])
-           //      .enter()
-           //      .filter(function(d) {
-           //          return (d.action == "start")
-           //          && (toAddDelay = 1000)
-           //      })
-           //      .each(function(d) {
-           //          totalDelay += 150;
-           //          callAfterDelay(delay, function() {
-           //                                      animateAction(d);
-
-           //              // addCompany(indexForActorType(d.actorType), d.actor);
-           //          });
-           //      })
-
-           //  totalDelay += toAddDelay;
-           //  toAddDelay = 0.0;
-
-           //  // RUN ACQUISITIONS
-           //  dataRun.data(allData[year])
-           //      .enter()
-           //      .filter(function(d) {
-           //          return d.action == "acquire" && (toAddDelay = 2000)
-           //      })
-           //      .each(function(d, i) {
-           //          btwDelay = 2000.0;
-           //          totalDelay += btwDelay;
-           //          delay = totalDelay;
-           //          callAfterDelay(delay, function() {
-           //              animateAction(d);
-
-           //              // acquireStartup(d.actor, d.obj1);
-           //          });
-           //      });
-
-
-           //  totalDelay += toAddDelay;
-           //  toAddDelay = 0.0;
-
-           //  // RUN NEW STARTUPS
-           //  dataRun.data(allData[year])
-           //      .enter()
-           //      .filter(function(d) {
-           //          return (d.action == "found") && (toAddDelay = 1000)
-           //      })
-           //      .each(function(d) {
-           //          // Cannot have a delay here b/c it messes up calculations
-           //          // totalDelay += 150;
-           //          delay = totalDelay;
-           //          callAfterDelay(delay, function() {
-           //              animateAction(d);
-
-           //              // foundStartup(d.actor, d.obj1.split(', '));
-           //          });
-           //      });
-
-
-
-           //  totalDelay += toAddDelay;
-           //  toAddDelay = 0.0;
-
-
-           //  // RUN NAME CHANGE
-           //  dataRun.data(allData[year])
-           //      .enter()
-           //      .filter(function(d) {
-           //          return d.action == "rename" && (toAddDelay = 800)
-           //      })
-           //      .each(function(d) {
-           //          totalDelay += 150;
-           //          delay = totalDelay;
-           //          callAfterDelay(delay, function() {
-           //              animateAction(d);
-
-           //              // changeCompanyName(d.actor, d.obj1);
-           //          });
-           //      })
-
-           //  totalDelay += toAddDelay;
-           //  toAddDelay = 0.0;
-
-
-           //  // RUN LAWSUITS
-           //  dataRun.data(allData[year])
-           //      .enter()
-           //      .filter(function(d) {
-           //          return d.action == "sues" && (toAddDelay = 1000)
-           //      })
-           //      .each(function(d, i) {
-           //          btwDelay = 1000.0;
-           //          totalDelay += btwDelay;
-           //          delay = totalDelay;
-           //          callAfterDelay(delay, function() {
-           //              animateAction(d);
-
-           //              // companySuesCompany(d.actor, d.obj1);
-           //          });
-           //      });
-
-
-           //  // RUN POACHES
-           //  totalDelay += toAddDelay;
-           //  toAddDelay = 0.0;
-
-           //  totalHires = {};
-           //  iteratorHires = {}
-
-           //  dataRun.data(allData[year])
-           //      .enter()
-           //      .filter(function(d) {
-           //          return (d.action == "poach") && addToHires(d.obj1) && (toAddDelay = 1800.0);
-           //      })
-           //      .each(function (d, i) {
-           //          btwDelay = 50.0;
-           //          totalDelay += btwDelay;
-           //          delay = totalDelay;
-           //          callAfterDelay(delay, function() {
-           //              animateAction(d);
-           //              // personPoachedByCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
-           //              // iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
-           //          })
-           //      })
-           //      ;
-
-           //  totalDelay += toAddDelay;
-           //  toAddDelay = 0.0;
-
-           //  // RUN HIRES
-           // dataRun.data(allData[year])
-           //      .enter()
-           //      .filter(function(d) {
-           //          return (d.action == "hire") && addToHires(d.obj1) && (toAddDelay = 1500)
-           //      })
-           //      .each(function(d, i, a) {
-           //          btwDelay = 250
-           //          totalDelay += btwDelay;
-           //          delay = totalDelay;
-           //          callAfterDelay(delay, function() {
-           //              animateAction(d);
-
-           //              // addPersonToCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
-           //              // iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
-           //          });
-           //      })
-
-           //  totalDelay += toAddDelay;
-           //  toAddDelay = 0.0;
 
             callAfterDelay(totalDelay, function() {
                 $("#nextButton").disable(false);
@@ -543,7 +353,6 @@
                 .style("font-size", yearFont)
                 .attr("x", margin)
                 .attr("y", yearFont + margin);
-            runYear(currentYear);
 
             radial = 70.0;
             personCalcArc = d3.arc()
@@ -560,7 +369,6 @@
                 .attr("d", personCalcArc)
                 .attr("fill", "none")
                 ;
-
         }
 
         function resetCanvas() {
@@ -638,20 +446,17 @@
         }
 
         function updateYearText(delay) {
-            if (delay == undefined) delay = 0.0
-                callAfterDelay(delay, function() {
-                    // d3.select("#yearText")
-                    //     .text(currentYear);
-                    d3.select("#year-description")
-                        .html(yearDescriptions[currentYear])
-                    d3.select("#year-description-title")
-                        .html(function() {
-                            if (currentYear == startYear) {
-                                return "Start";
-                            }
-                            return currentYear
-                        })
-                });
+            if (delay == undefined) delay = 0.0;
+            callAfterDelay(delay, function() {
+                // d3.select("#yearText")
+                //     .text(currentYear);
+                d3.select("#year-description")
+                    .html(yearDescriptions[currentYear])
+                d3.select("#year-description-title")
+                    .html(function() {
+                        return isStartYear() ? "Start" : currentYear;
+                    })
+            });
         }
 
         /*
@@ -1335,6 +1140,10 @@
             }
         }
 
+
+        function isStartYear() {
+            return currentYear == startYear - 1;
+        }
         function id(name) {
           return name.replace(/\W/g, '')
         }
