@@ -1,6 +1,6 @@
 year	actor	actorType	action	obj1	obj2	note
-2009	deCarta	startup	start			
 2009	AutoNavi	startup	start			
+2009	deCarta	startup	start			
 2009	Google	tech	start			
 2009	Tesla	car	start			
 2009	Sebastian Thrun	person	hire	Google		Internal move
@@ -26,10 +26,12 @@ year	actor	actorType	action	obj1	obj2	note
 2014	Alibaba	tech	acquire	AutoNavi		
 2014	Jur van den Berg	person	hire	Google		
 2014	Sterling Anderson	person	hire	Tesla		
-2015	Dag Reckhorn	person	hire	Faraday Futures		
+2014	Dag Reckhorn	person	hire	Faraday Futures		
 2015	Apple	tech	start			
 2015	Uber	tech	start			
 2015	GM	car	start			
+2015	Ford	car	start			
+2015	Uber	car	acquire	deCarta		
 2014	Faraday Futures	startup	start	Nick Sampson, Tom Wessner		
 2015	Audi, BMW, and Daimler	car	start			
 2015	Audi BMW and Daimler	car	acquire	HERE		
@@ -37,3 +39,21 @@ year	actor	actorType	action	obj1	obj2	note
 2015	Brett Browning	person	hire	Uber		
 2015	John Krafcik	person	hire	Google		
 2015	Andrew Gray	person	hire	Cruise Automation		
+2016	Otto	startup	start	Jur van den Berg, Anthony Levandowski, Don Burnette, Lior Ron		
+2016	Argo AI	startup	start	Bryan Salesky, Peter Rander, Brett Browning		
+2016	Andrew Gray	person	hire	Otto		
+2016	Soren Juelsgaard	person	hire	Otto		
+2016	Claire Delaunay	person	hire	Otto		
+2016	Brett Browning	person	hire	Argo AI		
+2016	Ford	car	acquire	Saips		
+2016	GM	car	acquire	Cruise Automation		
+2016	Renault-Nissan	car	start			
+2016	Renault-Nissan	car	acquire	Sylpheo		
+2016	Baidu	tech	start			
+2016	Google	tech	rename	Waymo		
+2016	Aurora Innovation	startup	start	Chris Urmson		
+2017	Tesla	car	sue	Aurora Innovation		
+2017	Waymo	tech	sue	Uber		
+2017	Uber	tech	acquire	Otto		
+2017	Sterling Anderson	person	hire	Aurora Innovation		
+2017	Baidu	tech	acquire	RavenTech		
