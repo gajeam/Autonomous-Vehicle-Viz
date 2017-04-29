@@ -94,11 +94,10 @@
 
         /* CONSTANTS */
 
-        LOG_ACTIONS = false;
         RADIANS_TO_DEGREES = (360.0/(2 * Math.PI));
 
         startYear = 2009;
-        maxYear = 2015;
+        maxYear = 2017;
         currentYear = maxYear + 1;
 
         canvasWidth = 700.0;
@@ -145,7 +144,7 @@
                             'radius' : startupRadius,
                             'name' : "Startups"};
     
-        actionOrder = ["start", "acquire", "found", "rename", "sues", "poach", "hire"];
+        actionOrder = ["start", "acquire", "found", "rename", "poach", "hire", "sue"];
 
 
         industryData = d3.tsv("industry.tsv", function(d) {
@@ -230,7 +229,7 @@
                             "acquire": [1000, 2000],
                             "found": [1000, 10],
                             "rename": [800, 150],
-                            "sues": [1000, 1000],
+                            "sue": [1000, 1000],
                             "poach": [1800, 50],
                             "hire": [1500, 250]
                         }
@@ -274,7 +273,7 @@
     
         function animateAction(d, action) {
             action = d.action;
-            logAnimations = false;
+            logAnimations = true;
             if (logAnimations) {
                 console.log(d.actor + " " + d.action + " " + d.obj1)
             }
@@ -287,8 +286,8 @@
                 foundStartup(d.actor, d.obj1.split(', '));
             } else if (action == "rename") {
                 changeCompanyName(d.actor, d.obj1);
-            } else if (action == "sues") {
-                companySuesCompany(d.actor, d.obj1);
+            } else if (action == "sue") {
+                companySuesPerson(d.actor, d.obj1);
             } else if (action == "poach") {
                 personPoachedByCompany(d.actor, d.obj1, iteratorHires[d.obj1], totalHires[d.obj1]);
                 iteratorHires[d.obj1] = iteratorHires[d.obj1] + 1;
@@ -947,9 +946,9 @@
                     .style("opacity", 1.0);
         }
 
-        function companySuesCompany(plaintiffName, defendantName) {
-            plaintiffCenter = accessPointForCompany(plaintiffName);
-            defendantCenter = accessPointForCompany(defendantName);
+        function companySuesPerson(plaintiffName, defendantName) {
+            plaintiffCenter = accessPointForId(plaintiffName);
+            defendantCenter = accessPointForId(defendantName);
 
             var startLineData = [plaintiffCenter,plaintiffCenter];
             var endLineData = [plaintiffCenter, defendantCenter];
@@ -967,25 +966,32 @@
                 .attr("refX", 8)
                 .attr("fill", arrowColor)
                 .attr("refY", 0)
-                .attr("markerWidth", 8)
-                .attr("markerHeight", 8)
+                .attr("markerWidth", 5)
+                .attr("markerHeight", 7)
                 .attr("orient", "auto")
               .append("svg:path")
                 .attr("d", "M0,-5L10,0L0,5");
 
 
-            svg.append("g")
+            svg.insert("g", "#mainPath")
                 .attr("class", "to-remove")
                 .append("path")
                 .attr("d", lineFunction(startLineData))
                 .attr("stroke", arrowColor)
                 .attr("stroke-width", 3)
+                .style("opacity", .5)
                 .attr("stroke-dasharray", 8)
                 .attr("marker-end", "url(#arrow-sue)")
                 .transition()
                 .duration(1000)
                   .attr("d", lineFunction(endLineData))
 
+            function accessPointForId(identifier, indexType) {
+                element = d3.select("#" + id(identifier));
+                console.log(element)
+                translate = xyTranslate(element.attr("transform"));
+                return {"x": translate[0], "y": translate[1]}
+            }
         }
 
          // COMPANY HELPER FUNCTIONS
@@ -1007,44 +1013,6 @@
                     companyCount++;
                 });
             return companyCount;
-        }
-
-
-        function accessPointForCompany(companyName, indexType) {
-            element = d3.select("#" + id(companyName));
-            translate = xyTranslate(element.attr("transform"));
-            return {"x": translate[0], "y": translate[1]}
-
-            // companyRadius = companyTypes[indexForActorType(element.attr("class"))].radius;
-            // companyCalcArc = d3.arc()
-            //                 .innerRadius(companyRadius)
-            //                 .outerRadius(companyRadius + 1)
-            //                 .startAngle(0)
-            //                 .endAngle(2 * Math.PI);
-
-
-            // tempCircle = svg.append("path")
-            //     .attr("class", "to-remove")
-            //     .attr("d", companyCalcArc)
-            //     .attr("fill", "none");
-
-
-
-
-            // calcCircle = tempCircle.node();
-            // radians = complement(radiansOfCompany(companyName));
-            // // Hack to get around negative percents
-            // if (radians < 0.0) {
-            //     radians += 2.0 * Math.PI
-            // }
-
-            // percent = radians /(2.0 * Math.PI);
-            // point = calcCircle.getPointAtLength(calcCircle.getTotalLength() * percent/2.0)
-
-            // point.x += translate[0]
-            // point.y += translate[1]
-            // tempCircle.remove();
-            // return point;
         }
 
         function personLocationForCompany(companyName, index, total) {
