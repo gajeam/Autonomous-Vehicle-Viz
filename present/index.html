@@ -301,7 +301,6 @@
           * CANVAS
           */
         function setupCanvas() {
-
             svg = d3.select("#svgCanvas")
                     .append("svg")
                     .attr("width", canvasWidth)
@@ -354,22 +353,33 @@
                 .attr("x", margin)
                 .attr("y", yearFont + margin);
 
-            radial = 70.0;
-            personCalcArc = d3.arc()
-                        .innerRadius(radial)
-                        .outerRadius(radial + 1)
-                        .startAngle(0)
-                        .endAngle(2 * Math.PI);
 
-            svg.append("g")
-                .attr("id", "arcCont")
-                .attr("transform", centerTransform)
-                .append("path")
-                .attr("id", "personCalcArc")
-                .attr("d", personCalcArc)
-                .attr("fill", "none")
-                ;
+            function setUpInitialText() {
+                for (i = 0.0; i < companyTypes.length; i++) {
+                    point = positionForPlaceOnCircle(90, (1.0/6.0 + i * 1.0/3.0))
+                    svg.append("circle")
+                        .attr("r", 10)
+                        .attr("fill", "red")
+                        .attr("transform", translatePoint(point)); 
+                }
+            }
+
+            setUpInitialText();
         }
+
+        function positionForPlaceOnCircle(r, percent,  center) {            
+            if (center == undefined) center = {"x": canvasWidth/2.0, "y" : canvasHeight/2.0}
+            angle = (Math.PI * 2.0) * percent;         
+            center.x = center.x + (Math.sin(angle) * r)
+            center.y -= Math.cos(angle) * r 
+            return center;
+        }
+
+        function testPoint(percent) {
+            point = calcArc.node().getPointAtLength(calcArc.node().getTotalLength() * .5 * percent)
+            console.log(point)
+        }
+
 
         function resetCanvas() {
             colorIndex = [0, 0, 0]
@@ -442,8 +452,10 @@
             if (isCircle == false) {
                 node.remove();
             }
-
         }
+
+        // function showInitialText() {
+        // }
 
         function updateYearText(delay) {
             if (delay == undefined) delay = 0.0;
@@ -953,9 +965,8 @@
 
         function personLocationForCompany(companyName, index, total) {
             element = d3.select("#" + id(companyName));
-            translate = xyTranslate(element.attr("transform"));
+            translate = pointTranslate(element.attr("transform"));
 
-            calcCircle = d3.select("#personCalcArc").node();
             radialDiff = Math.PI * .9;
             radians = complement(radiansOfCompany(companyName));
             radians += radialDiff/2.0 - (radialDiff * (index + 1)/(total + 1));
@@ -963,14 +974,10 @@
             if (radians < 0.0) {
                 radians += 2.0 * Math.PI
             }
-
             percent = radians /(2.0 * Math.PI);
-            point = calcCircle.getPointAtLength(calcCircle.getTotalLength() * percent/2.0)
 
-            xOffset = yOffset = 0.0;
-            translate[0] += point.x + xOffset;
-            translate[1] += point.y + yOffset;
-            return translateXY(translate);
+            point = positionForPlaceOnCircle(70, percent, translate)            
+            return translatePoint(point)
         }
 
         /*
@@ -1126,6 +1133,10 @@
           translate = translate.replace(')', '');
           translate = translate.split(',');
           return {"x" : +translate[0], "y" : +translate[1]};
+        }
+
+        function translatePoint(point) {
+            return 'translate(' + point.x + ',' + point.y + ')'
         }
 
         function indexForActorType(cType) {
