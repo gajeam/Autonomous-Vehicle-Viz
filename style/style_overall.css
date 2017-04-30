@@ -1,0 +1,35 @@
+/* =================================================
+=============       Title Section      =============
+==================================================== */
+
+#title-row {
+    background-image: url(../img/open_road.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: left top;
+}
+
+.overlay{
+    background-color: rgba(0,0,0, 0.3);
+    min-width: 100vw;
+    height: 850px;
+}
+
+
+#title-text {
+    color: white;
+    text-align: center;
+    width: 100vw;
+    height: 850px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+/* =================================================
+=============            Body          =============
+==================================================== */
+
+.topic-row {
+    min-width: 100vw;
+    height: 850px;
+}

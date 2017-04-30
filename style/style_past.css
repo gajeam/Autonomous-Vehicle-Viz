@@ -1,0 +1,26 @@
+/* =================================================
+=============            Body          =============
+==================================================== */
+
+
+#past-row {
+  background-color: #DCE2E8;
+}
+
+#past-text {
+padding-top: 30px;
+color: black;
+text-align: center;
+width: 100vw;
+/*height: 50px;*/
+display: table-cell;
+vertical-align: middle;
+}
+
+
+#darpa-graph {
+  padding-bottom: 70px;
+  width: 100vw;
+  /* The ratio is ~100:54 but this will need to be recalculated when the image file gets updated */
+  height: 50vw; 
+}

@@ -3,8 +3,11 @@
     <head>
         <meta charset="utf-8">
 
-        <link rel="stylesheet" href="style/style_future.css">
+        <link rel="stylesheet" href="style/style_overall.css">
+        <link rel="stylesheet" href="style/style_past.css">
         <link rel="stylesheet" href="style/style_present.css">
+        <link rel="stylesheet" href="style/style_future.css">
+        
 
         <!-- BOOTSTRAP STUFF -->
         <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
@@ -1308,7 +1311,7 @@
                 .attr("y", height*(5/6))
                 .attr("width", width)
                 .attr("height", height/6)
-                .attr("fill", "red")
+                .attr("fill", "#C03639")
                 .attr("fill-opacity", .4);
 
 
@@ -1321,7 +1324,7 @@
               .attr("cx", xMap)
               .attr("cy", yMap)
               // .style("fill", function(d) { return color(cValue(d));}) 
-              .style("fill", "blue")
+              .style("fill", "00A295")
               .style("opacity", .6)
               .style("stroke", "black")
               .on("mouseover", function(d) {
@@ -1341,7 +1344,7 @@
                     .attr("id", "infoBox")
                     .style("margin-left", (margin.left-15) + "px")
                     .style("margin-right", (margin.right-15) + "px")
-                    .style("opacity", 100);
+                    .style("opacity", 0.9);
 
                   infoBox.append("h4").text(d["Company"]);
                   ul = infoBox.append("ul");
@@ -1369,76 +1372,51 @@
     </script>
     </head>
 
-    <style>
-
-    .topic-row {
-        min-width: 100vw;
-        height: 850px;
-    }
-    #title-row {
-        background-color: steelblue;
-    }
-
-    #past-row {
-        /*background-color: steelblue;*/
-    }
-
-    #present-row {
-        /*min-height: 100vh;*/
-        /*background-color: pink; THIS BACKGROUND COLOR WAS F'ED FOR SOME REASON
-        */
-    }
-
-    #future-row {
-        background-color: orange;
-    }
-
-    #darpa-graph {
-        width:100vw;
-        /* The ratio is ~100:54 but this will need to be recalculated when the image file gets updated */
-        height:50vw; 
-    }
-    .topic-title {
-        width:100%;
-    }
-
-
-    #present-data-display {
-        width: 30vw;
-    }
-    
-    </style>
-
-
     <body>
 
     <div class="container-fluid">
 
         <div class="row topic-row" id="title-row">
-            <h1>
-                AUTONOMOUS VEHICLES: FUCK YEAH
-            </h1>
+            <div class="overlay">
+                <div id="title-text">
+                    <h3>
+                    AUTONOMOUS VEHICLES: PAST, PRESENT, FUTURE
+                    </h3>
+                    <p> Hello from the other side </br>
+                        I must have called a thousand times </br>
+                        To tell you I'm sorry for everything that I've done </br>
+                        But when I call you never seem to be home </p>
+                </div>
+            </div>     
         </div>
 
         <div class = "row topic-row" id="past-row">
           <div class="row">
             <div class="col">
-                <h2>
-                    AUTONOMOUS VEHICLES: THE PAST
-                </h2>
+                <div id="past-text">
+                    <h3>
+                        THE PAST
+                    </h3>
+                    <p> DARPA Challenges are so awesome, omg it's like they're incredible </br>
+                        Don't you just wanna know more about them?? </p>
+                </div>
             </div>
           </div>
             <div class="row">
-                <img src="img/DARPA_graphs.png" id="darpa-graph"/>
+                <img src="img/DARPA.svg" id="darpa-graph"/>
             </div>
         </div>
 
         <div class = "row topic-row" id="present-row">
           <div class="row">
             <div class="col">
-                <h2>
-                    AUTONOMOUS VEHICLES: THE PRESENT
-                </h2>
+                <div id="present-text">
+                    <h2>
+                        THE PRESENT
+                    </h2>
+                    <p> But like, seeing dots moving is even cooler, so that's what you'll get to see now.</br>
+                        So MANY dots moving, it's unreal - ENJOY! </p>
+                </div>
             </div>
           </div>
           <div class ="row">
@@ -1468,9 +1446,13 @@
         <div class = "row topic-row" id="future-row">
           <div class="row">
             <div class="col">
-                <h2>
-                    AUTONOMOUS VEHICLES: THE FUTURE
-                </h2>
+                <div id="future-text">
+                    <h2>
+                        THE FUTURE
+                    </h2>
+                    <p> Also, I think most of these companies are lying</br>
+                        I can't believe we'll have level 5 in 2017 - not a chance...</p>
+                </div>
             </div>
           </div>
           

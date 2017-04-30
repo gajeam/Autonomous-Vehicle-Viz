@@ -2,10 +2,18 @@
 =============            Body          =============
 ==================================================== */
 
+#future-row {
+    background-color: #B0BCC6;
+}
 
-#future-row h2 {
-  padding: 20px;
-
+#future-text {
+padding-top: 30px;
+color: black;
+text-align: center;
+width: 100vw;
+/*height: 50px;*/
+display: table-cell;
+vertical-align: middle;
 }
 
 .col-1 {
@@ -73,10 +81,11 @@ td {
 
 #infoBox {
 /*    margin-top: 20px;
-*/    background-color: powderblue;
+*/  background-color: #00A295;
     padding: 20px;
     padding-top: 10px;
     padding-bottom: 5px;
+    /*fill-opacity: .4;*/
 }
 
 #legendBox {

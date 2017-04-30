@@ -4,14 +4,26 @@
 
 
 #present-row {
-  margin: 20px;
+  background-color: #CED9E1;
 }
 
 #present-row p, li {
     font-size: 14px;
 }
 
+#present-text {
+padding-top: 30px;
+color: black;
+text-align: center;
+width: 100vw;
+/*height: 50px;*/
+display: table-cell;
+vertical-align: middle;
+}
 
+#present-data-display {
+  /*margin-left: 10px;*/
+}
 
 /* =================================================
 =============      Custom Elements     =============
@@ -34,4 +46,8 @@
 .svg-container {
     width:700px;
     z-index:1;
+}
+
+#present-data-display {
+    width: 40vw;
 }
