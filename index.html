@@ -451,7 +451,7 @@
          *  PEOPLE METHODS
          */
 
-        function addPersonToCompany(personName, companyName, index, total) {
+        function addPersonToCompany(personName, companyName, index, total, dashed=true) {
             var company = d3.select("g#" + id(companyName));
             try {
                 var startTransform = randomOffsetStart(company)
@@ -477,7 +477,7 @@
                 .on("end", function() {
                     var pName = d3.select(this).attr("id")
                     var cName = d3.select(this).attr("_companyId")
-                    drawLineFromPersonToCompany(pName, cName)
+                    drawLineFromPersonToCompany(pName, cName, dashed)
                 })
 
             var popTime = 500
@@ -628,7 +628,7 @@
 
                     callAfterDelay(1000, function() {
                         var fName = founderNames[f]
-                        addPersonToCompany(fName, startupName, f, +founderNames.length);
+                        addPersonToCompany(fName, startupName, f, +founderNames.length, false);
                         f++;
                         startup.transition()
                             .duration(750)
@@ -998,7 +998,7 @@
         * HELPER METHODS
         */
 
-        function animateLineFromPersonToCompany(personName, companyName) {
+        function animateLineFromPersonToCompany(personName, companyName, dashed=false) {
             person = d3.select("#" + id(personName));
             personCenter = pointTranslate(person.attr("transform"))
 
@@ -1011,15 +1011,15 @@
                   .y(function(d) { return d.y;});
 
             var duration = 750;
-            personLine(personName)
+            personLine(personName, dashed)
                 .attr("d", lineFunction(startLineData))
                 .transition()
                 .duration(duration)
-                .attr("d", lineFunction(endLineData));
+                .attr("d", lineFunction(endLineData))
             return duration;
         }
 
-        function drawLineFromPersonToCompany(personName, companyName) {
+        function drawLineFromPersonToCompany(personName, companyName, dashed=true) {
             person = d3.select("#" + id(personName));
             personCenter = xyTranslate(person.attr("transform"))
 
@@ -1034,7 +1034,7 @@
                   .y(function(d) { return d.y;});
 
 
-            personLine(personName)
+            personLine(personName, dashed)
                 .attr("d", lineFunction(lineData))
                 .style("opacity", 0.0)
                 .transition()
@@ -1042,12 +1042,15 @@
                 .style("opacity", 1.0);
         }
 
-        function personLine(personName) {
+        function personLine(personName, dashed=true) {
             return svg.insert("g", "#" + id(personName))
                 .attr("class", "to-remove")
                 .append("path")
                 .attr("stroke", company.select("circle").attr("fill"))
                 .attr("stroke-width", 1.0)
+                .attr("stroke-dasharray", function() {
+                    return dashed ? 4 : undefined;
+                })
                 .style("opacity", 1.0);
 
         }
