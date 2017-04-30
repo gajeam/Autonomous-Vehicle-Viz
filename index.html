@@ -24,7 +24,7 @@
 
     function loadPresent() {
         nextButtonFunction = updateData;
-        
+
         // Shout out to StackOverflow
         // http://stackoverflow.com/a/16788240/1031615
         jQuery.fn.extend({
@@ -1340,36 +1340,57 @@
          */
     }
     #title-row {
-        background-color: red;
+        background-color: steelblue;
     }
 
     #past-row {
-        background-color: green;
+        /*background-color: steelblue;*/
     }
 
     #present-row {
         min-height: 100vh;
-
-/*        background-color: pink;
-*/    }
+        /*background-color: pink; THIS BACKGROUND COLOR WAS F'ED FOR SOME REASON
+        */
+    }
 
     #future-row {
         background-color: orange;
     }
 
+    #darpa-graph {
+        width:100vw;
+        /* The ratio is ~100:54 but this will need to be recalculated when the image file gets updated */
+        height:50vw; 
+    }
     .topic-title {
         width:100%;
     }
-
-/**/
-
-
-
-
+    
     </style>
+
+
     <body>
 
     <div class="container-fluid">
+
+        <div class="row topic-row" id="title-row">
+            <h1>
+                AUTONOMOUS VEHICLES: FUCK YEAH
+            </h1>
+        </div>
+
+        <div class = "row topic-row" id="past-row">
+          <div class="row">
+            <div class="col">
+                <h2>
+                    AUTONOMOUS VEHICLES: THE PAST
+                </h2>
+            </div>
+          </div>
+            <row>
+                <img src="past/DARPA_graphs.png" id="darpa-graph"/>
+            </row>
+        </div>
 
         <div class = "row topic-tile" id="present-row">
           <div class="row">
@@ -1403,15 +1424,6 @@
                 <div id="svgCanvas"></div>
             </div>
             </div>
-        </div>
-
-
-        <div class="row topic-row" id="title-row">
-
-        </div>
-
-        <div class = "row topic-row" id="past-row">
-        Good afternoon, Marti!
         </div>
 
         <div class = "row topic-row" id="future-row">
@@ -1496,23 +1508,3 @@
 
 
 </html>
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
