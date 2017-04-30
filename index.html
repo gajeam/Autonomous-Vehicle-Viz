@@ -20,7 +20,7 @@
         <script src="http://d3js.org/d3.v4.min.js"></script>
 
     <script>
-
+    function loadPresent() {
         
         // Shout out to StackOverflow
         // http://stackoverflow.com/a/16788240/1031615
@@ -46,8 +46,8 @@
         maxYear = 2017;
         currentYear = maxYear + 1;
 
-        canvasWidth = 700.0;
-        canvasHeight = 650.0;
+        canvasWidth = 745.0;
+        canvasHeight = 745.0;
 
         mainRadius = 250.0;
         mainStrokeWidth = 5.0
@@ -219,7 +219,7 @@
     
         function animateAction(d, action) {
             action = d.action;
-            logAnimations = true;
+            logAnimations = false;
             if (logAnimations) {
                 console.log(d.actor + " " + d.action + " " + d.obj1)
             }
@@ -1166,6 +1166,8 @@
         d3.selection.prototype.last = function() {
             return d3.select(this.nodes()[this.nodes().length-1])
         };
+    }
+
     function loadFuture() {
         var margin = {top: 40, right: 90, bottom: 50, left: 50},
             width = 960 - margin.left - margin.right,
@@ -1320,7 +1322,6 @@
 
             });
     }
-    loadFuture();
 
     </script>
     </head>
@@ -1344,11 +1345,17 @@
     }
 
     #present-row {
+        min-height: 100vh;
+
+/*        background-color: pink;
+*/    }
+
+    #future-row {
         background-color: orange;
     }
 
-    #future-row {
-        background-color: pink;
+    .topic-title {
+        width:100%;
     }
 
 /**/
@@ -1361,30 +1368,37 @@
 
     <div class="container-fluid">
 
-        <div class = "row topic-row" id="present-row">
-            <div class="row">
-                <div class = "col-5">
-                    <div class = "row present-info" id="year-info-cont">
-                        <div class= "info-text-box">
-                            <h1 id="year-description-title"></h1>
-                            <p id="year-description"></p>
-                            <button type="button"
-                                class="btn btn-primary "
-                                id="nextButton"
-                                onclick="updateData()">Next Year
-                            </button>
-                        </div>
+        <div class = "row topic-tile" id="present-row">
+          <div class="row">
+            <div class="col">
+                <h2>
+                    AUTONOMOUS VEHICLES: THE PRESENT
+                </h2>
+            </div>
+          </div>
+          <div class ="row topic-row">
+            <div class = "col-5">
+                <div class = "row present-info" id="year-info-cont">
+                    <div class= "info-text-box">
+                        <h1 id="year-description-title"></h1>
+                        <p id="year-description"></p>
+                        <button type="button"
+                            class="btn btn-primary "
+                            id="nextButton"
+                            onclick="updateData()">Next Year
+                        </button>
                     </div>
-                    <div class = "row present-info" id="company-info-cont" style="visibility:hidden;">
-                        <div class= "info-text-box">
-                        </div>
+                </div>
+                <div class = "row present-info" id="company-info-cont" style="visibility:hidden;">
+                    <div class= "info-text-box">
                     </div>
+                </div>
 
 
-                </div>
-                <div class="col-7 svg-container">
-                    <div id="svgCanvas"></div>
-                </div>
+            </div>
+            <div class="col-7 svg-container">
+                <div id="svgCanvas"></div>
+            </div>
             </div>
         </div>
 
@@ -1471,6 +1485,10 @@
 
     </div>
 
+    <script type="text/javascript">
+        loadPresent();
+        loadFuture();
+    </script>
     </body>
 
 

@@ -3,6 +3,9 @@
 ==================================================== */
 
 
+#present-row {
+  margin: 20px;
+}
 
 #present-row p, li {
     font-size: 14px;
@@ -16,7 +19,6 @@
 
 .present-info {
     margin-left:20px;
-    margin-top:20px;
     padding:20px;
 }
 #year-info-cont {
@@ -24,8 +26,9 @@
   background-color: rgba(70, 130, 180, .3);
 }
 #company-info-cont {
+  margin-top: 20px;
   height:400px;
-    background-color: rgba(50, 205, 50, .3);
+  background-color: rgba(50, 205, 50, .3);
 }
 
 .svg-container {
