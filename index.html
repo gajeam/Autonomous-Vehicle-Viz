@@ -1333,7 +1333,7 @@
 
     .topic-row {
         min-width: 100vw;
-        min-height: 100vh;
+        min-height: 700px;
 
         /*
          *  PRESENT SECTIION STYLING
@@ -1365,6 +1365,11 @@
     .topic-title {
         width:100%;
     }
+
+
+    #present-data-display {
+        width: 40vw;
+    }
     
     </style>
 
@@ -1388,11 +1393,11 @@
             </div>
           </div>
             <row>
-                <img src="past/DARPA_graphs.png" id="darpa-graph"/>
+                <img src="img/DARPA_graphs.png" id="darpa-graph"/>
             </row>
         </div>
 
-        <div class = "row topic-tile" id="present-row">
+        <div class = "row topic-row" id="present-row">
           <div class="row">
             <div class="col">
                 <h2>
@@ -1400,8 +1405,8 @@
                 </h2>
             </div>
           </div>
-          <div class ="row topic-row">
-            <div class = "col-5">
+          <div class ="row">
+            <div class = "col-5" id="present-data-display">
                 <div class = "row present-info" id="year-info-cont">
                     <div class= "info-text-box">
                         <h1 id="year-description-title"></h1>
@@ -1417,13 +1422,11 @@
                     <div class= "info-text-box">
                     </div>
                 </div>
-
-
             </div>
             <div class="col-7 svg-container">
                 <div id="svgCanvas"></div>
             </div>
-            </div>
+          </div>
         </div>
 
         <div class = "row topic-row" id="future-row">
