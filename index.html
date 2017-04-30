@@ -20,7 +20,10 @@
         <script src="http://d3js.org/d3.v4.min.js"></script>
 
     <script>
+    nextButtonFunction = ""
+
     function loadPresent() {
+        nextButtonFunction = updateData;
         
         // Shout out to StackOverflow
         // http://stackoverflow.com/a/16788240/1031615
@@ -1385,7 +1388,7 @@
                         <button type="button"
                             class="btn btn-primary "
                             id="nextButton"
-                            onclick="updateData()">Next Year
+                            onclick="nextButtonFunction()">Next Year
                         </button>
                     </div>
                 </div>
