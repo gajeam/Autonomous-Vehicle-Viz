@@ -78,6 +78,18 @@
 
     <div class="container-fluid">
 
+        <div class = "row topic-row" id="present-row">
+        </div>
+
+
+        <div class="row topic-row" id="title-row">
+
+        </div>
+
+        <div class = "row topic-row" id="past-row">
+        Good afternoon, Marti!
+        </div>
+
         <div class = "row topic-row" id="future-row">
           <div class="row">
             <div class="col">
@@ -149,177 +161,167 @@
           </div>
         </div>
 
-        <div class="row topic-row" id="title-row">
-
-        </div>
-
-        <div class = "row topic-row" id="past-row">
-        Good afternoon, Marti!
-
-        </div>
-
-        <div class = "row topic-row" id="present-row">
-        Good evening, Marti!
-        </div>
-
 
     </div>
 
     </body>
 
     <script>
-    var margin = {top: 40, right: 90, bottom: 50, left: 50},
-        width = 960 - margin.left - margin.right,
-        height = 500 - margin.top - margin.bottom;
+    function loadFuture() {
+        var margin = {top: 40, right: 90, bottom: 50, left: 50},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
 
-    /*
-     * value accessor - returns the value to encode for a given data object.
-     * scale - maps value to a visual display encoding, such as a pixel position.
-     * map function - maps from data value to display value
-     * axis - sets up axis
-     */ 
+        /*
+         * value accessor - returns the value to encode for a given data object.
+         * scale - maps value to a visual display encoding, such as a pixel position.
+         * map function - maps from data value to display value
+         * axis - sets up axis
+         */ 
 
-    // setup x 
-    var xValue = function(d) { return d.Year;}, // data -> value
-        xScale = d3.scaleLinear().range([0, width]), // value -> display
-        xMap = function(d) { return xScale(xValue(d));}, // data -> display
-        xAxis = d3.axisBottom().scale(xScale).ticks(16)
-                .tickFormat(d3.format("d")).tickSizeOuter(0);
+        // setup x 
+        var xValue = function(d) { return d.Year;}, // data -> value
+            xScale = d3.scaleLinear().range([0, width]), // value -> display
+            xMap = function(d) { return xScale(xValue(d));}, // data -> display
+            xAxis = d3.axisBottom().scale(xScale).ticks(16)
+                    .tickFormat(d3.format("d")).tickSizeOuter(0);
 
-    // setup y
+        // setup y
 
-    var ticks = [0,1,2,3,4,5];
-    var tickLabels = ["N/A",1,2,3,4,5];
+        var ticks = [0,1,2,3,4,5];
+        var tickLabels = ["N/A",1,2,3,4,5];
 
-    var yValue = function(d) { return d["Level"];}, // data -> value
-        yScale = d3.scaleLinear().range([height, 0]), // value -> display
-        yMap = function(d) { return yScale(yValue(d));}, // data -> display
-        yAxis = d3.axisLeft().scale(yScale).tickValues(ticks)
-                .tickFormat(function(d,i){ return tickLabels[i] }).tickSizeOuter(0);
-
-
-    // setup fill color
-    // var cValue = function(d) { return d.bl;};
-    // color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    // add the graph canvas to the body of the webpage
-    var svg = d3.select("#scatterplot").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var yValue = function(d) { return d["Level"];}, // data -> value
+            yScale = d3.scaleLinear().range([height, 0]), // value -> display
+            yMap = function(d) { return yScale(yValue(d));}, // data -> display
+            yAxis = d3.axisLeft().scale(yScale).tickValues(ticks)
+                    .tickFormat(function(d,i){ return tickLabels[i] }).tickSizeOuter(0);
 
 
-    // add the tooltip area to the webpage
-    var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+        // setup fill color
+        // var cValue = function(d) { return d.bl;};
+        // color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    // load data
-    d3.csv("future/ship_dates.csv", function(error, data) {
-
-      // change string (from CSV) into number format
-      data.forEach(function(d) {
-        d.Year = +d.Year;
-        d["Level"] = +d["Level"];
-      });
-
-      // don't want dots overlapping axis, so add in buffer to data domain
-      xScale.domain([d3.min(data, xValue)-0.2, d3.max(data, xValue)+0.2]);
-      yScale.domain([d3.min(data, yValue)-0.5, d3.max(data, yValue)+0.2]);
-
-      // x-axis
-
-      xAxisTranslateX = width/2.0;
-      xAxisTranslateY = margin.bottom;
-      svg.append("g")
-          .attr("class", "x-axis")
-          .attr("transform", "translate(0," + height + ")")
-          .call(xAxis)
-        .append("text")
-          .attr("class", "x-label")
-          .attr("transform", "translate(" + xAxisTranslateX + "," + xAxisTranslateY + ")")
-          .style("text-anchor", "end")
-          .text("Expected Ship Year");
-
-      // y-axis
-
-      yAxisTranslateX = -margin.left;
-      yAxisTranslateY = height/2.0 - 25.0; // It looks gross in the middle so we moved it up a bit
-      svg.append("g")
-          .attr("class", "y-axis")
-          .call(yAxis)
-        .append("text")
-          .attr("class", "y-label")
-          .attr("transform", "translate(" + yAxisTranslateX + "," + yAxisTranslateY + ")rotate(-90)")
-          .attr("y", 6)
-          .attr("dy", ".71em")
-          .style("text-anchor", "end")
-          .text("Level of Autonomy");
-
-        // add rectangle
-        svg.append("rect")
-            .attr("id", "NANs")
-            .attr("x", 0)
-            .attr("y", height*(5/6))
-            .attr("width", width)
-            .attr("height", height/6)
-            .attr("fill", "red")
-            .attr("fill-opacity", .4);
+        // add the graph canvas to the body of the webpage
+        var svg = d3.select("#scatterplot").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-      // draw dots
-      svg.selectAll(".dot")
-          .data(data)
-        .enter().append("circle")
-          .attr("class", "dot")
-          .attr("r", 5)
-          .attr("cx", xMap)
-          .attr("cy", yMap)
-          // .style("fill", function(d) { return color(cValue(d));}) 
-          .style("fill", "blue")
-          .style("opacity", .6)
-          .style("stroke", "black")
-          .on("mouseover", function(d) {
-              tooltip.transition()
-                   .duration(200)
-                   .style("opacity", .9);
-              tooltip.html(d["Company"])
-                   .style("left", (d3.event.pageX + 5) + "px")
-                   .style("top", (d3.event.pageY - 28) + "px")
-                   .style("font-size", "12px");
-                      // add infoBox to the webpage
-            d3.select("#legendBox")
-                .attr("visibility", "visible");
+        // add the tooltip area to the webpage
+        var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
 
-            var infoBox = d3.select("#legendBox")
-                .append("div")
-                .attr("id", "infoBox")
-                .style("margin-left", (margin.left-15) + "px")
-                .style("margin-right", (margin.right-15) + "px")
-                .style("opacity", 100);
+        // load data
+        d3.csv("future/ship_dates.csv", function(error, data) {
 
-              infoBox.append("h4").text(d["Company"]);
-              ul = infoBox.append("ul");
-              var bullet_points = d["Comments"].split("; ");
-              for (i in bullet_points) {
-                point = bullet_points[i];
-                ul.append("li")
-                    .text(point)
-                    .style("font-size", "16px");
-              }
-
-
-          })
-          .on("mouseout", function(d) {
-              tooltip.transition()
-                   .duration(500)
-                   .style("opacity", 0);
-            d3.select("#legendBox").attr("visibility", "hidden");
-            d3.select("#infoBox").node().remove();
+          // change string (from CSV) into number format
+          data.forEach(function(d) {
+            d.Year = +d.Year;
+            d["Level"] = +d["Level"];
           });
 
-        });
+          // don't want dots overlapping axis, so add in buffer to data domain
+          xScale.domain([d3.min(data, xValue)-0.2, d3.max(data, xValue)+0.2]);
+          yScale.domain([d3.min(data, yValue)-0.5, d3.max(data, yValue)+0.2]);
+
+          // x-axis
+
+          xAxisTranslateX = width/2.0;
+          xAxisTranslateY = margin.bottom;
+          svg.append("g")
+              .attr("class", "x-axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis)
+            .append("text")
+              .attr("class", "x-label")
+              .attr("transform", "translate(" + xAxisTranslateX + "," + xAxisTranslateY + ")")
+              .style("text-anchor", "end")
+              .text("Expected Ship Year");
+
+          // y-axis
+
+          yAxisTranslateX = -margin.left;
+          yAxisTranslateY = height/2.0 - 25.0; // It looks gross in the middle so we moved it up a bit
+          svg.append("g")
+              .attr("class", "y-axis")
+              .call(yAxis)
+            .append("text")
+              .attr("class", "y-label")
+              .attr("transform", "translate(" + yAxisTranslateX + "," + yAxisTranslateY + ")rotate(-90)")
+              .attr("y", 6)
+              .attr("dy", ".71em")
+              .style("text-anchor", "end")
+              .text("Level of Autonomy");
+
+            // add rectangle
+            svg.append("rect")
+                .attr("id", "NANs")
+                .attr("x", 0)
+                .attr("y", height*(5/6))
+                .attr("width", width)
+                .attr("height", height/6)
+                .attr("fill", "red")
+                .attr("fill-opacity", .4);
+
+
+          // draw dots
+          svg.selectAll(".dot")
+              .data(data)
+            .enter().append("circle")
+              .attr("class", "dot")
+              .attr("r", 5)
+              .attr("cx", xMap)
+              .attr("cy", yMap)
+              // .style("fill", function(d) { return color(cValue(d));}) 
+              .style("fill", "blue")
+              .style("opacity", .6)
+              .style("stroke", "black")
+              .on("mouseover", function(d) {
+                  tooltip.transition()
+                       .duration(200)
+                       .style("opacity", .9);
+                  tooltip.html(d["Company"])
+                       .style("left", (d3.event.pageX + 5) + "px")
+                       .style("top", (d3.event.pageY - 28) + "px")
+                       .style("font-size", "12px");
+                          // add infoBox to the webpage
+                d3.select("#legendBox")
+                    .attr("visibility", "visible");
+
+                var infoBox = d3.select("#legendBox")
+                    .append("div")
+                    .attr("id", "infoBox")
+                    .style("margin-left", (margin.left-15) + "px")
+                    .style("margin-right", (margin.right-15) + "px")
+                    .style("opacity", 100);
+
+                  infoBox.append("h4").text(d["Company"]);
+                  ul = infoBox.append("ul");
+                  var bullet_points = d["Comments"].split("; ");
+                  for (i in bullet_points) {
+                    point = bullet_points[i];
+                    ul.append("li")
+                        .text(point)
+                        .style("font-size", "16px");
+                  }
+
+
+              })
+              .on("mouseout", function(d) {
+                  tooltip.transition()
+                       .duration(500)
+                       .style("opacity", 0);
+                d3.select("#legendBox").attr("visibility", "hidden");
+                d3.select("#infoBox").node().remove();
+              });
+
+            });
+    }
+    loadFuture();
 
     </script>
 </html>
