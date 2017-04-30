@@ -1,8 +1,36 @@
-/*Styling for scatter plot*/
+/* =================================================
+=============            Body          =============
+==================================================== */
 
-body {
-  font: 11px sans-serif;
+h2 {
+  padding: 20px;
 }
+
+.col-1 {
+  max-width: 5% !important;
+}
+
+/* =================================================
+=============  Table describing levels =============
+==================================================== */
+
+.table-condensed>thead>tr>th,
+.table-condensed>tbody>tr>th,
+.table-condensed>tfoot>tr>th,
+.table-condensed>thead>tr>td,
+.table-condensed>tbody>tr>td,
+.table-condensed>tfoot>tr>td {
+    padding: 5px;
+}
+
+td {
+  font-size: 12px;
+}
+
+
+/* ========================================
+=============   Scatter plot  =============
+======================================== */
 
 .axis path,
 .axis line {
@@ -11,9 +39,24 @@ body {
   shape-rendering: crispEdges;
 }
 
-.dot {
-  stroke: #000;
+.x-axis,
+.y-axis {
+  font-size: 12px;
+  font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  fill: #292b2c;
 }
+
+.x-label,
+.y-label {
+  font-size: 12px;
+  font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  fill: #292b2c;
+}
+
 
 .tooltip {
   position: absolute;
@@ -22,6 +65,9 @@ body {
   pointer-events: none;
 }
 
+/* =================================================
+============= Box with further details =============
+=================================================== */
 
 #infobox {
     margin-top: 20px;
@@ -29,25 +75,5 @@ body {
     padding: 20px;
     padding-top: 10px;
     padding-bottom: 5px;
-}
-
-/*#scatterplot {
-    z-index:0;
-}
-#rect {
-    background-color: orange;
-    position:absolute;
-    z-index:1;
-}
-*/
-#grid {
-    border-collapse: collapse;
-    border: 2px black solid;
-    font: 12px sans-serif;
-}
-
-.td {
-    border: 1px black solid;
-    padding: 5px;
 }
 

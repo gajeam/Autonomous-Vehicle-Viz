@@ -1,0 +1,27 @@
+Company,Year,Level old,Level,Comments
+Otto,2017,4,4,"Level of autonomy: 4; Provide full self-driving capabilities for trucks; Currently focusing on improving accelerating, braking, and lane control; Developing prediction models to anticipate other drivers' movements, navigating construction zones, and weather hazards"
+Tesla,2017,5,5,"Level of autonomy: 5; By end of year, promise of a fully autunomous vehicle that can drive across the country"
+General Motors,2018,0,-0.05,No specific level promised
+Lucid Motors,2018,0.1,0.05,No specific level promised
+Renault-Nissan Alliance,2018,4,3.85,"Level of autonomy: 4; Operate with ""multiple-lane control,"" which can autonomously negotiate hazards and change lanes during highyway driving"
+Baidu,2018,4.1,3.95,Level of autonomy: 4; Commercialize level 4 autonomous driving by 2018 and hit mass production by 2020
+Faraday Futures,2018,4.2,4.05,Level of autonomy: 4; Vehilce learns and adapts to your driving preferences
+Drive.ai,2018,4.3,4.15,Level of autonomy: 4; Focus on using deep learning for everything the self-driving car needs to do
+Apple,2019,0,0,No specific level promised
+Delphi,2019,4,3.95,"Level of autonomy: 4; Will partner with Mobileye for sensor signal processing, fusion, and mapping technologies"
+Nuro.ai,2019,4.1,4.05,Level of autonomy: 4; Provide entirely hands-free experience
+LeEco,2020,0,0,No specific level promised
+Daimler,2020,4,3.7,Level of autonomy: 4; Parent company of Mercedes-Benz and Bosch
+Hyundai,2020,4.1,3.8,"Level of autonomy: 4; Vehicle can drive itself, recognize traffic signals, and stop when needed; It can turn and slow down for traffic and pedestrians"
+PSA,2020,4.2,3.9,"Level of autonomy: 4; Provide ""hands off"" and ""eyes off"" driving functions; The driver can give full control of the driving to the vehicle"
+Toyota,2020,4.3,4,Level of autonomy: 4; Automated driving on highways from the on-ramp to the off-ramp
+Audi,2020,4.4,4.1,"Level of autonomy: 4; Provide full self-driving capabilities, with manual driving options"
+Bosch,2020,4.5,4.2,Level of autonomy: 4; Provide full self-driving capabilities with AI onboard computer
+Zoox,2020,4.6,4.3,"Level of autonomy: 4; Provide full self-driving taxis; No designated front or rear side; No windshields, steering wheel, or brake pedal"
+Renault-Nissan Alliance,2020,5,4.95,Level of autonomy: 5; Navigate city intersections and heavy urban traffic without driver intervention
+Honda,2020,5.01,5.05,"Level of autonomy: 5; Aside from full automation, vehicle connects to the internet and uses AI to allow the vehicles to ""think"" while driving"
+BMW,2021,3,3,"Level of autonomy: 3; Operate under levels 3, 4, and 5 depending on the model; Current cars can already park themselves, come to pick you up when you are ready, lane assist, and provide side collision protection"
+Ford Fusion Hybrid,2021,4,3.95,"Level of autonomy: 4; Operate without steering wheel, gas pedal, or brake pedal"
+Argo AI,2021,4.01,4.05,Level of autonomy: 4; Developing AI system for Ford
+Volvo,2021,0,0,"No specifc level promised; Vehicle expected to perform all driving - steering, braking, acceleration; People on board are not expected to have control of the car"
+Volkswagen,2025,5,5,"Level of autonomy: 5; Operate without steering wheel, pedals, conventional cockpit controls or instruments; Operates using voice commands; Can be summoned by a remote dubbed ""The Button"""
