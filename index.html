@@ -23,8 +23,8 @@
     <style>
 
     .topic-row {
-        width: 100vw;
-        height: 100vh;
+        min-width: 100vw;
+        min-height: 100vh;
 
         /*
          *  PRESENT SECTIION STYLING
@@ -44,6 +44,10 @@
 
     #future-row {
         background-color: pink;
+    }
+
+    #legendBox {
+        height: 25vh;
     }
 /*        p, li {
             font-size: 14px;
@@ -135,7 +139,7 @@
               <div class = "row">
 
                 <div class="col">
-                  <div id="legendbox">
+                  <div id="legendBox">
                  </div>
                 </div>
 
@@ -162,7 +166,7 @@
     </div>
 
     </body>
-    
+
     <script>
     var margin = {top: 40, right: 90, bottom: 50, left: 50},
         width = 960 - margin.left - margin.right,
@@ -284,15 +288,19 @@
                    .style("left", (d3.event.pageX + 5) + "px")
                    .style("top", (d3.event.pageY - 28) + "px")
                    .style("font-size", "12px");
-                      // add box to the webpage
-            var box = d3.select("#legendbox").append("div")
-                .attr("id", "infobox")
+                      // add infoBox to the webpage
+            d3.select("#legendBox")
+                .attr("visibility", "visible");
+
+            var infoBox = d3.select("#legendBox")
+                .append("div")
+                .attr("id", "infoBox")
                 .style("margin-left", (margin.left-15) + "px")
                 .style("margin-right", (margin.right-15) + "px")
                 .style("opacity", 100);
 
-              box.append("h4").text(d["Company"]);
-              ul = box.append("ul");
+              infoBox.append("h4").text(d["Company"]);
+              ul = infoBox.append("ul");
               var bullet_points = d["Comments"].split("; ");
               for (i in bullet_points) {
                 point = bullet_points[i];
@@ -307,7 +315,8 @@
               tooltip.transition()
                    .duration(500)
                    .style("opacity", 0);
-              d3.select("#infobox").node().remove();
+            d3.select("#legendBox").attr("visibility", "hidden");
+            d3.select("#infoBox").node().remove();
           });
 
         });
