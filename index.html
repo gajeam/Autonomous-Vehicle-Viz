@@ -222,7 +222,7 @@
     
         function animateAction(d, action) {
             action = d.action;
-            logAnimations = false;
+            logAnimations = true;
             if (logAnimations) {
                 console.log(d.actor + " " + d.action + " " + d.obj1)
             }
@@ -360,6 +360,8 @@
         }
 
         function clearCanvas(duration) {
+            // Companies founded should appear at the beginning
+            resetFoundingPos();
             // Remove people
             delay = 0.0
             duration = 750.0;
@@ -601,10 +603,11 @@
         /*
          *  STARTUP METHODS
          */
+
          function foundStartup(startupName, founderNames) {
             // Check to see if the founders are on the board
             // NOTE: they either all will be or all won't be.
-            founders = []
+            var founders = []
             for (f in founderNames) {
                 founder = d3.select("#" + id(founderNames[f]));
                 if (founder.empty() == false) {
@@ -612,11 +615,13 @@
                 }
             }
 
-            var startup = addCompany(kIndexStartUp, startupName, 1250)
+            var startup = addCompany(kIndexStartUp, startupName, 1250, posForFounding())
                         .style("opacity", 0.0);
 
             if (founders.length != 0) {
-                showFounding();
+                callAfterDelay(750, function() {
+                    showFounding();
+                })
             } else {
                 for (i in founderNames) {
                     f = 0;
@@ -664,7 +669,7 @@
             acquirer = d3.select("g#" + id(acquirerName));
             acquirerTransform = acquirer.attr("transform")
             acquirerColor = acquirer.select("circle").attr("fill");
-            duration = 2000;
+            duration = 1500;
 
             // Move the startup
             svg.select("#" + id(startupName))
@@ -751,8 +756,7 @@
          *  COMPANY METHODS
          */
 
-         function addCompany(indexType, name, time) {
-
+         function addCompany(indexType, name, time, newIndex) {
             if (time == undefined) {
                 time = 750.0;
             }
@@ -762,9 +766,18 @@
             color = colors[indexType][colorIndex[indexType]];
             colorIndex[indexType] = (colorIndex[indexType] + 1)%(colors[indexType].length);
 
+            if (newIndex == undefined) newIndex = companyCount;
+
             // Shift all the other companies
+            var afterId = undefined;
+
             svg.selectAll("." + company.type)
                 .each(function() {
+                    if (companyIter == newIndex) {
+                        // Find the element to insert the new element after
+                        afterId = '#' + d3.select(this).attr('id')
+                        companyIter++; // Skip the location we're adding to
+                    }
                     d3.select(this)
                         .attr("_relIndex", companyIter)
                         .transition()
@@ -773,11 +786,11 @@
                     companyIter++;
                 });
 
-            g = svg.append("g")
+            g = svg.insert("g", afterId)
                 .attr("class", company.type)
                 .attr("id", id(name))
-                .attr("_relIndex", companyCount)
-                .attr("transform", transForEdgeIndex(company.path, companyCount + 1, companyCount + 2))
+                .attr("_relIndex", newIndex)
+                .attr("transform", transForEdgeIndex(company.path, newIndex + 1, companyCount + 2))
 
             g.append("circle")
             .attr("fill", color)
@@ -1169,6 +1182,30 @@
         d3.selection.prototype.last = function() {
             return d3.select(this.nodes()[this.nodes().length-1])
         };
+
+
+
+         foundingPos = 0
+         function posForFounding() {
+            retVal = undefined
+            if (foundingPos%3 == 1) retVal = 0
+            if (foundingPos%3 == 2) {
+                retVal = 0;
+                d3.selectAll('.startup')
+                    .each(function() {
+                        retVal++
+                    })
+                    .call(function() {
+                        retVal =  Math.floor(retVal/2);
+                    })
+            }
+            foundingPos++;
+            return retVal;
+         }
+
+         function resetFoundingPos() {
+            foundingPos = 0;
+         }
     }
 
     function loadFuture() {
@@ -1333,11 +1370,7 @@
 
     .topic-row {
         min-width: 100vw;
-        min-height: 700px;
-
-        /*
-         *  PRESENT SECTIION STYLING
-         */
+        height: 850px;
     }
     #title-row {
         background-color: steelblue;
@@ -1348,7 +1381,7 @@
     }
 
     #present-row {
-        min-height: 100vh;
+        /*min-height: 100vh;*/
         /*background-color: pink; THIS BACKGROUND COLOR WAS F'ED FOR SOME REASON
         */
     }
@@ -1368,7 +1401,7 @@
 
 
     #present-data-display {
-        width: 40vw;
+        width: 30vw;
     }
     
     </style>
@@ -1392,9 +1425,9 @@
                 </h2>
             </div>
           </div>
-            <row>
+            <div class="row">
                 <img src="img/DARPA_graphs.png" id="darpa-graph"/>
-            </row>
+            </div>
         </div>
 
         <div class = "row topic-row" id="present-row">
