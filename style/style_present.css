@@ -4,7 +4,7 @@
 
 
 #present-row {
-  background-color: #CED9E1;
+  background-color: #CED9E1; /* @NISHA Present background color */
 }
 
 #present-row p, li {
@@ -12,17 +12,22 @@
 }
 
 #present-text {
-padding-top: 30px;
-color: black;
-text-align: center;
-width: 100vw;
-/*height: 50px;*/
-display: table-cell;
-vertical-align: middle;
+  padding-top: 30px;
+  color: black;
+  text-align: center;
+  width: 100vw;
+  /*height: 50px;*/
+  display: table-cell;
+  vertical-align: middle;
 }
 
 #present-data-display {
   /*margin-left: 10px;*/
+}
+
+.btn {
+  background-color: #909090; /* @NISHA The background button of the color */
+  color:#000000; /* @NISHA the text color of the button */
 }
 
 /* =================================================
@@ -35,12 +40,12 @@ vertical-align: middle;
 }
 #year-info-cont {
   height:325px;
-  background-color: rgba(70, 130, 180, .3);
+  background-color: #DDBFD4; /* @NISHA Top-left box background color */
 }
 #company-info-cont {
   margin-top: 20px;
   height:400px;
-  background-color: rgba(50, 205, 50, .3);
+  background-color: #ada0d6; /* @NISHA Bottom-left box background color */
 }
 
 .svg-container {

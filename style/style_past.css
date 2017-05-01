@@ -4,17 +4,17 @@
 
 
 #past-row {
-  background-color: #DCE2E8;
+  background-color: #DCE2E8; /* @NISHA Past background color */
 }
 
 #past-text {
-padding-top: 30px;
-color: black;
-text-align: center;
-width: 100vw;
-/*height: 50px;*/
-display: table-cell;
-vertical-align: middle;
+	padding-top: 30px;
+	color: black;
+	text-align: center;
+	width: 100vw;
+	/*height: 50px;*/
+	display: table-cell;
+	vertical-align: middle;
 }
 
 
