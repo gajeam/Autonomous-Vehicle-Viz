@@ -1216,7 +1216,7 @@
 
     function loadFuture() {
         var margin = {top: 40, right: 90, bottom: 50, left: 50},
-            width = 960 - margin.left - margin.right,
+            width = 750 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
         /*
@@ -1230,7 +1230,7 @@
         var xValue = function(d) { return d.Year;}, // data -> value
             xScale = d3.scaleLinear().range([0, width]), // value -> display
             xMap = function(d) { return xScale(xValue(d));}, // data -> display
-            xAxis = d3.axisBottom().scale(xScale).ticks(16)
+            xAxis = d3.axisBottom().scale(xScale).ticks(8)
                     .tickFormat(d3.format("d")).tickSizeOuter(0);
 
         // setup y
@@ -1269,10 +1269,10 @@
          * @NISHA Here are all the future graph colors you can change
          */
 
-         var dotColor = "#00A295";
+         var dotColor = "#EACB49";
          var dotOpacity = .6;
 
-         var boxColor = "#C03639";
+         var boxColor = "#a27eb8";
          var boxOpacity = .4;
 
          //////////////////////////
@@ -1327,6 +1327,13 @@
                 .attr("fill-opacity", boxOpacity);
 
 
+          // draw info box
+          var infoBox = d3.select("#infoBox")
+            .style('width', width + "px")
+            .style("margin-left", (margin.left - 15) + "px") // HACK: These are made up numbers
+            // .style("margin-right", (margin.right+85) + "px")
+            .style("opacity", 0.9);
+
           // draw dots
           svg.selectAll(".dot")
               .data(data)
@@ -1346,18 +1353,9 @@
                        .style("left", (d3.event.pageX + 5) + "px")
                        .style("top", (d3.event.pageY - 28) + "px")
                        .style("font-size", "12px");
-                          // add infoBox to the webpage
-                d3.select("#legendBox")
-                    .attr("visibility", "visible");
 
-                var infoBox = d3.select("#legendBox")
-                    .append("div")
-                    .attr("id", "infoBox")
-                    .style("margin-left", (margin.left-15) + "px")
-                    .style("margin-right", (margin.right-15) + "px")
-                    .style("opacity", 0.9);
 
-                  infoBox.append("h4").text(d["Company"]);
+                  infoBox.select("h4").text(d["Company"]);
                   ul = infoBox.append("ul");
                   var bullet_points = d["Comments"].split("; ");
                   for (i in bullet_points) {
@@ -1369,12 +1367,13 @@
 
 
               })
+
               .on("mouseout", function(d) {
                   tooltip.transition()
                        .duration(500)
                        .style("opacity", 0);
-                d3.select("#legendBox").attr("visibility", "hidden");
-                d3.select("#infoBox").node().remove();
+                infoBox.select("h4").text("Hover over the dots to find out more about each company and their promises");
+                ul.remove();
               });
 
             });
@@ -1519,8 +1518,9 @@
               <div class = "row">
 
                 <div class="col">
-                  <div id="legendBox">
-                 </div>
+                  <div id="infoBox">
+                    <h4 class = "title-box">Hover over the dots to find out more about each company and their promises</h4>
+                  </div>
                 </div>
 
               </div>

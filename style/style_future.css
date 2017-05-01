@@ -3,7 +3,7 @@
 ==================================================== */
 
 #future-row {
-    background-color: #B0BCC6;  /* @NISHA Future background color */
+    background-color: #F6F6F6;  /* @NISHA Future background color */
 }
 
 #future-text {
@@ -81,14 +81,9 @@ td {
 
 #infoBox {
 /*    margin-top: 20px;
-*/  background-color: #00A295; /* @NISHA Bottom-right info box color */
+*/  background-color: #E7EBF0; /* @NISHA Bottom-right info box color */
     padding: 20px;
     padding-top: 10px;
     padding-bottom: 5px;
+    height: 22vh;
 }
-
-#legendBox {
-    height: 25vh;
-}
-
-
