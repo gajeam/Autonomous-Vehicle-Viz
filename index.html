@@ -946,24 +946,28 @@
                     .style("opacity", 0.0);
 
             console.log(companyText.attr('_orientation'));
-            company.insert("text")
-                    .attr("class", "to-fade")
-                    .text(acquiredName)
-                    .each(function() {
-                            orientText(this, companyText.attr('_orientation'), companyRadius, true);
+            textLines = acquiredName.split(' ');
+            for (i in textLines) {
+                company.select("text")
+                        .append("tspan")
+                        .attr("class", "to-remove")
+                        .text(textLines[i])
+                        .each(function() {
+                                orientText(this, companyText.attr('_orientation'), companyRadius);
+                            })
+                        .attr("x", function() {
+                            return +d3.select(this).attr("x") + companyTextX;
                         })
-                    .attr("x", function() {
-                        return +d3.select(this).attr("x") + companyTextX;
-                    })
-                    .attr("y", companyTextY)
-                    .attr("font-style", "italic")
-                    .attr("font-size", companyTextSize + "px")
-                    .attr("fill", acquired.select("circle").attr("fill"))
-                    .style("opacity", 0.0)
-                    .transition()
-                    .delay(delay)
-                    .duration(250)
-                    .style("opacity", 1.0);
+                        .attr("y", companyTextY + (i * companyTextSize))
+                        .attr("font-style", "italic")
+                        .attr("font-size", companyTextSize + "px")
+                        .attr("fill", acquired.select("circle").attr("fill"))
+                        .style("opacity", 0.0)
+                        .transition()
+                        .delay(delay)
+                        .duration(250)
+                        .style("opacity", 1.0);
+            }
         }
 
         function companySuesPerson(plaintiffName, defendantName) {
