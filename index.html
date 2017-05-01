@@ -171,6 +171,8 @@
             showTypeLabels(false)
             var totalDelay = clearCanvas();
 
+            resetInfoCont();
+
             updateYearText(totalDelay);
             totalDelay = 500.0; // Add some time for switching the year
 
@@ -266,7 +268,8 @@
             // svg.append("rect")
             //     .attr("width", "100%")
             //     .attr("height", "100%")
-            //     .attr("fill", backgroundColor);
+            //     .attr("fill", 'red')
+            //     .style('opacity', 0.1);
 
             // Add the different arcs
 
@@ -445,7 +448,11 @@
                     .html(yearDescriptions[currentYear])
                 d3.select("#year-description-title")
                     .html(function() {
-                        return isStartYear() ? "Start" : currentYear;
+                        return isStartYear() ? "" : currentYear;
+                    })
+                d3.select("#nextButton")
+                    .text(function(){
+                        return isStartYear() ? "Start" : "Next year";
                     })
             });
         }
@@ -815,11 +822,10 @@
 
                     var company = companyDescriptions[companyName];
                     var infoCont = d3.select("#company-info-cont")
-                    infoCont.style("visibility", "visible");
 
+                    infoCont.html('') // Clear the HTML that is already in there
                     infoCont.append("h3").html(companyName);
                     infoCont.append("p").html(company.description)
-
 
                     hasEmployees = false;
                     d3.selectAll("g")
@@ -845,12 +851,25 @@
                         })
              })
              .on("mouseout", function(d) {
-                d3.select("#company-info-cont")
-                    .style("visibility", "hidden")
-                    .html("");
+                resetInfoCont();
              });
 
             return g;
+        }
+
+        function resetInfoCont() {
+        d3.select("#company-info-cont")
+            .html("");
+
+        d3.select("#company-info-cont")
+            .append("p")
+            .text("Hover over the dots to find out more about each company and person.")
+            .style("font-style", "italic");
+        // infoBox.html('')
+        // infoBox.select("h4").remove()
+        // infoBox.append("p").text("Hover over the dots to find out more about each company and their promises")
+        //         .style("font-style", "italic");
+        // ul.remove();
         }
 
         function changeCompanyName(fromName, toName) {
@@ -1215,7 +1234,7 @@
     }
 
     function loadFuture() {
-        var margin = {top: 40, right: 90, bottom: 50, left: 50},
+        var margin = {top: 10, right: 90, bottom: 50, left: 50},
             width = 750 - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
@@ -1289,8 +1308,8 @@
 
           // x-axis
 
-          xAxisTranslateX = width/2.0;
-          xAxisTranslateY = margin.bottom;
+          xAxisTranslateX = (width + margin.right)/2.0;
+          xAxisTranslateY = margin.bottom - 5;
           svg.append("g")
               .attr("class", "x-axis")
               .attr("transform", "translate(0," + height + ")")
@@ -1299,12 +1318,13 @@
               .attr("class", "x-label")
               .attr("transform", "translate(" + xAxisTranslateX + "," + xAxisTranslateY + ")")
               .style("text-anchor", "end")
+              .style("font-style", "italic")
               .text("Expected Ship Year");
 
           // y-axis
 
           yAxisTranslateX = -margin.left;
-          yAxisTranslateY = height/2.0 - 25.0; // It looks gross in the middle so we moved it up a bit
+          yAxisTranslateY = (height - margin.top - margin.bottom)/2.0 - 30; // It looks gross in the middle so we moved it up a bit
           svg.append("g")
               .attr("class", "y-axis")
               .call(yAxis)
@@ -1313,6 +1333,7 @@
               .attr("transform", "translate(" + yAxisTranslateX + "," + yAxisTranslateY + ")rotate(-90)")
               .attr("y", 6)
               .attr("dy", ".71em")
+              .style("font-style", "italic")
               .style("text-anchor", "end")
               .text("Level of Autonomy");
 
@@ -1355,14 +1376,15 @@
                        .style("font-size", "12px");
 
 
-                  infoBox.select("h4").text(d["Company"]);
+                  infoBox.select('p').remove();
+                  infoBox.append("h4").text(d["Company"]);
                   ul = infoBox.append("ul");
                   var bullet_points = d["Comments"].split("; ");
                   for (i in bullet_points) {
                     point = bullet_points[i];
                     ul.append("li")
                         .text(point)
-                        .style("font-size", "16px");
+                        .style("font-size", "14px");
                   }
 
 
@@ -1372,10 +1394,18 @@
                   tooltip.transition()
                        .duration(500)
                        .style("opacity", 0);
-                infoBox.select("h4").text("Hover over the dots to find out more about each company and their promises");
-                ul.remove();
+                  resetInfoBox();
               });
+              
 
+              function resetInfoBox() {
+                infoBox.select("h4").remove()
+                infoBox.append("p").text("Hover over the dots to find out more about each company and their promises")
+                        .style("font-style", "italic");
+                ul.remove();
+              }
+
+              resetInfoBox()
             });
     }
 
@@ -1430,20 +1460,24 @@
             </div>
           </div>
           <div class ="row">
-            <div class = "col-5" id="present-data-display">
-                <div class = "row present-info" id="year-info-cont">
-                    <div class= "info-text-box">
-                        <h1 id="year-description-title"></h1>
-                        <p id="year-description"></p>
-                        <button type="button"
-                            class="btn"
-                            id="nextButton"
-                            onclick="nextButtonFunction()">Next Year
-                        </button>
+            <div class = "col-5">
+                <div id="present-data-display">
+                    <div class = "row present-info" id="year-info-cont">
+                        <div class= "info-text-box">
+                            <h1 id="year-description-title"></h1>
+                            <p id="year-description"></p>
+                            <div class = "d-flex justify-content-center">
+                                <button type="button"
+                                    class="btn"
+                                    id="nextButton"
+                                    onclick="nextButtonFunction()">Start
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class = "row present-info" id="company-info-cont">
-                    <div class= "info-text-box">
+                    <div class = "row present-info" id="company-info-cont">
+                        <div class= "info-text-box">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1467,7 +1501,7 @@
           </div>
           
           <div class="row">
-            <div class="col-4">
+            <div class="col-5">
               <table class="table table-condensed">
                 <thead>
                   <tr>
@@ -1508,7 +1542,7 @@
             <div class="col-1">
             </div>
 
-            <div class="col-7">
+            <div class="col-6">
 
               <div class = "row">
                 <div id="scatterplot">
@@ -1519,7 +1553,6 @@
 
                 <div class="col">
                   <div id="infoBox">
-                    <h4 class = "title-box">Hover over the dots to find out more about each company and their promises</h4>
                   </div>
                 </div>
 
