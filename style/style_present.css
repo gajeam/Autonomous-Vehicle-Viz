@@ -34,6 +34,7 @@
     margin-left:20px;
     padding:20px;
 }
+
 #year-info-cont {
   height:300px;
   background-color: #e1e8ec; /* @NISHA Top-left box background color */
@@ -52,4 +53,8 @@
     width: 40vw;
     padding-left: 40px;
     padding-right: 40px;
+}
+
+#company-info-emptystate p {
+  font-style:italic;
 }

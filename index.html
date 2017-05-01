@@ -168,10 +168,14 @@
         function runYear(year) {
             // Disable the button
             $("#nextButton").disable(true);
+
+            // Show the hover over info text
+            d3.select('#company-info-emptystate')
+             .style('display', undefined);
+
+
             showTypeLabels(false)
             var totalDelay = clearCanvas();
-
-            resetInfoCont();
 
             updateYearText(totalDelay);
             totalDelay = 500.0; // Add some time for switching the year
@@ -818,14 +822,20 @@
 
              g.select("circle")
                 .on("mouseover", function(d) {
+
                     companyName = d3.select(this.parentNode).select("text").text(); // Do this because the name might change
 
                     var company = companyDescriptions[companyName];
-                    var infoCont = d3.select("#company-info-cont")
+                    var infoCont = d3.select("#company-info")
 
-                    infoCont.html('') // Clear the HTML that is already in there
-                    infoCont.append("h3").html(companyName);
-                    infoCont.append("p").html(company.description)
+                    d3.select('#company-info-emptystate')
+                        .style('display', 'none');
+                    d3.select('#company-info')
+                        .style('display', undefined)
+
+                    infoCont.select("#company-name").html(companyName);
+                    infoCont.select("#company-description").html(company.description)
+
 
                     hasEmployees = false;
                     d3.selectAll("g")
@@ -834,43 +844,35 @@
                         })
                         .call(function() {
                             if (hasEmployees == true) {
-                                infoCont.append("h5").html("Employees as of " + currentYear)
-                                infoCont.append("br") // Ugh this still doesn't work
-                                infoCont.append("ul");
-
+                                infoCont.select("#company-employees-title")
+                                        .style('display', undefined);
+                                infoCont.select("#company-employees-title").html("Employees as of " + currentYear);
+                            } else {
+                                infoCont.select("#company-employees-title")
+                                        .style('display', 'none')
                             }
                         })
                         .each(function() {
-                            infoCont.select("ul")
+                            infoCont.select("#company-employee-list")
                                     .append("li")
                                     .html(d3.select(this).select("text").text())
                         })
                         .call(function() {
-                            infoCont.append("br")
-                            infoCont.append("p").html("<i>Source: " + company.source)
+                            infoCont.select("#company-source").html("<i>Source: " + company.source)
                         })
              })
              .on("mouseout", function(d) {
-                resetInfoCont();
+                d3.select('#company-info-emptystate')
+                    .style('display', undefined);
+                d3.select('#company-employee-list')
+                    .html('')
+                d3.select('#company-info')
+                    .style('display', 'none')
              });
 
             return g;
         }
 
-        function resetInfoCont() {
-        d3.select("#company-info-cont")
-            .html("");
-
-        d3.select("#company-info-cont")
-            .append("p")
-            .text("Hover over the dots to find out more about each company and person.")
-            .style("font-style", "italic");
-        // infoBox.html('')
-        // infoBox.select("h4").remove()
-        // infoBox.append("p").text("Hover over the dots to find out more about each company and their promises")
-        //         .style("font-style", "italic");
-        // ul.remove();
-        }
 
         function changeCompanyName(fromName, toName) {
             company = d3.select("#" + id(fromName));
@@ -1402,7 +1404,10 @@
                 infoBox.select("h4").remove()
                 infoBox.append("p").text("Hover over the dots to find out more about each company and their promises")
                         .style("font-style", "italic");
-                ul.remove();
+                try {
+                    ul.remove();
+                 } catch (err){
+                }
               }
 
               resetInfoBox()
@@ -1433,12 +1438,13 @@
         <div class = "row topic-row" id="past-row">
           <div class="row">
             <div class="col">
-                <div id="past-text">
+                <div id="past-text" class="explaining-text">
                     <h3>
                         THE PAST
                     </h3>
-                    <p> DARPA Challenges are so awesome, omg it's like they're incredible </br>
-                        Don't you just wanna know more about them?? </p>
+                    <p>
+                    In 2003, the United States’ Defense Advanced Research Projects Agency (DARPA) launched The Grand Challenge to spur the innovation of unmanned, remote controlled ground vehicles. This event was the first of its kind and the technologies developed for these competitions have undoubtedly supported and accelerated the progress we have seen within the autonomous vehicle industry.
+                    </p>
                 </div>
             </div>
           </div>
@@ -1450,7 +1456,7 @@
         <div class = "row topic-row" id="present-row">
           <div class="row">
             <div class="col">
-                <div id="present-text">
+                <div id="present-text" class="explaining-text">
                     <h2>
                         THE PRESENT
                     </h2>
@@ -1476,7 +1482,15 @@
                         </div>
                     </div>
                     <div class = "row present-info" id="company-info-cont">
-                        <div class= "info-text-box">
+                        <div id='company-info' style='display:none'>
+                            <h3 id='company-name'></h3>
+                            <p id='company-description'></p>
+                            <h5 id='company-employees-title'></h5>
+                            <ul id='company-employee-list'></ul>
+                            <p id ='company-source'></p>
+                        </div>
+                        <div id='company-info-emptystate' style='display:none;'>
+                            <p>Hover over the dots to find out more about each company and person.</p>
                         </div>
                     </div>
                 </div>
@@ -1490,7 +1504,7 @@
         <div class = "row topic-row" id="future-row">
           <div class="row">
             <div class="col">
-                <div id="future-text">
+                <div id="future-text" class = "explaining-text">
                     <h2>
                         THE FUTURE
                     </h2>

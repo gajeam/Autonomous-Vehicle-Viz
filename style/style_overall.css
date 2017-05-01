@@ -15,7 +15,6 @@
     height: 850px;
 }
 
-
 #title-text {
     color: white;
     text-align: center;
@@ -32,4 +31,11 @@
 .topic-row {
     min-width: 100vw;
     height: 850px;
+}
+
+.explaining-text p {
+    text-align: justify-all;
+
+    padding-left: 200px;
+    padding-right:200px;
 }
