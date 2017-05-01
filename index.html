@@ -63,7 +63,7 @@
         companyRadius = 24;
 
         personTextSize = 10.0;
-        companyTextSize = 16.0;
+        companyTextSize = 14.0;
 
         kIndexTech = 0;
         kIndexStartUp = 1;
@@ -231,7 +231,7 @@
     
         function animateAction(d, action) {
             action = d.action;
-            logAnimations = true;
+            logAnimations = false;
             if (logAnimations) {
                 console.log(d.actor + " " + d.action + " " + d.obj1)
             }
@@ -337,7 +337,7 @@
                         .attr("font-weight", 600)
                         .text(companyType.name)
                         .each(function() {
-                            orientText(this.parentNode, orient, margin);
+                            orientText(this, orient, margin, true);
                         })
                 }
             }
@@ -515,7 +515,7 @@
              .attr("font-size", personTextSize + "px")
              .each(function() {
                 orient = rotateOrientation(company.select("text").attr("_orientation"), 2);
-                orientText(this.parentNode, orient, personRadius);
+                orientText(this, orient, personRadius, true);
              })
              .transition()
              .delay(250)
@@ -594,7 +594,7 @@
             person.select("text")
                      .each(function() {
                         orient = rotateOrientation(company.select("text").attr("_orientation"), 2);
-                        orientText(this.parentNode, orient, personRadius);
+                        orientText(this, orient, personRadius, true);
                  });
 
             person.attr("class", "person")
@@ -812,19 +812,47 @@
             .transition()
                 .attr("r", company.radius);
 
-            g.append("text")
-             .attr("fill-opacity", 1.0)
-              .attr("font-size", companyTextSize + "px")
-             .text(name)
-             .each(function() {
-                orientText(this.parentNode, orientationForIndex(indexType), company.radius)
-             });
+            var text = g.append("text")
+                         .attr("fill-opacity", 1.0)
+                         .attr("font-size", companyTextSize + "px")
+                          // .each(function() {
+                          //       orientText(this.parentNode, orientationForIndex(indexType), company.radius)
+                          //    });
+
+            // if (indexType == kIndexStartUp) {
+                splitWords = (indexType == kIndexStartUp) ? name.split(' ') : [name];
+                for (i in splitWords) {
+                        text.append('tspan')
+                         .text(splitWords[i])
+                         .attr('x', 0)
+                         .attr('y', companyTextSize * 2.0)
+                         .attr('dy', i * companyTextSize)
+                       .each(function() {
+                            orientText(this, orientationForIndex(indexType), company.radius)
+                         });
+                         // .attr('alignment-baseline', function() {
+                         //    if (indexType == kIndexStartUp) {
+                         //        return 'baseline'
+                         //    } return undefined;
+                         // })
+                }
+
+            // }
+
+            function textFromTspans(textNode) {
+                textVals = []
+                d3.select(textNode)
+                .selectAll('tspan')
+                .each(function() {
+                    textVals.push(d3.select(this).text())
+                });
+                return textVals.join(' ')
+            }
 
              g.select("circle")
                 .on("mouseover", function(d) {
-
-                    companyName = d3.select(this.parentNode).select("text").text(); // Do this because the name might change
-
+                     // Do this because the name might change
+                    companyName = textFromTspans(d3.select(this.parentNode).select("text").node())
                     var company = companyDescriptions[companyName];
                     var infoCont = d3.select("#company-info")
 
@@ -886,7 +914,9 @@
                     .style("opacity", 0.0)
                     .on("end", function() {
                         d3.select(this)
+                            .select('tspan')
                             .text(toName)
+                        d3.select(this)
                             .transition()
                             .delay(fadeInDelay)
                             .duration(fadeDuration)
@@ -915,15 +945,19 @@
                     .duration(250)
                     .style("opacity", 0.0);
 
+            console.log(companyText.attr('_orientation'));
             company.insert("text")
                     .attr("class", "to-fade")
                     .text(acquiredName)
-                    .attr("x", companyTextX)
-                    .attr("y", companyTextY)
-                    .attr("text-anchor", function() {
-                        return companyText.attr("text-anchor");
+                    .each(function() {
+                            orientText(this, companyText.attr('_orientation'), companyRadius, true);
+                        })
+                    .attr("x", function() {
+                        return +d3.select(this).attr("x") + companyTextX;
                     })
+                    .attr("y", companyTextY)
                     .attr("font-style", "italic")
+                    .attr("font-size", companyTextSize + "px")
                     .attr("fill", acquired.select("circle").attr("fill"))
                     .style("opacity", 0.0)
                     .transition()
@@ -974,7 +1008,6 @@
 
             function accessPointForId(identifier, indexType) {
                 element = d3.select("#" + id(identifier));
-                console.log(element)
                 translate = xyTranslate(element.attr("transform"));
                 return {"x": translate[0], "y": translate[1]}
             }
@@ -1104,7 +1137,7 @@
             return +c;
         }
 
-        function orientText(element, orientation, radius) {
+        function orientText(element, orientation, radius, isText=false) {
             margin = 4.0;
 
             baseline = "middle"
@@ -1131,11 +1164,13 @@
             }
 
             d3.select(element)
-                .select("text")
                 .style("alignment-baseline", baseline)
                 .attr("text-anchor", textAnchor)
                 .attr("x", x)
                 .attr("y", y)
+
+            textElement = (isText == true) ? element : element.parentNode;
+            d3.select(textElement)
                 .attr("_orientation", orientation);
         }
 
@@ -1577,8 +1612,6 @@
 
           </div>
         </div>
-
-
     </div>
 
     <script type="text/javascript">
