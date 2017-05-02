@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="748px" height="188px" viewBox="0 0 748 188" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>present-legend</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="present-legend">
+            <g id="Types-Legend">
+                <rect id="Circle-Legend" fill="#E1E8EC" fill-rule="nonzero" x="0" y="0" width="463" height="187.863281"></rect>
+                <g id="Car-Companies" transform="translate(49.000000, 145.000000)">
+                    <circle id="Car4" fill="#2B6BA0" fill-rule="nonzero" cx="340.456083" cy="16" r="16"></circle>
+                    <circle id="Car3" fill="#9CC3E4" fill-rule="nonzero" cx="266.874348" cy="16" r="16"></circle>
+                    <circle id="Car2" fill="#12538A" fill-rule="nonzero" cx="193.292614" cy="16" r="16"></circle>
+                    <circle id="Car1" fill="#6AA0CC" fill-rule="nonzero" cx="119.710879" cy="16" r="16"></circle>
+                    <g id="Automobile-Companies" transform="translate(0.000000, 2.000000)" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                        <g id="Automobile">
+                            <text>
+                                <tspan x="0.6584581" y="11">Automobile</tspan>
+                            </text>
+                        </g>
+                        <g id="Companies" transform="translate(1.000000, 14.000000)">
+                            <g id="Group">
+                                <text id="Companies">
+                                    <tspan x="0.3251248" y="11">Companies</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+                <g id="Tech-Companies" transform="translate(49.000000, 94.000000)">
+                    <circle id="Tech4" fill="#09C409" fill-rule="nonzero" cx="340.456083" cy="16" r="16"></circle>
+                    <circle id="Tech3" fill="#7FE77F" fill-rule="nonzero" cx="266.874348" cy="16" r="16"></circle>
+                    <circle id="Tech2" fill="#039403" fill-rule="nonzero" cx="193.292614" cy="16" r="16"></circle>
+                    <circle id="Tech1" fill="#53D953" fill-rule="nonzero" opacity="0.959999979" cx="119.710879" cy="16" r="16"></circle>
+                    <g id="Technology-Companies" transform="translate(0.000000, 2.000000)" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                        <g id="Technology">
+                            <text>
+                                <tspan x="0.6704581" y="11">Technology</tspan>
+                            </text>
+                        </g>
+                        <g id="Companies" transform="translate(1.000000, 14.000000)">
+                            <g id="Group">
+                                <text id="Companies">
+                                    <tspan x="0.3251248" y="11">Companies</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+                <g id="Startups" transform="translate(68.000000, 50.000000)">
+                    <circle id="Startup4" fill="#BA456A" fill-rule="nonzero" cx="324.322215" cy="12" r="12"></circle>
+                    <circle id="Startup3" fill="#731F35" fill-rule="nonzero" cx="249.872911" cy="12" r="12"></circle>
+                    <circle id="Startup2" fill="#9B264C" fill-rule="nonzero" cx="175.423607" cy="12" r="12"></circle>
+                    <circle id="Startup1" fill="#EB9CB4" fill-rule="nonzero" cx="100.974302" cy="12" r="12"></circle>
+                    <g id="Group" transform="translate(0.000000, 5.000000)" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                        <g id="Startups">
+                            <text>
+                                <tspan x="0.5557915" y="11">Startups</tspan>
+                            </text>
+                        </g>
+                    </g>
+                </g>
+                <g id="People" transform="translate(80.000000, 16.000000)">
+                    <circle id="Person8" fill="#A0A0A0" fill-rule="nonzero" cx="315.621413" cy="7" r="6"></circle>
+                    <circle id="Person7" fill="#53D953" fill-rule="nonzero" cx="283.102954" cy="7" r="6"></circle>
+                    <circle id="Person6" fill="#12538A" fill-rule="nonzero" cx="250.584495" cy="7" r="6"></circle>
+                    <circle id="Person5" fill="#9B264C" fill-rule="nonzero" cx="218.066036" cy="7" r="6"></circle>
+                    <circle id="Person4" fill="#039403" fill-rule="nonzero" cx="185.547577" cy="7" r="6"></circle>
+                    <circle id="Person3" fill="#6AA0CC" fill-rule="nonzero" cx="153.029118" cy="7" r="6"></circle>
+                    <circle id="Person2" fill="#EB9CB4" fill-rule="nonzero" cx="120.510659" cy="7" r="6"></circle>
+                    <circle id="Person1" fill="#A0A0A0" fill-rule="nonzero" cx="87.992201" cy="7" r="6"></circle>
+                    <g id="Group" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                        <text id="People">
+                            <tspan x="0.1211249" y="11">People</tspan>
+                        </text>
+                    </g>
+                </g>
+            </g>
+            <g id="Lines-Legend" transform="translate(490.000000, 0.000000)">
+                <rect id="Line-Legend" fill="#E1E8EC" fill-rule="nonzero" x="0" y="0" width="258" height="187.863281"></rect>
+                <g id="Lucia-Uber" transform="translate(30.000000, 122.000000)">
+                    <path d="M25.500002,32 L161.621835,32" id="Lawsuit-line" stroke="#FF0000" fill="#FF0000" fill-rule="nonzero" stroke-linecap="square" stroke-dasharray="8" transform="translate(93.560918, 32.500000) scale(-1, 1) translate(-93.560918, -32.500000) "></path>
+                    <polygon id="Lawsuit-line-decoration-1" stroke="#FF0000" fill="#FF0000" fill-rule="nonzero" stroke-linecap="square" stroke-dasharray="8" transform="translate(31.100000, 32.000000) scale(-1, 1) translate(-31.100000, -32.000000) " points="36.5 32 25.7 29 25.7 35"></polygon>
+                    <g id="Uber" transform="translate(162.000000, 0.000000)">
+                        <circle id="Oval" fill="#53D953" fill-rule="nonzero" cx="18" cy="31.5" r="18"></circle>
+                        <g id="Group" transform="translate(3.000000, 0.000000)" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                            <g id="Uber">
+                                <text>
+                                    <tspan x="0" y="11">Uber</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </g>
+                    <g id="Lucia" transform="translate(0.000000, 10.000000)">
+                        <circle id="Oval" fill="#53D953" fill-rule="nonzero" cx="17" cy="22" r="8"></circle>
+                        <g id="Group" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                            <text id="Lucia">
+                                <tspan x="0" y="11">Lucia</tspan>
+                            </text>
+                        </g>
+                    </g>
+                    <g id="Lucia-was-sued-by-Ub" transform="translate(12.000000, 45.000000)" fill="#1E1D21" font-size="12">
+                        <g id="Lucia-was" transform="translate(0.000000, 1.000000)" font-style="italic" font-family="HelveticaNeue-LightItalic, Helvetica Neue" font-weight="300">
+                            <g id="Group">
+                                <text id="Lucia-was">
+                                    <tspan x="0" y="11">Lucia was</tspan>
+                                </text>
+                            </g>
+                        </g>
+                        <g id="sued" transform="translate(55.000000, 0.000000)" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="bold">
+                            <g id="Group">
+                                <text id="sued">
+                                    <tspan x="0.1279994" y="12">sued</tspan>
+                                </text>
+                            </g>
+                        </g>
+                        <g id="by-Uber" transform="translate(88.000000, 1.000000)" font-style="italic" font-family="HelveticaNeue-LightItalic, Helvetica Neue" font-weight="300">
+                            <g id="Group">
+                                <text id="by-Uber">
+                                    <tspan x="0.600307" y="11">by Uber</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+                <g id="Gabe-founded-Uber" transform="translate(30.000000, 63.000000)">
+                    <path d="M186,32 L17,32" id="Founding-Line" stroke="#53D953" stroke-width="2" stroke-linecap="square"></path>
+                    <g id="Uber" transform="translate(162.000000, 0.000000)">
+                        <circle id="Oval" fill="#53D953" fill-rule="nonzero" cx="18" cy="32" r="18"></circle>
+                        <g id="Group" transform="translate(3.000000, 0.000000)" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                            <g id="Uber">
+                                <text>
+                                    <tspan x="0" y="11">Uber</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </g>
+                    <g id="Gabe" transform="translate(0.000000, 10.000000)">
+                        <circle id="Oval" fill="#53D953" fill-rule="nonzero" cx="17" cy="22" r="8"></circle>
+                        <g id="Group" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                            <text id="Gabe">
+                                <tspan x="0" y="11">Gabe</tspan>
+                            </text>
+                        </g>
+                    </g>
+                    <g id="Group" transform="translate(12.000000, 45.000000)" fill="#1E1D21" font-size="12">
+                        <g id="Gabe" transform="translate(0.000000, 1.000000)" font-style="italic" font-family="HelveticaNeue-LightItalic, Helvetica Neue" font-weight="300">
+                            <g id="Group">
+                                <text id="Gabe">
+                                    <tspan x="0" y="11">Gabe</tspan>
+                                </text>
+                            </g>
+                        </g>
+                        <g id="founded" transform="translate(33.000000, 0.000000)" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="bold">
+                            <g id="Group">
+                                <text id="founded">
+                                    <tspan x="0.5719997" y="12">founded</tspan>
+                                </text>
+                            </g>
+                        </g>
+                        <g id="Uber" transform="translate(85.000000, 1.000000)" font-style="italic" font-family="HelveticaNeue-LightItalic, Helvetica Neue" font-weight="300">
+                            <g id="Group">
+                                <text id="Uber">
+                                    <tspan x="0.589538" y="11">Uber</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+                <g id="Nisha-Uber" transform="translate(30.000000, 4.000000)">
+                    <path d="M176,32 L17,32" id="Hire-Line" stroke="#53D953" stroke-width="2" stroke-linecap="square" stroke-dasharray="4"></path>
+                    <g id="Uber" transform="translate(162.000000, 0.000000)">
+                        <circle id="Oval" fill="#53D953" fill-rule="nonzero" cx="18" cy="31.5" r="18"></circle>
+                        <g id="Group" transform="translate(3.000000, 0.000000)" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                            <g id="Uber">
+                                <text>
+                                    <tspan x="0" y="11">Uber</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </g>
+                    <g id="Nisha" transform="translate(0.000000, 10.000000)">
+                        <circle id="Oval" fill="#53D953" fill-rule="nonzero" cx="17" cy="22" r="8"></circle>
+                        <g id="Group" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
+                            <text id="Nisha">
+                                <tspan x="0" y="11">Nisha</tspan>
+                            </text>
+                        </g>
+                    </g>
+                    <g id="Nisha-was-hired-by-U" transform="translate(12.000000, 45.000000)" fill="#1E1D21" font-size="12">
+                        <g id="Nisha-was" transform="translate(0.000000, 1.000000)" font-style="italic" font-family="HelveticaNeue-LightItalic, Helvetica Neue" font-weight="300">
+                            <g id="Group">
+                                <text id="Nisha-was">
+                                    <tspan x="0" y="11">Nisha was</tspan>
+                                </text>
+                            </g>
+                        </g>
+                        <g id="hired" transform="translate(56.000000, 0.000000)" font-family="HelveticaNeue-Bold, Helvetica Neue" font-weight="bold">
+                            <g id="Group">
+                                <text id="hired">
+                                    <tspan x="0.6759994" y="12">hired</tspan>
+                                </text>
+                            </g>
+                        </g>
+                        <g id="by-Uber" transform="translate(90.000000, 1.000000)" font-style="italic" font-family="HelveticaNeue-LightItalic, Helvetica Neue" font-weight="300">
+                            <g id="Group">
+                                <text id="by-Uber">
+                                    <tspan x="0.403384" y="11">by Uber</tspan>
+                                </text>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -53,9 +53,9 @@
         currentYear = maxYear + 1;
 
         canvasWidth = 745.0;
-        canvasHeight = 745.0;
+        canvasHeight = 580.0;
 
-        mainRadius = 250.0;
+        mainRadius = 225.0;
         mainStrokeWidth = 5.0
 
         personRadius = 8;
@@ -449,17 +449,24 @@
                 // d3.select("#yearText")
                 //     .text(currentYear);
                 d3.select("#year-description")
-                    .html(yearDescriptions[currentYear])
+                    .html(function () {
+                        return isStartYear ? startText() : yearDescriptions[currentYear];
+                    })
                 d3.select("#year-description-title")
                     .html(function() {
-                        return isStartYear() ? "" : currentYear;
+                        return isStartYear() ? "The Present" : currentYear;
                     })
                 d3.select("#nextButton")
                     .text(function(){
                         return isStartYear() ? "Start" : "Next year";
                     })
             });
+
+            function startText() {
+                return "After the DARPA races, the race was on to be the first to bring autonomous vehicles to market. What started off as just science fiction quickly became a corporate battlefield frought with employee poaching, billion dollar acquisitions, and eager entrepeneurs leaving big companies to begin their own startups.<br/><br/>This visualiztion gives a history of the corporate race to autonomous vehicles.";
+            }
         }
+
 
         /*
          *  PEOPLE METHODS
@@ -1002,7 +1009,7 @@
                 .append("path")
                 .attr("d", lineFunction(startLineData))
                 .attr("stroke", arrowColor)
-                .attr("stroke-width", 3)
+                .attr("stroke-width", 2)
                 .style("opacity", .5)
                 .attr("stroke-dasharray", 8)
                 .attr("marker-end", "url(#arrow-sue)")
@@ -1108,7 +1115,7 @@
                 .attr("class", "to-remove")
                 .append("path")
                 .attr("stroke", company.select("circle").attr("fill"))
-                .attr("stroke-width", 1.0)
+                .attr("stroke-width", 2.0)
                 .attr("stroke-dasharray", function() {
                     return dashed ? 4 : undefined;
                 })
@@ -1493,7 +1500,7 @@
         </div>
 
         <div class = "row topic-row" id="present-row">
-          <div class="row">
+<!--           <div class="row">
             <div class="col">
                 <div id="present-text" class="explaining-text">
                     <h2>
@@ -1504,12 +1511,12 @@
                 </div>
             </div>
           </div>
-          <div class ="row">
+-->          <div class ="row">
             <div class = "col-5">
                 <div id="present-data-display">
                     <div class = "row present-info" id="year-info-cont">
                         <div class= "info-text-box">
-                            <h1 id="year-description-title"></h1>
+                            <h1 id="year-description-title">The Present</h1>
                             <p id="year-description"></p>
                             <div class = "d-flex justify-content-center">
                                 <button type="button"
@@ -1521,7 +1528,7 @@
                         </div>
                     </div>
                     <div class = "row present-info" id="company-info-cont">
-                        <div id='company-info' style='display:none'>
+                        <div id='company-info'>
                             <h3 id='company-name'></h3>
                             <p id='company-description'></p>
                             <h5 id='company-employees-title'></h5>
@@ -1535,7 +1542,12 @@
                 </div>
             </div>
             <div class="col-7 svg-container">
-                <div id="svgCanvas"></div>
+                <row>
+                    <div id="svgCanvas"></div>
+                </row>
+                <row>
+                    <img src="img/present-legend.svg" id="present-legend"/>
+                </row>
             </div>
           </div>
         </div>
