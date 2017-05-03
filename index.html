@@ -318,10 +318,11 @@
                 .attr("y", yearFont + margin);
 
             // Use these for z-axes
-            var zOrder = [kIndexStartUp, kIndexCar, kIndexStartUp]
+            var zOrder = [kIndexStartUp, kIndexCar, kIndexTech]
             for (i in zOrder) {
-                svg.append('g').attr('id', 'z-level' + zOrder[i]);
+                svg.append('g').attr('id', 'z-level-' + zOrder[i]);
             }
+            svg.append('g').attr('id', 'z-level-person');
 
             function setUpTypeLabels() {
                 orientations = ["right", "bottom", "left"];
@@ -497,7 +498,8 @@
             var endColor = company.select("circle").attr("fill");
 
             var moveTime = 1400
-            var person = svg.append("g")
+            var person = svg.insert("g", '#z-level-person')
+
             person.attr("class", "person")
                 .attr("id", id(personName))
                 .attr("_companyId", company.attr("id"))
@@ -818,7 +820,7 @@
                 });
 
             if (afterId == undefined) {
-                afterId = 'z-level' + indexType;
+                afterId = 'z-level-' + indexType;
                 console.log(afterId);
             }
             g = svg.insert("g", '#' + afterId)
