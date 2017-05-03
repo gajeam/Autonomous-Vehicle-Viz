@@ -140,6 +140,13 @@
             }
         })
 
+        d3.tsv("data/peopleInfo.tsv", function(d) {
+            peopleDescriptions = {}
+            for (i in d) {
+                peopleDescriptions[d[i].person] = d[i]
+            }
+        })
+
         d3.tsv("data/yearInfo.tsv", function(d) {
             yearDescriptions = {}
             for (i in d) {
@@ -177,6 +184,13 @@
                 return show ? 'none' : undefined;
              });
         }
+        function clearHoverArea() {
+            d3.select("#hover-entity-name").html('');
+            d3.select("#hover-entity-description").html('')
+            d3.select("#hover-entity-employees-title").html('')
+            d3.select("#hover-entity-source").html("")
+            d3.select("#hover-entity-employee-list").html('')
+        }
         function runYear(year) {
             // Disable the button
             $("#nextButton").disable(true);
@@ -193,7 +207,7 @@
             dataRun = d3.selectAll("something");
 
             delayInfo = {   "start": [1500, 150], // before, btw
-                            "acquire": [1000, 2000],
+                            "acquire": [1000, 1500],
                             "found": [1000, 10],
                             "rename": [800, 150],
                             "sue": [1000, 1000],
@@ -534,13 +548,13 @@
                 .attr("r", 0)
                 .on("mouseover", function() {
                     showHoverEmptyState(false);
-
+                    clearHoverArea();
                     d3.select("#hover-entity-name").html(personName);
-                    d3.select("#hover-entity-description").html('')
-                    d3.select("#hover-entity-employees-title").html('')
-                    d3.select("#hover-entity-source").html("")
-                    d3.select("#hover-entity-employee-list").html('')
 
+                    if (peopleDescriptions[personName] != undefined) {
+                        d3.select("#hover-entity-description").html(peopleDescriptions[personName].description)
+                        d3.select("#hover-entity-employees-title").html('Employment as of ' + currentYear);
+                    }
                     var personData = peopleData[personName];
                     for (p in personData) {
                         d3.select("#hover-entity-employee-list")
@@ -748,7 +762,7 @@
             acquirer = d3.select("g#" + id(acquirerName));
             acquirerTransform = acquirer.attr("transform")
             acquirerColor = acquirer.select("circle").attr("fill");
-            duration = 1500;
+            duration = 1800;
 
             // Move the startup
             svg.select("#" + id(startupName))
@@ -760,7 +774,7 @@
                 .duration(duration)
                 .attr("transform", acquirerTransform)
 
-            acqDelay = 250.0;
+            acqDelay = 200.0;
             totalAcqDelay = 0.0;
             peopleCount = 0;
             peopleIterator = 0;
@@ -929,6 +943,7 @@
                 .on("mouseover", function(d) {
                      // Do this because the name might change
                     companyName = textFromTspans(d3.select(this.parentNode).select("text").node(), (indexType != kIndexStartUp));
+                    clearHoverArea();
                     var company = companyDescriptions[companyName];
                     var infoCont = d3.select("#hover-entity-info")
 
@@ -1612,7 +1627,7 @@
                             <p id ='hover-entity-source'></p>
                         </div>
                         <div id='hover-entity-info-emptystate' style='display:none;'>
-                            <p>Hover over the dots to find out more about each company.</p>
+                            <p>Hover over the dots to find out more about each company and person.</p>
                         </div>
                     </div>
                 </div>
