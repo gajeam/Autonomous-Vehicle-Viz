@@ -360,11 +360,6 @@
             return center;
         }
 
-        function testPoint(percent) {
-            point = calcArc.node().getPointAtLength(calcArc.node().getTotalLength() * .5 * percent)
-            console.log(point)
-        }
-
         function resetCanvas() {
             colorIndex = [0, 0, 0]
             svg.selectAll('g')
@@ -821,7 +816,6 @@
 
             if (afterId == undefined) {
                 afterId = 'z-level-' + indexType;
-                console.log(afterId);
             }
             g = svg.insert("g", '#' + afterId)
                 .attr("class", company.type)
@@ -862,12 +856,16 @@
 
             // }
 
-            function textFromTspans(textNode) {
+            function textFromTspans(textNode, oneLine=false) {
+                if (oneLine == undefined) oneLine = false;
+
                 textVals = []
                 d3.select(textNode)
                 .selectAll('tspan')
                 .each(function() {
-                    textVals.push(d3.select(this).text())
+                    if (oneLine == false || (oneLine == true && textVals.length == 0)) {
+                        textVals.push(d3.select(this).text())
+                    }
                 });
                 return textVals.join(' ')
             }
@@ -875,7 +873,7 @@
              g.select("circle")
                 .on("mouseover", function(d) {
                      // Do this because the name might change
-                    companyName = textFromTspans(d3.select(this.parentNode).select("text").node())
+                    companyName = textFromTspans(d3.select(this.parentNode).select("text").node(), (indexType != kIndexStartUp));
                     var company = companyDescriptions[companyName];
                     var infoCont = d3.select("#company-info")
 
@@ -895,12 +893,10 @@
                         })
                         .call(function() {
                             if (hasEmployees == true) {
-                                infoCont.select("#company-employees-title")
-                                        .style('display', undefined);
                                 infoCont.select("#company-employees-title").html("Employees as of " + currentYear);
                             } else {
-                                infoCont.select("#company-employees-title")
-                                        .style('display', 'none')
+                                infoCont.select("#company-employees-title").html("");
+
                             }
                         })
                         .each(function() {
@@ -968,7 +964,6 @@
                     .duration(250)
                     .style("opacity", 0.0);
 
-            console.log(companyText.attr('_orientation'));
             textLines = acquiredName.split(' ');
             for (i in textLines) {
                 company.select("text")
