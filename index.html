@@ -173,6 +173,8 @@
             // Show the hover over info text
             d3.select('#company-info-emptystate')
              .style('display', undefined);
+            d3.select('#company-info')
+             .style('display', 'none');
 
 
             showTypeLabels(false)
@@ -1570,7 +1572,7 @@
                             <p id ='company-source'></p>
                         </div>
                         <div id='company-info-emptystate' style='display:none;'>
-                            <p>Hover over the dots to find out more about each company and person.</p>
+                            <p>Hover over the dots to find out more about each company.</p>
                         </div>
                     </div>
                 </div>
