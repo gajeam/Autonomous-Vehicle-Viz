@@ -151,7 +151,8 @@
          *  ANIMATION FUNCTIONS
          */
         function updateData() {
-            currentYear++;
+            skipVal = isSkipYear(currentYear) ? 2 : 1;
+            currentYear += skipVal;
             if (currentYear > maxYear) {
                 resetCanvas();
                 currentYear = startYear - 1;
@@ -459,7 +460,11 @@
                     })
                 d3.select("#year-description-title")
                     .html(function() {
-                        return isStartYear() ? "The Present" : currentYear;
+                        if (isStartYear() == true) {
+                            return "The Present"
+                        } else if (isSkipYear(currentYear)) {
+                            return currentYear + "-" + (currentYear + 1)
+                        } return currentYear;
                     })
                 d3.select("#nextButton")
                     .text(function(){
@@ -1248,9 +1253,17 @@
         }
 
 
+
         function isStartYear() {
             return currentYear == startYear - 1;
         }
+        function isSkipYear(year) {
+            // Years where we show a two year range.
+            // It's a hack but this is due tomorrow!
+            var skipYears = [2009, 2011]
+            return skipYears.indexOf(year) != -1;
+        }
+
         function id(name) {
           return name.replace(/\W/g, '')
         }
