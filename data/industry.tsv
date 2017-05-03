@@ -13,7 +13,7 @@ year	actor	actorType	action	obj1	obj2	note
 2009	Tesla	car	start			
 2009	Tom Wessner	person	hire	Tesla		
 2011	Bryan Salesky	person	hire	Google		
-2011	HERE	startup	start			
+2011	HERE Inc.	startup	start			
 2011	Udacity	startup	start	Sebastian Thrun		
 2013	Claire Delaunay	person	hire	Google		
 2013	Cruise Automation	startup	start	Kyle Vogt, Daniel Kan		
@@ -24,7 +24,7 @@ year	actor	actorType	action	obj1	obj2	note
 2014	Faraday Future	startup	start	Nick Sampson, Tom Wessner		
 2014	Sterling Anderson	person	hire	Tesla		
 2015	Apple	tech	start			
-2015	Audi, BMW, Daimler	car	acquire	HERE		
+2015	Audi, BMW, Daimler	car	acquire	HERE Inc.		
 2015	Audi, BMW, Daimler	car	start			
 2015	Brett Browning	person	hire	Uber		
 2015	Ford	car	start			
@@ -43,8 +43,8 @@ year	actor	actorType	action	obj1	obj2	note
 2016	Renault-Nissan	car	start			
 2016	Renault-Nissan	car	acquire	Sylpheo		
 2017	Baidu	tech	acquire	RavenTech		
+2017	Ford	car	acquire	Argo AI		
 2017	Sterling Anderson	person	hire	Aurora Innovation		
 2017	Tesla	car	sue	Sterling Anderson		
 2017	Uber	tech	acquire	Otto		
 2017	Waymo	tech	sue	Anthony Levandowski		
-2017	Ford	car	acquire	Argo AI		

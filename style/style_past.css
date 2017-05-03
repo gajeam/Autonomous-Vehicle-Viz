@@ -19,8 +19,14 @@
 
 
 #darpa-graph {
-  padding-bottom: 70px;
-  width: 100vw;
+	margin-left:auto;
+	margin-right:auto;
+
+      width: 1070px;
   /* The ratio is ~100:54 but this will need to be recalculated when the image file gets updated */
-  height: 50vw; 
+  height: 600px; 
+}
+
+.dankRow {
+	width:100%;
 }

@@ -554,6 +554,8 @@
                     if (peopleDescriptions[personName] != undefined) {
                         d3.select("#hover-entity-description").html(peopleDescriptions[personName].description)
                         d3.select("#hover-entity-employees-title").html('Employment as of ' + currentYear);
+                        d3.select("#hover-entity-source").html("Source: " + peopleDescriptions[personName].source)
+
                     }
                     var personData = peopleData[personName];
                     for (p in personData) {
@@ -972,7 +974,7 @@
                                     .html(d3.select(this).select("text").text())
                         })
                         .call(function() {
-                            infoCont.select("#hover-entity-source").html("<i>Source: " + company.source)
+                            infoCont.select("#hover-entity-source").html("Source: " + company.source)
                         })
              })
              .on("mouseout", function(d) {
@@ -1585,8 +1587,8 @@
                 </div>
             </div>
           </div>
-            <div class="row">
-                <img src="img/DARPA_infographic.svg" id="darpa-graph"/>
+            <div class="row dankRow">
+                <img src="img/DARPA_infographic.png" id="darpa-graph" alt="DARPA image"/>
             </div>
         </div>
 

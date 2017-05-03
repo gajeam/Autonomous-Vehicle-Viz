@@ -45,6 +45,9 @@
   background-color: #e1e8ec; /* @NISHA Bottom-left box background color */
 }
 
+#hover-entity-source {
+  font-style:italic;
+}
 .svg-container {
     width:700px;
 }
