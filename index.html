@@ -452,7 +452,7 @@
                 //     .text(currentYear);
                 d3.select("#year-description")
                     .html(function () {
-                        return isStartYear ? startText() : yearDescriptions[currentYear];
+                        return isStartYear() ? startText() : yearDescriptions[currentYear];
                     })
                 d3.select("#year-description-title")
                     .html(function() {
@@ -464,12 +464,18 @@
                     })
                 d3.select("#nextButton")
                     .text(function(){
-                        return isStartYear() ? "Start" : "Next year";
+                        if (isStartYear()) {
+                            return "Start";
+                        } else if (currentYear == maxYear) {
+                            return "Restart";
+                        } else {
+                            return "Next year";
+                        }
                     })
             });
 
             function startText() {
-                return "After the DARPA races, the race was on to be the first to bring autonomous vehicles to market. What started off as just science fiction quickly became a corporate battlefield frought with employee poaching, billion dollar acquisitions, and eager entrepeneurs leaving big companies to begin their own startups.<br/><br/>This visualiztion gives a history of the corporate race to autonomous vehicles.";
+                return "After the DARPA races, the race was on to be the first company to bring autonomous vehicles to market. What started off as just science fiction quickly became a corporate battlefield frought with <b>employee poaching</b>, <b>billion dollar acquisitions</b>, and <b>eager entrepeneurs</b> leaving big companies to begin their own startups.<br/><br/>This visualization gives a history of the <b>corporate race</b> to autonomous vehicles.";
             }
         }
 
@@ -844,6 +850,8 @@
                          .attr('x', 0)
                          .attr('y', companyTextSize * 2.0)
                          .attr('dy', i * companyTextSize)
+                          .attr("font-size", companyTextSize + "px")
+
                        .each(function() {
                             orientText(this, orientationForIndex(indexType), company.radius)
                          });
@@ -976,7 +984,7 @@
                         .attr("x", function() {
                             return +d3.select(this).attr("x") + companyTextX;
                         })
-                        .attr("y", companyTextY + (i * companyTextSize))
+                        .attr("y", companyTextY + (i * 12.0))
                         .attr("font-style", "italic")
                         .attr("font-size", companyTextSize + "px")
                         .attr("fill", acquired.select("circle").attr("fill"))

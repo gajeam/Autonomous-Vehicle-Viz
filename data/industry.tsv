@@ -24,8 +24,8 @@ year	actor	actorType	action	obj1	obj2	note
 2014	Faraday Future	startup	start	Nick Sampson, Tom Wessner		
 2014	Sterling Anderson	person	hire	Tesla		
 2015	Apple	tech	start			
-2015	Audi BMW and Daimler	car	acquire	HERE		
-2015	Audi, BMW, and Daimler	car	start			
+2015	Audi, BMW, Daimler	car	acquire	HERE		
+2015	Audi, BMW, Daimler	car	start			
 2015	Brett Browning	person	hire	Uber		
 2015	Ford	car	start			
 2015	GM	car	start			
@@ -47,3 +47,4 @@ year	actor	actorType	action	obj1	obj2	note
 2017	Tesla	car	sue	Sterling Anderson		
 2017	Uber	tech	acquire	Otto		
 2017	Waymo	tech	sue	Anthony Levandowski		
+2017	Ford	car	acquire	Argo AI		
