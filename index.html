@@ -98,6 +98,7 @@
     
         actionOrder = ["start", "acquire", "found", "rename", "poach", "hire", "sue"];
 
+        peopleData = {};
 
         industryData = d3.tsv("data/industry.tsv", function(d) {
             people = []
@@ -166,17 +167,22 @@
         totalHires = {};
         iteratorHires = {};
 
+        function showHoverEmptyState(show) {
+            d3.select('#hover-entity-info-emptystate')
+             .style('display', function() {
+                return show ? undefined : 'none';
+             });
+            d3.select('#hover-entity-info')
+             .style('display', function() {
+                return show ? 'none' : undefined;
+             });
+        }
         function runYear(year) {
             // Disable the button
             $("#nextButton").disable(true);
 
             // Show the hover over info text
-            d3.select('#company-info-emptystate')
-             .style('display', undefined);
-            d3.select('#company-info')
-             .style('display', 'none');
-
-
+            showHoverEmptyState(true);
             showTypeLabels(false)
             var totalDelay = clearCanvas();
 
@@ -337,9 +343,10 @@
                     center = {"x" : canvasWidth * .5, "y" : canvasHeight * .45}
                     margin = (orient == "bottom") ? 120 : 0; // HACK to shift startups further down
                     point = positionForPlaceOnCircle(radius, percentLoc, center)
-                    svg.append("g")
+                    svg.insert("g", "#mainArc")
                         .attr("transform", translatePoint(point))
                         .append("text")
+                        .attr("pointer-events", "none")
                         .attr("class", "type-labels")
                         .attr("fill", companyType.color)
                         .attr("font-size", 24)
@@ -371,6 +378,7 @@
                 .each(function() {
                     removeElement(this);
                 })
+            peopleData = {}
         }
 
         function clearCanvas(duration) {
@@ -486,7 +494,7 @@
          *  PEOPLE METHODS
          */
 
-        function addPersonToCompany(personName, companyName, index, total, dashed=true) {
+        function addPersonToCompany(personName, companyName, index, total, founder=false) {
             var company = d3.select("g#" + id(companyName));
             try {
                 var startTransform = randomOffsetStart(company)
@@ -495,6 +503,10 @@
             catch (err) {
                 console.warn("Cannot find company " + companyName + " for hiring " + personName);
                 return;
+            }
+
+            if (founder == false) {
+                addPersonInfo(personName, ('Hired by ' + companyName))
             }
 
             var startColor = "#A0A0A0" // Start with a neutral color
@@ -513,13 +525,33 @@
                 .on("end", function() {
                     var pName = d3.select(this).attr("id")
                     var cName = d3.select(this).attr("_companyId")
-                    drawLineFromPersonToCompany(pName, cName, dashed)
+                    drawLineFromPersonToCompany(pName, cName, !founder)
                 })
 
             var popTime = 500
             person.append("circle")
                 .attr("fill", startColor)
                 .attr("r", 0)
+                .on("mouseover", function() {
+                    showHoverEmptyState(false);
+
+                    d3.select("#hover-entity-name").html(personName);
+                    d3.select("#hover-entity-description").html('')
+                    d3.select("#hover-entity-employees-title").html('')
+                    d3.select("#hover-entity-source").html("")
+                    d3.select("#hover-entity-employee-list").html('')
+
+                    var personData = peopleData[personName];
+                    for (p in personData) {
+                        d3.select("#hover-entity-employee-list")
+                            .append('li')
+                            .html(personData[p])
+                    }
+                })
+                .on('mouseout', function() {
+                    showHoverEmptyState(true);
+                })
+
                 .transition()
                 .ease(d3.easeElastic)
                 .duration(500)
@@ -579,9 +611,6 @@
             }
         }
 
-
-
-
         function personPoachedByCompany(personName, poacherName, index, total) {
             // TODO deal with indices
             person = d3.select("#" + id(personName));
@@ -600,6 +629,8 @@
                 function (){
                   drawLineFromPersonToCompany(personName, poacherName);
               });
+
+            addPersonInfo(personName, 'Poached by ' + poacherName);
         }
 
         function movePersonToCompany(personName, companyName, index, total, comp, changeColor) {
@@ -636,6 +667,16 @@
             }
 
         }
+
+         function addPersonInfo(personName, info) {
+            if (peopleData[personName] == undefined) {
+                peopleData[personName] = []
+            }
+            if (Object.keys(peopleData).indexOf(info) == -1) {
+                peopleData[personName].push((info + ' in ' + currentYear)) ;
+            }
+         }
+
         /*
          *  STARTUP METHODS
          */
@@ -664,7 +705,8 @@
 
                     callAfterDelay(1000, function() {
                         var fName = founderNames[f]
-                        addPersonToCompany(fName, startupName, f, +founderNames.length, false);
+                        addPersonInfo(fName, 'Founded ' + startupName);
+                        addPersonToCompany(fName, startupName, f, +founderNames.length, true);
                         f++;
                         startup.transition()
                             .duration(750)
@@ -694,6 +736,7 @@
                                     .duration(duration)
                                     .style("opacity",1.0);
                         });
+                    addPersonInfo(fName, 'Founded ' + startupName);
                 }
             }
          }
@@ -738,13 +781,15 @@
                         .duration(250.0)
                         .style("opacity", 1.0);
 
-
                     d3.select(this).select("text")
                         .style("opacity", 0.0)
                         .transition()
                         .delay(750.0)
                         .duration(250.0)
                         .style("opacity", 1.0);
+
+                    personName = d3.select(this).select('text').text();
+                    addPersonInfo(personName, 'Moved to ' + acquirerName + ' via acquisition')
 
                     // Move people with the company
                     d3.select(this)
@@ -885,15 +930,12 @@
                      // Do this because the name might change
                     companyName = textFromTspans(d3.select(this.parentNode).select("text").node(), (indexType != kIndexStartUp));
                     var company = companyDescriptions[companyName];
-                    var infoCont = d3.select("#company-info")
+                    var infoCont = d3.select("#hover-entity-info")
 
-                    d3.select('#company-info-emptystate')
-                        .style('display', 'none');
-                    d3.select('#company-info')
-                        .style('display', undefined)
+                    showHoverEmptyState(false);
 
-                    infoCont.select("#company-name").html(companyName);
-                    infoCont.select("#company-description").html(company.description)
+                    infoCont.select("#hover-entity-name").html(companyName);
+                    infoCont.select("#hover-entity-description").html(company.description)
 
 
                     hasEmployees = false;
@@ -903,28 +945,26 @@
                         })
                         .call(function() {
                             if (hasEmployees == true) {
-                                infoCont.select("#company-employees-title").html("Employees as of " + currentYear);
+                                infoCont.select("#hover-entity-employees-title").html("Employees as of " + currentYear);
                             } else {
-                                infoCont.select("#company-employees-title").html("");
+                                infoCont.select("#hover-entity-employees-title").html("");
 
                             }
                         })
                         .each(function() {
-                            infoCont.select("#company-employee-list")
+                            infoCont.select("#hover-entity-employee-list")
                                     .append("li")
                                     .html(d3.select(this).select("text").text())
                         })
                         .call(function() {
-                            infoCont.select("#company-source").html("<i>Source: " + company.source)
+                            infoCont.select("#hover-entity-source").html("<i>Source: " + company.source)
                         })
              })
              .on("mouseout", function(d) {
-                d3.select('#company-info-emptystate')
-                    .style('display', undefined);
-                d3.select('#company-employee-list')
-                    .html('')
-                d3.select('#company-info')
-                    .style('display', 'none')
+                d3.select('#hover-entity-employee-list')
+                .html('')
+                showHoverEmptyState(true);
+                d3.select('#hover-entity-info-emptystate')
              });
 
             return g;
@@ -1563,15 +1603,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class = "row present-info" id="company-info-cont">
-                        <div id='company-info'>
-                            <h3 id='company-name'></h3>
-                            <p id='company-description'></p>
-                            <h5 id='company-employees-title'></h5>
-                            <ul id='company-employee-list'></ul>
-                            <p id ='company-source'></p>
+                    <div class = "row present-info" id="hover-entity-info-cont">
+                        <div id='hover-entity-info'>
+                            <h3 id='hover-entity-name'></h3>
+                            <p id='hover-entity-description'></p>
+                            <h5 id='hover-entity-employees-title'></h5>
+                            <ul id='hover-entity-employee-list'></ul>
+                            <p id ='hover-entity-source'></p>
                         </div>
-                        <div id='company-info-emptystate' style='display:none;'>
+                        <div id='hover-entity-info-emptystate' style='display:none;'>
                             <p>Hover over the dots to find out more about each company.</p>
                         </div>
                     </div>
