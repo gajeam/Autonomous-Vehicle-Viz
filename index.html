@@ -151,7 +151,8 @@
          *  ANIMATION FUNCTIONS
          */
         function updateData() {
-            currentYear++;
+            skipVal = isSkipYear(currentYear) ? 2 : 1;
+            currentYear += skipVal;
             if (currentYear > maxYear) {
                 resetCanvas();
                 currentYear = startYear - 1;
@@ -316,6 +317,12 @@
                 .attr("x", margin)
                 .attr("y", yearFont + margin);
 
+            // Use these for z-axes
+            var zOrder = [kIndexStartUp, kIndexCar, kIndexTech]
+            for (i in zOrder) {
+                svg.append('g').attr('id', 'z-level-' + zOrder[i]);
+            }
+            svg.append('g').attr('id', 'z-level-person');
 
             function setUpTypeLabels() {
                 orientations = ["right", "bottom", "left"];
@@ -454,7 +461,11 @@
                     })
                 d3.select("#year-description-title")
                     .html(function() {
-                        return isStartYear() ? "The Present" : currentYear;
+                        if (isStartYear() == true) {
+                            return "The Present"
+                        } else if (isSkipYear(currentYear)) {
+                            return currentYear + "-" + (currentYear + 1)
+                        } return currentYear;
                     })
                 d3.select("#nextButton")
                     .text(function(){
@@ -487,7 +498,8 @@
             var endColor = company.select("circle").attr("fill");
 
             var moveTime = 1400
-            var person = svg.append("g")
+            var person = svg.insert("g", '#z-level-person')
+
             person.attr("class", "person")
                 .attr("id", id(personName))
                 .attr("_companyId", company.attr("id"))
@@ -796,7 +808,7 @@
                 .each(function() {
                     if (companyIter == newIndex) {
                         // Find the element to insert the new element after
-                        afterId = '#' + d3.select(this).attr('id')
+                        afterId = d3.select(this).attr('id')
                         companyIter++; // Skip the location we're adding to
                     }
                     d3.select(this)
@@ -807,7 +819,11 @@
                     companyIter++;
                 });
 
-            g = svg.insert("g", afterId)
+            if (afterId == undefined) {
+                afterId = 'z-level-' + indexType;
+                console.log(afterId);
+            }
+            g = svg.insert("g", '#' + afterId)
                 .attr("class", company.type)
                 .attr("id", id(name))
                 .attr("_relIndex", newIndex)
@@ -1239,9 +1255,17 @@
         }
 
 
+
         function isStartYear() {
             return currentYear == startYear - 1;
         }
+        function isSkipYear(year) {
+            // Years where we show a two year range.
+            // It's a hack but this is due tomorrow!
+            var skipYears = [2009, 2011]
+            return skipYears.indexOf(year) != -1;
+        }
+
         function id(name) {
           return name.replace(/\W/g, '')
         }
