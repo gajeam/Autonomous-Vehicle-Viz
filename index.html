@@ -316,6 +316,11 @@
                 .attr("x", margin)
                 .attr("y", yearFont + margin);
 
+            // Use these for z-axes
+            var zOrder = [kIndexStartUp, kIndexCar, kIndexStartUp]
+            for (i in zOrder) {
+                svg.append('g').attr('id', 'z-level' + zOrder[i]);
+            }
 
             function setUpTypeLabels() {
                 orientations = ["right", "bottom", "left"];
@@ -796,7 +801,7 @@
                 .each(function() {
                     if (companyIter == newIndex) {
                         // Find the element to insert the new element after
-                        afterId = '#' + d3.select(this).attr('id')
+                        afterId = d3.select(this).attr('id')
                         companyIter++; // Skip the location we're adding to
                     }
                     d3.select(this)
@@ -807,7 +812,11 @@
                     companyIter++;
                 });
 
-            g = svg.insert("g", afterId)
+            if (afterId == undefined) {
+                afterId = 'z-level' + indexType;
+                console.log(afterId);
+            }
+            g = svg.insert("g", '#' + afterId)
                 .attr("class", company.type)
                 .attr("id", id(name))
                 .attr("_relIndex", newIndex)
