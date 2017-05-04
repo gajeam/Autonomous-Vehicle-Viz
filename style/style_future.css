@@ -7,13 +7,18 @@
 }
 
 #future-text {
-  padding-top: 30px;
+  padding-top: 10px;
   color: black;
   text-align: center;
   width: 100vw;
   /*height: 50px;*/
   display: table-cell;
   vertical-align: middle;
+}
+
+#future-legend {
+  margin-left: 20px;
+  margin-top: -20px;
 }
 
 .col-1 {
@@ -41,6 +46,13 @@ td {
   font-size: 12px;
 }
 
+.grey-out {
+  opacity: 0.5;
+}
+
+.division-border {
+  border-bottom: dashed 2px #cfd3d8 !important;
+}
 
 /* ========================================
 =============   Scatter plot  =============
@@ -87,7 +99,7 @@ td {
 /*    margin-top: 20px;
 */  background-color: #E7EBF0; /* @NISHA Bottom-right info box color */
     padding: 20px;
-    padding-top: 10px;
+    padding-top: 15px;
     padding-bottom: 5px;
-    height: 19vh;
+    height: 24vh;
 }

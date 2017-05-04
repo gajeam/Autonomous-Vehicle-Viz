@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 117.4 165" style="enable-background:new 0 0 117.4 165;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#F6F6F6;}
+	.st1{fill:#6AA0CC;}
+	.st2{fill:#BA456A;}
+	.st3{fill:#1E1D21;}
+	.st4{font-family:'HelveticaNeue';}
+	.st5{font-size:12px;}
+	.st6{opacity:0.96;fill:#09C409;enable-background:new    ;}
+</style>
+<rect id="Circle-Legend" class="st0" width="117.4" height="138.8"/>
+<circle id="Car1" class="st1" cx="25.3" cy="100.9" r="12.3"/>
+<circle id="Car1_1_" class="st2" cx="25.3" cy="27.7" r="12.3"/>
+<g id="Automobile-Companies" transform="translate(0.000000, 2.000000)">
+	<g id="Automobile">
+		<text transform="matrix(1 0 0 1 48.5559 94.9434)" class="st3 st4 st5">Automobile</text>
+	</g>
+	<g id="Companies_1_" transform="translate(1.000000, 14.000000)">
+		<g id="Group">
+			<text transform="matrix(1 0 0 1 48.2226 94.9433)" class="st3 st4 st5">Companies</text>
+		</g>
+	</g>
+</g>
+<circle id="Tech1" class="st6" cx="25.3" cy="63.9" r="12.3"/>
+<g id="Technology-Companies" transform="translate(0.000000, 2.000000)">
+	<g id="Technology">
+		<text transform="matrix(1 0 0 1 48.5679 57.9434)" class="st3 st4 st5">Technology</text>
+	</g>
+	<g id="Companies_3_" transform="translate(1.000000, 14.000000)">
+		<g id="Group_1_">
+			<text transform="matrix(1 0 0 1 48.2226 57.9434)" class="st3 st4 st5">Companies</text>
+		</g>
+	</g>
+</g>
+<g id="Group_2_" transform="translate(0.000000, 5.000000)">
+	<g id="Startups">
+		<text transform="matrix(1 0 0 1 48.5559 25.7157)" class="st3 st4 st5">Startups</text>
+	</g>
+</g>
+</svg>

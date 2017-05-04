@@ -1370,7 +1370,7 @@
     function loadFuture() {
         var margin = {top: 10, right: 90, bottom: 50, left: 50},
             width = 750 - margin.left - margin.right,
-            height = 500 - margin.top - margin.bottom;
+            height = 480 - margin.top - margin.bottom;
 
         /*
          * value accessor - returns the value to encode for a given data object.
@@ -1387,19 +1387,20 @@
                     .tickFormat(d3.format("d")).tickSizeOuter(0);
 
         // setup y
-
-        var ticks = [0,1,2,3,4,5];
-        var tickLabels = ["N/A",1,2,3,4,5];
+        var ticks = [2,3,4,5];
+        var tickLabels = ["N/A",3,4,5];
 
         var yValue = function(d) { return d["Level"];}, // data -> value
-            yScale = d3.scaleLinear().range([height, 0]), // value -> display
+            yScale = d3.scaleLinear().domain([2,6]).range([height, 0]), // value -> display
+            // yScale = d3.scaleLinear().domain([2,5]),
             yMap = function(d) { return yScale(yValue(d));}, // data -> display
             yAxis = d3.axisLeft().scale(yScale).tickValues(ticks)
                     .tickFormat(function(d,i){ return tickLabels[i] }).tickSizeOuter(0);
+            // yAxis.scale().domain([2, 5]);
 
 
         // setup fill color
-        // var cValue = function(d) { return d.bl;};
+        // var cValue = function(d) { return d["Company"];};
         // color = d3.scaleOrdinal(d3.schemeCategory10);
 
         // add the graph canvas to the body of the webpage
@@ -1437,8 +1438,8 @@
           });
 
           // don't want dots overlapping axis, so add in buffer to data domain
-          xScale.domain([d3.min(data, xValue)-0.2, d3.max(data, xValue)+0.2]);
-          yScale.domain([d3.min(data, yValue)-0.5, d3.max(data, yValue)+0.2]);
+          xScale.domain([d3.min(data, xValue)-0.3, d3.max(data, xValue)+0.3]);
+          yScale.domain([d3.min(data, yValue)-0.5, d3.max(data, yValue)+0.6]);
 
           // x-axis
 
@@ -1458,7 +1459,7 @@
           // y-axis
 
           yAxisTranslateX = -margin.left;
-          yAxisTranslateY = (height - margin.top - margin.bottom)/2.0 - 30; // It looks gross in the middle so we moved it up a bit
+          yAxisTranslateY = (height - margin.top - margin.bottom)/2.0 - 40; // It looks gross in the middle so we moved it up a bit
           svg.append("g")
               .attr("class", "y-axis")
               .call(yAxis)
@@ -1471,34 +1472,163 @@
               .style("text-anchor", "end")
               .text("Promised Level of Autonomy");
 
-            // add rectangle
-            svg.append("rect")
-                .attr("id", "NANs")
-                .attr("x", 0)
-                .attr("y", height*(5/6))
-                .attr("width", width)
-                .attr("height", height/6)
-                .attr("fill", boxColor)
-                .attr("fill-opacity", boxOpacity);
+        
+
+            // OVERAMBITIOUS
+
+            // svg.append("rect")
+            //     .attr("id", "overambitious")
+            //     .attr("x", 0)
+            //     .attr("y", 0)
+            //     .attr("width", width/3)
+            //     .attr("height", height - (height/4.3))
+            //     .attr("fill", "#AF4E4E")
+            //     // .style("stroke", "black")
+            //     // .style("stroke-width", 1);
+            //     .attr("fill-opacity", boxOpacity);
+            
+            svg.append("text")
+              .attr("id", "ambitious-text")
+              .attr("y", 20)
+              .attr("x", 190)
+              .style("font-style", "italic")
+              .style("text-anchor", "end")
+              .text("OVERAMBITIOUS")
+              .attr("fill-opacity", 0.5)
+              .attr("font-size", "20px")
+              .attr("font-weight", "bold");
+
+
+            // AMBITIOUS
+            svg.append("polyline")
+                .attr("points", "205,10 205,310")
+                .attr("fill", "#F6F6F6")
+                .style("stroke", "black")
+                .style("stroke-width", 1);
+
+            // svg.append("rect")
+            //     .attr("id", "ambitious")
+            //     .attr("x", width/3)
+            //     .attr("y", 0)
+            //     .attr("width", width/2.8)
+            //     .attr("height", height - (height/4.3))
+            //     .attr("fill", "#DDDA83")
+            //     // .style("stroke", "black")
+            //     // .style("stroke-width", 1);
+            //     .attr("fill-opacity", boxOpacity);
+           
+            svg.append("text")
+              .attr("id", "ambitious-text")
+              .attr("y", 20)
+              .attr("x", 365)
+              .style("font-style", "italic")
+              .style("text-anchor", "end")
+              .text("AMBITIOUS")
+              .attr("fill-opacity", 0.5)
+              .attr("font-size", "20px")
+              .attr("font-weight", "bold");
+     
+
+            // CAUTIOUS
+            svg.append("polyline")
+                .attr("points", "420,10 420,310")
+                .attr("fill", "#F6F6F6")
+                .style("stroke", "black")
+                .style("stroke-width", 1);
+
+            // svg.append("rect")
+            //     .attr("id", "cautious")
+            //     .attr("x", (width/3.2)*2.185)
+            //     .attr("y", 0)
+            //     .attr("width", width/3.15)
+            //     .attr("height", height - (height/4.3))
+            //     .attr("fill", "#6DA856")
+            //     // .style("stroke", "black")
+            //     // .style("stroke-width", 1);
+            //     .attr("fill-opacity", boxOpacity);
+
+            svg.append("text")
+              .attr("id", "cautious-text")
+              .attr("y", 20)
+              .attr("x", 560)
+              .style("font-style", "italic")
+              .style("text-anchor", "end")
+              .text("CAUTIOUS")
+              .attr("fill-opacity", 0.5)
+              .attr("font-size", "20px")
+              .attr("font-weight", "bold");
+
+
+            //VAGUE
+            svg.append("polyline")
+                .attr("points", "0,320 610,320")
+                .attr("fill", "#F6F6F6")
+                .style("stroke", "black")
+                .style("stroke-width", 1);
+            
+            // svg.append("rect")
+            //     .attr("id", "vague")
+            //     .attr("x", 0)
+            //     .attr("y", height- (height/4.3))
+            //     .attr("width", width)
+            //     .attr("height", height/4.3)
+            //     .attr("fill", "#C7B299")
+            //     // .style("stroke", "black")
+            //     // .style("stroke-width", 1);
+            //     .attr("fill-opacity", boxOpacity);
+
+            svg.append("text")
+              .attr("id", "vague-text")
+              .attr("y", 370)
+              .attr("x", 550)
+              .style("font-style", "italic")
+              .style("text-anchor", "end")
+              .text("VAGUE")
+              .attr("fill-opacity", 0.5)
+              .attr("font-size", "20px")
+              .attr("font-weight", "bold");
+
 
 
           // draw info box
           var infoBox = d3.select("#infoBox")
-            .style('width', width + "px")
-            .style("margin-left", (margin.left - 15) + "px") // HACK: These are made up numbers
+            .style('width', (width - 80) + "px")
+            .style("margin-left", (margin.left - 60) + "px") // HACK: These are made up numbers
             // .style("margin-right", (margin.right+85) + "px")
             .style("opacity", 0.9);
+
+        // colors = [  ["#53D953", "#039403", "#7FE77F", "#09C409",], // greens
+        //             [ "#EB9CB4", "#9B264C", "#731F35", "#BA456A",], // pinks (replaced lightest shade)
+        //             ["#6AA0CC", "#12538A", "#9CC3E4", "#2B6BA0",]] // blues
+
+            var carColor = "#6AA0CC"; // blue
+            var techColor = "#09C409"; //green
+            var startupColor = "#BA456A"; //pink
+
+            var cars = ["Renault-Nissan", "General Motors", "Volvo", "Honda", "Audi, BMW, Daimler", "Toyota", "Hyundai",
+                        "PSA Group", "Ford", "Volkswagen", "Tesla"];
+            var tech = ["Baidu", "Apple", "Bosch", "Waymo", "Uber", "Alibaba", "Google"];
+            //no information on Udacity, Apple, Alibaba, Aurora Innovation
 
           // draw dots
           svg.selectAll(".dot")
               .data(data)
             .enter().append("circle")
               .attr("class", "dot")
-              .attr("r", 5)
+              .attr("r", 7)
               .attr("cx", xMap)
               .attr("cy", yMap)
-              .style("fill", dotColor)
-              .style("opacity", dotOpacity)
+              // .style("fill", function(d) { return color(cValue(d));})
+              .style("fill", function(d) {
+                    if (cars.indexOf(d["Company"]) > -1) {
+                        return carColor;
+                    } else if (tech.indexOf(d["Company"]) > -1) {
+                        return techColor
+                    } else {
+                        return startupColor;
+                    }
+              })
+              .style("opacity", 0.8)
               .style("stroke", "black")
               .on("mouseover", function(d) {
                   tooltip.transition()
@@ -1535,7 +1665,8 @@
               function resetInfoBox() {
                 infoBox.select("h4").remove()
                 infoBox.append("p").text("Hover over the dots to find out more about each company and their promises")
-                        .style("font-style", "italic");
+                        .style("font-style", "italic")
+                        .style("font-size", "14px");
                 try {
                     ul.remove();
                  } catch (err){
@@ -1653,13 +1784,13 @@
                         THE FUTURE
                     </h2>
                     <p>
-                        As companies improve their technologies, they start promising specific levels of autonomy and ship dates to the public. Below you can find a graph detailing how far into the race these companies and startups supposedly are, based on the promises the companies have made. While these dates and autonomy levels seem unrealistic, they tell us something about market expectations.
+                        As companies improve their technologies, they start promising specific levels of autonomy and ship dates to the public. Below you can see the promises these companies and startups have made. While some of these dates and autonomy levels are unrealistic, they tell us something about market expectations and pressure.
                     </p>
                 </div>
             </div>
           </div>
           
-          <div class="row">
+          <div class="row" style='margin-top:-40px'>
             <div class="col-5">
                 <div id="table-container">
                     <table class="table table-condensed">
@@ -1682,18 +1813,19 @@
                             <td>Ford Fusion Hybrid</td>
                           </tr>
                           <tr>
-                            <th scope="row">3</th>
-                            <td class = "des"> <b>Middle autonomy.</b> The driver is necessary, but in specific traffic or environmental conditions all "safety-critical functions" are controlled by the vehicle. The driver may need to intervene depending on the situation, but does not have to monitor as much as in the other levels. Many companies are considering skipping level 3 as it requires people to go from a state of inattentiveness to one of alertness very quickly.</td>
-                            <td>Tesla Model S</td>
+                            <th scope="row" class="division-border">3</th>
+                            <td class="division-border"> <b>Middle autonomy.</b> The driver is necessary, but in specific traffic or environmental conditions all "safety-critical functions" are controlled by the vehicle. The driver may need to intervene depending on the situation, but does not have to monitor as much as in the other levels. Many companies are considering skipping level 3 as it requires people to go from a state of inattentiveness to one of alertness very quickly.</td>
+                            <td class="division-border">Tesla Model S</td>
                           </tr>
-                            <th scope="row">2</th>
-                            <td class = "des">At least one driver assistance system, like steering and acceleration/deceleration is automated. The vehicle can gauge when to engage these systems based on understanding the driving environment. Automated processes also include cruise control and lane-centering. While not actively using hands or feet, the driver must always pay attention and be ready to take control of the vehicle at any time.</td>
-                            <td>Mercedes-Benz E-Class</td>
+                          <tr>
+                            <th scope="row" class="grey-out">2</th>
+                            <td class="grey-out">The vehicle can gauge when to engage driver assistance systems based on its understanding of the driving environment. While not actively using hands or feet, the driver must always pay attention and be ready to take control of the vehicle at any time.</td>
+                            <td class="grey-out">Mercedes-Benz E-Class</td>
                           </tr>                 
                           <tr>
-                            <th scope="row">1</th>
-                            <td class = "des"> <b>Least autonomy.</b> The driver is still in control of most of the driving, but functions like steering or accelerating are controlled by the car.</td>
-                            <td>Audi A7</td>
+                            <th scope="row" class="grey-out">1</th>
+                            <td class="grey-out"> <b>Least autonomy.</b> The driver is still in control of most of the driving, but functions like steering or accelerating are controlled by the car.</td>
+                            <td class="grey-out">Audi A7</td>
                           </tr>
                         </tbody>
                     </table>
@@ -1711,7 +1843,9 @@
               </div>
 
               <div class = "row">
-
+                <col>
+                    <img src="img/future-legend.svg" id="future-legend"/>
+                </col>
                 <div class="col">
                   <div id="infoBox">
                   </div>
