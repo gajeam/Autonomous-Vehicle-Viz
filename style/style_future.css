@@ -18,7 +18,9 @@
 
 #future-legend {
   margin-left: 20px;
-  margin-top: -20px;
+  margin-top: 10px;
+  height: 150px;
+  width: 105px;
 }
 
 .col-1 {
