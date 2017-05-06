@@ -80,8 +80,8 @@
             <g id="Lines-Legend" transform="translate(490.000000, 0.000000)">
                 <rect id="Line-Legend" fill="#E1E8EC" fill-rule="nonzero" x="0" y="0" width="258" height="187.863281"></rect>
                 <g id="Lucia-Uber" transform="translate(30.000000, 122.000000)">
-                    <path d="M25.500001,32 L161.621834,32" id="Lawsuit-line" stroke="#FF0000" fill="#FF0000" fill-rule="nonzero" stroke-linecap="square" stroke-dasharray="8" transform="translate(93.560918, 32.500000) scale(-1, 1) translate(-93.560918, -32.500000) "></path>
-                    <polygon id="Lawsuit-line-decoration-1" stroke="#FF0000" fill="#FF0000" fill-rule="nonzero" stroke-linecap="square" stroke-dasharray="8" transform="translate(31.100000, 32.000000) scale(-1, 1) translate(-31.100000, -32.000000) " points="36.5 32 25.7 29 25.7 35"></polygon>
+                    <path d="M25.500002,32 L161.621835,32" id="Lawsuit-line" stroke="#FF0000" stroke-width="2" fill="#FF0000" fill-rule="nonzero" stroke-linecap="square" stroke-dasharray="1,4,1,4" transform="translate(93.560918, 33.000000) scale(-1, 1) translate(-93.560918, -33.000000) "></path>
+                    <polygon id="Triangle" fill="#FF0000" transform="translate(28.121101, 32.121101) rotate(270.000000) translate(-28.121101, -32.121101) " points="28.1211007 25.1211007 35.1211007 39.1211007 21.1211007 39.1211007"></polygon>
                     <g id="Uber" transform="translate(162.000000, 0.000000)">
                         <circle id="Oval" fill="#53D953" fill-rule="nonzero" cx="18" cy="31.5" r="18"></circle>
                         <g id="Group" transform="translate(3.000000, 0.000000)" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
@@ -169,7 +169,7 @@
                     </g>
                 </g>
                 <g id="Nisha-Uber" transform="translate(30.000000, 4.000000)">
-                    <path d="M176,32 L17,32" id="Hire-Line" stroke="#53D953" stroke-width="2" stroke-linecap="square" stroke-dasharray="4"></path>
+                    <path d="M176,32 L17,32" id="Hire-Line" stroke="#53D953" stroke-width="2" stroke-linecap="square" stroke-dasharray="6,8"></path>
                     <g id="Uber" transform="translate(162.000000, 0.000000)">
                         <circle id="Oval" fill="#53D953" fill-rule="nonzero" cx="18" cy="31.5" r="18"></circle>
                         <g id="Group" transform="translate(3.000000, 0.000000)" font-size="12" font-family="HelveticaNeue, Helvetica Neue" fill="#1E1D21" font-weight="normal">
@@ -188,7 +188,7 @@
                             </text>
                         </g>
                     </g>
-                    <g id="Nisha-was-hired-by-U" transform="translate(12.000000, 45.000000)" fill="#1E1D21" font-size="12">
+                    <g id="Nisha-was-hired-by-U" transform="translate(12.000000, 48.000000)" fill="#1E1D21" font-size="12">
                         <g id="Nisha-was" transform="translate(0.000000, 1.000000)" font-style="italic" font-family="HelveticaNeue-LightItalic, Helvetica Neue" font-weight="300">
                             <g id="Group">
                                 <text id="Nisha-was">

@@ -1088,9 +1088,9 @@
                 .attr("d", lineFunction(startLineData))
                 .attr("stroke", arrowColor)
                 .attr("stroke-width", 2)
-                .style("opacity", .5)
-                .attr("stroke-dasharray", 8)
                 .attr("marker-end", "url(#arrow-sue)")
+                .style("opacity", 1.0)
+                .attr("stroke-dasharray", 2)
                 .transition()
                 .duration(1000)
                   .attr("d", lineFunction(endLineData))
@@ -1195,7 +1195,7 @@
                 .attr("stroke", company.select("circle").attr("fill"))
                 .attr("stroke-width", 2.0)
                 .attr("stroke-dasharray", function() {
-                    return dashed ? 4 : undefined;
+                    return dashed ? 6 : undefined;
                 })
                 .style("opacity", 1.0);
 
